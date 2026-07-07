@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Log in — SQLite Tutorial</title>
+
+  <!-- from bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <link rel="stylesheet" href="../css/site.css" />
+</head>
+
+<body class="bg-light">
+  <main class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-5 col-md-7">
+        <div class="card shadow-sm">
+          <div class="card-body p-4">
+            <h1 class="h4 mb-1">SQLite Tutorial</h1>
+            <p class="text-muted mb-4">Sign in to save your exercise progress.</p>
+
+            <div id="alert" class="d-none"></div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input id="email" type="email" class="form-control" autocomplete="email" />
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input id="password" type="password" class="form-control" autocomplete="current-password" />
+            </div>
+
+            <div class="d-flex gap-2">
+              <button id="btnSignIn" class="btn btn-primary flex-grow-1">Log in</button>
+              <button id="btnSignUp" class="btn btn-outline-primary flex-grow-1">Sign up</button>
+            </div>
+
+            <div class="mt-3 small text-muted d-flex justify-content-between">
+              <a href="../index.html">Back to modules</a>
+              <a href="./profile.html">Profile</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { supabase } from "../js/supabase-client.js";
+
+    const params = new URLSearchParams(window.location.search);
+    const returnTo = params.get("returnTo") || "../pages/profile.html";
+
+    const alertEl = document.getElementById("alert");
+    function showAlert(message, type = "danger") {
+      alertEl.className = "alert alert-" + type;
+      alertEl.textContent = message;
+      alertEl.classList.remove("d-none");
+    }
+    function clearAlert() {
+      alertEl.classList.add("d-none");
+      alertEl.textContent = "";
+    }
+
+    const emailEl = document.getElementById("email");
+    const passwordEl = document.getElementById("password");
+    const btnSignIn = document.getElementById("btnSignIn");
+    const btnSignUp = document.getElementById("btnSignUp");
+
+    async function init() {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (sessionData?.session?.user) {
+        window.location.href = returnTo;
+      }
+    }
+
+    btnSignIn.addEventListener("click", async () => {
+      clearAlert();
+      const email = emailEl.value.trim();
+      const password = passwordEl.value;
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) return showAlert(error.message, "danger");
+
+      window.location.href = returnTo;
+    });
+
+    btnSignUp.addEventListener("click", async () => {
+      clearAlert();
+      const email = emailEl.value.trim();
+      const password = passwordEl.value;
+
+      const { data, error } = await supabase.auth.signUp({ email, password });
+      if (error) return showAlert(error.message, "danger");
+
+      if (data?.session?.user) window.location.href = returnTo;
+      showAlert("Account created. You can now log in.", "info");
+    });
+
+    init().catch((err) => showAlert(err.message || String(err), "danger"));
+  </script>
+</body>
+</html>
+

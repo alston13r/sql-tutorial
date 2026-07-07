@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your profile — SQLite Tutorial</title>
+
+  <!-- from bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <link rel="stylesheet" href="../css/site.css" />
+</head>
+
+<body class="bg-light">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="../index.html"><i class="bi bi-database me-2"></i>SQLite Tutorial</a>
+
+      <div class="navbar-nav ms-auto align-items-lg-center">
+        <a class="nav-link text-white-50" href="../index-path.html">Learning path</a>
+        <a class="nav-link" href="./login.html" id="nav-auth-login">Log in</a>
+        <a class="nav-link d-none" href="./profile.html" id="nav-auth-profile">Profile</a>
+        <a class="nav-link d-none" href="#" id="nav-auth-logout">Log out</a>
+        <span class="navbar-text text-white-50 ms-lg-2 d-none d-lg-inline" id="nav-auth-email"></span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h1 class="h4 mb-0">Progress</h1>
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-primary" href="../index.html">Modules</a>
+      </div>
+    </div>
+
+    <div id="alert" class="d-none"></div>
+
+    <div class="row g-3">
+      <div class="col-lg-4">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="text-muted small">Signed in as</div>
+            <div id="userEmail" class="fw-semibold">—</div>
+            <hr />
+            <div class="d-flex justify-content-between">
+              <span class="text-muted">Completed exercises</span>
+              <span id="countCompleted" class="fw-semibold">0</span>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span class="text-muted">In-progress</span>
+              <span id="countInProgress" class="fw-semibold">0</span>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span class="text-muted">Not started</span>
+              <span id="countNotStarted" class="fw-semibold">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-8">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h2 class="h6 mb-3">Last completed exercises</h2>
+            <div id="lastCompleted" class="small text-muted">Loading…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="../js/auth-ui.js"></script>
+  <script type="module">
+    import { supabase } from "../js/supabase-client.js";
+
+    const alertEl = document.getElementById("alert");
+    function showAlert(message, type = "danger") {
+      alertEl.className = "alert alert-" + type;
+      alertEl.textContent = message;
+      alertEl.classList.remove("d-none");
+    }
+
+    const userEmailEl = document.getElementById("userEmail");
+    const countCompletedEl = document.getElementById("countCompleted");
+    const countInProgressEl = document.getElementById("countInProgress");
+    const countNotStartedEl = document.getElementById("countNotStarted");
+    const lastCompletedEl = document.getElementById("lastCompleted");
+
+    async function countStatus(status) {
+      const { count, error } = await supabase
+        .from("exercise_progress")
+        .select("exercise_id", { count: "exact", head: true })
+        .eq("status", status);
+
+      if (error) throw error;
+      return count || 0;
+    }
+
+    async function loadLastCompleted() {
+      const { data, error } = await supabase
+        .from("exercise_progress")
+        .select("module_id, lesson_id, exercise_id, completed_at")
+        .eq("status", "completed")
+        .order("completed_at", { ascending: false })
+        .limit(10);
+
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        lastCompletedEl.textContent = "No completed exercises yet.";
+        return;
+      }
+
+      lastCompletedEl.innerHTML = `
+        <div class="list-group list-group-flush">
+          ${data
+            .map(
+              (r) => `
+            <div class="list-group-item">
+              <div class="fw-semibold">${r.module_id} / ${r.lesson_id}</div>
+              <div class="text-muted small">${r.exercise_id} — ${
+                r.completed_at ? new Date(r.completed_at).toLocaleString() : "—"
+              }</div>
+            </div>`
+            )
+            .join("")}
+        </div>
+      `;
+    }
+
+    async function init() {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const session = sessionData?.session;
+
+      if (!session?.user) {
+        const loginUrl = new URL("./login.html", window.location.href);
+        loginUrl.searchParams.set("returnTo", window.location.href);
+        window.location.href = loginUrl.toString();
+        return;
+      }
+
+      userEmailEl.textContent = session.user.email || session.user.id;
+
+      const [completed, inProgress, notStarted] = await Promise.all([
+        countStatus("completed"),
+        countStatus("in_progress"),
+        countStatus("not_started"),
+      ]);
+
+      countCompletedEl.textContent = completed;
+      countInProgressEl.textContent = inProgress;
+      countNotStartedEl.textContent = notStarted;
+
+      await loadLastCompleted();
+    }
+
+    init().catch((err) => {
+      showAlert(err.message || String(err), "danger");
+      lastCompletedEl.textContent = "Failed to load progress.";
+    });
+  </script>
+</body>
+</html>
+
