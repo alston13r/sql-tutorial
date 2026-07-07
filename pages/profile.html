@@ -69,6 +69,13 @@
     </div>
   </main>
 
+  <footer class="bg-light py-3 mt-auto border-top">
+    <div class="container text-center text-muted small">
+      SQLite Tutorial &mdash; MIT License<br>
+      <a href="https://github.com/alston13r/sql-tutorial" class="link-secondary">GitHub Repository</a>
+    </div>
+  </footer>
+
   <script type="module" src="../js/auth-ui.js"></script>
   <script type="module">
     import { supabase } from "../js/supabase-client.js";
@@ -85,35 +92,33 @@
     const countInProgressEl = document.getElementById("countInProgress");
     const countNotStartedEl = document.getElementById("countNotStarted");
     const lastCompletedEl = document.getElementById("lastCompleted");
+    const knownExercises = [
+      { module_id: "01-foundations", lesson_id: "intro", exercise_id: "intro-01" },
+    ];
 
-    async function countStatus(status) {
-      const { count, error } = await supabase
-        .from("exercise_progress")
-        .select("exercise_id", { count: "exact", head: true })
-        .eq("status", status);
-
-      if (error) throw error;
-      return count || 0;
-    }
-
-    async function loadLastCompleted() {
+    async function loadProgressRows() {
       const { data, error } = await supabase
         .from("exercise_progress")
-        .select("module_id, lesson_id, exercise_id, completed_at")
-        .eq("status", "completed")
-        .order("completed_at", { ascending: false })
-        .limit(10);
+        .select("module_id, lesson_id, exercise_id, status, completed_at");
 
       if (error) throw error;
+      return data || [];
+    }
 
-      if (!data || data.length === 0) {
+    async function loadLastCompleted(data) {
+      const completed = [...data]
+        .filter((row) => row.status === "completed")
+        .sort((a, b) => new Date(b.completed_at || 0) - new Date(a.completed_at || 0))
+        .slice(0, 10);
+
+      if (completed.length === 0) {
         lastCompletedEl.textContent = "No completed exercises yet.";
         return;
       }
 
       lastCompletedEl.innerHTML = `
         <div class="list-group list-group-flush">
-          ${data
+          ${completed
             .map(
               (r) => `
             <div class="list-group-item">
@@ -141,17 +146,31 @@
 
       userEmailEl.textContent = session.user.email || session.user.id;
 
-      const [completed, inProgress, notStarted] = await Promise.all([
-        countStatus("completed"),
-        countStatus("in_progress"),
-        countStatus("not_started"),
-      ]);
+      const rows = await loadProgressRows();
+      const rowMap = new Map(
+        rows.map((row) => [`${row.module_id}:${row.lesson_id}:${row.exercise_id}`, row.status])
+      );
+      let completed = 0;
+      let inProgress = 0;
+      let notStarted = 0;
+
+      for (const exercise of knownExercises) {
+        const key = `${exercise.module_id}:${exercise.lesson_id}:${exercise.exercise_id}`;
+        const status = rowMap.get(key) || "not_started";
+        if (status === "completed") {
+          completed += 1;
+        } else if (status === "in_progress") {
+          inProgress += 1;
+        } else {
+          notStarted += 1;
+        }
+      }
 
       countCompletedEl.textContent = completed;
       countInProgressEl.textContent = inProgress;
       countNotStartedEl.textContent = notStarted;
 
-      await loadLastCompleted();
+      await loadLastCompleted(rows);
     }
 
     init().catch((err) => {
