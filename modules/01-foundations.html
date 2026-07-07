@@ -43,6 +43,9 @@
       <div class="col-lg-9">
         <span class="badge bg-secondary mb-2">Module 1</span>
         <h1 class="display-6 fw-bold mb-3">Introduction to SQL & SQLite</h1>
+        <div class="alert alert-success d-none" id="lesson-complete-alert">
+          <i class="bi bi-trophy me-2"></i>All exercises in this lesson have been completed.
+        </div>
         <p class="lead text-muted">
           SQL (Structured Query Language) is the standard language for working with relational databases.
           In this tutorial, you'll use SQLite to explore data, answer questions, and gradually build confidence with queries.
@@ -168,19 +171,19 @@
         </p>
 
         <div class="sql-sandbox"
-             data-exercise='{"type":"query","database":"employees.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT * FROM employees"}}'>
+             data-exercise='{"type":"query","moduleId":"01-foundations","lessonId":"intro","exerciseId":"intro-01","database":"employees.sql","starterSql":"SELECT ","validation":{"type":"exactSqlMatch","expectedSql":"SELECT * FROM employees;","options":{"caseSensitive":false,"collapseWhitespace":true,"trim":true}}}'>
           <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
             <span class="sql-meta text-muted">
               <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
             </span>
-            <div class="btn-group btn-group-sm">
+            <div class="btn-group btn-group-sm" role="group" aria-label="SQL exercise actions">
               <button type="button" class="btn btn-outline-secondary btn-reset" title="Reset database">
                 <i class="bi bi-arrow-counterclockwise"></i> Reset
               </button>
               <button type="button" class="btn btn-outline-primary btn-run">
                 <i class="bi bi-play-fill"></i> Run
               </button>
-              <button type="button" class="btn btn-primary btn-check">
+              <button type="button" class="btn btn-primary btn-validate">
                 <i class="bi bi-check-lg"></i> Check
               </button>
             </div>
@@ -212,6 +215,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
   <script src="../js/sql-runner.js"></script>
   <script src="../js/exercise.js"></script>
+  <script type="module" src="../js/progress.js"></script>
   <script src="../js/lesson-page.js"></script>
   <script type="module" src="../js/auth-ui.js"></script>
 </body>

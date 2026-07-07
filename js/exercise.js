@@ -3,6 +3,20 @@
  * Supports query exercises (result matching) and mutation exercises (state checks).
  */
 const Exercise = (function () {
+  function normalizeSql(sql, options = {}) {
+    const {
+      caseSensitive = false,
+      collapseWhitespace = true,
+      trim = true,
+    } = options;
+
+    let normalized = sql;
+    if (collapseWhitespace) normalized = normalized.replace(/\s+/g, " ");
+    if (trim) normalized = normalized.trim();
+    if (!caseSensitive) normalized = normalized.toLowerCase();
+    return normalized;
+  }
+
   function normalizeRows(columns, values) {
     return values.map((row) => {
       const obj = {};
@@ -63,6 +77,28 @@ const Exercise = (function () {
       return { passed: true, message: "Correct!", actual: result };
     }
 
+    checkExactSqlMatch(userSql, expectedSql, options = {}) {
+      let actual;
+      try {
+        actual = this.runner.query(userSql);
+      } catch (err) {
+        return { passed: false, message: `SQL error: ${err.message}` };
+      }
+
+      const actualSql = normalizeSql(userSql, options);
+      const targetSql = normalizeSql(expectedSql, options);
+
+      if (actualSql !== targetSql) {
+        return {
+          passed: false,
+          message: `For this exercise, use the exact command: ${expectedSql}`,
+          actual,
+        };
+      }
+
+      return { passed: true, message: "Correct!", actual };
+    }
+
     checkMutation(userSql, verifyQuery, expectedQuery) {
       try {
         this.runner.db.run(userSql);
@@ -96,6 +132,8 @@ const Exercise = (function () {
           return this.checkResultMatch(userSql, validation.query);
         case "rowCount":
           return this.checkRowCount(userSql, validation.count);
+        case "exactSqlMatch":
+          return this.checkExactSqlMatch(userSql, validation.expectedSql, validation.options);
         case "mutation": {
           const statements = userSql
             .split(";")
