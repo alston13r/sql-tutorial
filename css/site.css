@@ -1,0 +1,58 @@
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#module-grid .card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+#module-grid .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+}
+
+.learning-path {
+  position: relative;
+  padding-left: 3rem;
+}
+
+.learning-path::before {
+  content: "";
+  position: absolute;
+  left: 1.125rem;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--bs-border-color);
+}
+
+.path-step {
+  position: relative;
+}
+
+.path-marker {
+  position: absolute;
+  left: -3rem;
+  top: 1.25rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background-color: var(--bs-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  z-index: 1;
+}
+
+.path-step:last-child .learning-path::before {
+  display: none;
+}
+
+.path-step.opacity-75 .path-marker {
+  background-color: var(--bs-secondary);
+}

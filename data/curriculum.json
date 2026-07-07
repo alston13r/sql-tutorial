@@ -1,0 +1,293 @@
+{
+  "title": "SQLite Tutorial",
+  "description": "A complete SQL curriculum adapted from W3Schools topics, tailored for SQLite and in-browser exercises.",
+  "dialect": "sqlite",
+  "exerciseTypes": {
+    "query": "Write a SELECT query to extract or display the required information.",
+    "mutation": "Write INSERT, UPDATE, or DELETE statements to modify the database."
+  },
+  "modules": [
+    {
+      "id": "01-foundations",
+      "order": 1,
+      "title": "Getting Started",
+      "description": "What SQL and SQLite are, basic syntax, and how to read query results.",
+      "duration": "30 min",
+      "status": "available",
+      "href": "modules/01-foundations.html",
+      "icon": "bi-database",
+      "topics": ["sql_intro", "sql_syntax", "sql_comments"],
+      "lessons": [
+        {
+          "id": "intro",
+          "title": "Introduction to SQL & SQLite",
+          "topics": ["sql_intro"],
+          "exercises": [
+            {
+              "id": "intro-01",
+              "type": "query",
+              "title": "Your first query",
+              "prompt": "Select all columns from the employees table.",
+              "database": "employees.sql",
+              "starterSql": "SELECT ",
+              "validation": { "type": "resultMatch", "query": "SELECT * FROM employees" }
+            }
+          ]
+        },
+        {
+          "id": "syntax",
+          "title": "SQL Syntax",
+          "topics": ["sql_syntax", "sql_comments"],
+          "exercises": [
+            {
+              "id": "syntax-01",
+              "type": "query",
+              "title": "Select specific columns",
+              "prompt": "Select only the name and department columns from employees.",
+              "database": "employees.sql",
+              "starterSql": "SELECT ",
+              "validation": { "type": "resultMatch", "query": "SELECT name, department FROM employees" }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "02-select",
+      "order": 2,
+      "title": "SELECT Basics",
+      "description": "Retrieve data with SELECT, DISTINCT, aliases, and LIMIT.",
+      "duration": "35 min",
+      "status": "coming_soon",
+      "href": null,
+      "icon": "bi-search",
+      "topics": ["sql_select", "sql_distinct", "sql_alias", "sql_top"],
+      "lessons": [
+        { "id": "select", "title": "SELECT", "topics": ["sql_select"] },
+        { "id": "distinct", "title": "SELECT DISTINCT", "topics": ["sql_distinct"] },
+        { "id": "aliases", "title": "Aliases", "topics": ["sql_alias"] },
+        { "id": "limit", "title": "LIMIT (SQLite equivalent of TOP)", "topics": ["sql_top"] }
+      ]
+    },
+    {
+      "id": "03-filtering",
+      "order": 3,
+      "title": "Filtering & Sorting",
+      "description": "Filter rows with WHERE, combine conditions, and sort results.",
+      "duration": "40 min",
+      "status": "coming_soon",
+      "href": null,
+      "icon": "bi-funnel",
+      "topics": ["sql_where", "sql_and", "sql_or", "sql_not", "sql_orderby"],
+      "lessons": [
+        { "id": "where", "title": "WHERE", "topics": ["sql_where"] },
+        { "id": "and-or-not", "title": "AND, OR, NOT", "topics": ["sql_and", "sql_or", "sql_not"] },
+        { "id": "orderby", "title": "ORDER BY", "topics": ["sql_orderby"] }
+      ]
+    },
+    {
+      "id": "04-modifying",
+      "order": 4,
+      "title": "Modifying Data",
+      "description": "Insert, update, and delete rows. Work with NULL values.",
+      "duration": "45 min",
+      "status": "coming_soon",
+      "href": null,
+      "icon": "bi-pencil-square",
+      "topics": ["sql_insert", "sql_update", "sql_delete", "sql_null_values"],
+      "lessons": [
+        { "id": "insert", "title": "INSERT INTO", "topics": ["sql_insert"] },
+        { "id": "update", "title": "UPDATE", "topics": ["sql_update"] },
+        { "id": "delete", "title": "DELETE", "topics": ["sql_delete"] },
+        { "id": "null", "title": "NULL Values", "topics": ["sql_null_values"] }
+      ]
+    },
+    {
+      "id": "05-aggregates",
+      "order": 5,
+      "title": "Aggregate Functions",
+      "description": "Summarize data with COUNT, SUM, AVG, MIN, and MAX.",
+      "duration": "35 min",
+      "status": "coming_soon",
+      "href": null,
+      "icon": "bi-bar-chart",
+      "topics": ["sql_aggregate_functions", "sql_count", "sql_sum", "sql_avg", "sql_min_max", "sql_max"],
+      "lessons": [
+        { "id": "aggregates-intro", "title": "Aggregate Functions", "topics": ["sql_aggregate_functions"] },
+        { "id": "count", "title": "COUNT()", "topics": ["sql_count"] },
+        { "id": "sum-avg", "title": "SUM() and AVG()", "topics": ["sql_sum", "sql_avg"] },
+        { "id": "min-max", "title": "MIN() and MAX()", "topics": ["sql_min_max", "sql_max"] }
+      ]
+    },
+    {
+      "id": "06-pattern-matching",
+      "order": 6,
+      "title": "Pattern Matching & Ranges",
+      "description": "Filter with LIKE, wildcards, IN, and BETWEEN.",
+      "duration": "35 min",
+      "status": "coming_soon",
+      "href": null,
+      "icon": "bi-regex",
+      "topics": ["sql_like", "sql_wildcards", "sql_in", "sql_between"],
+      "lessons": [
+        { "id": "like", "title": "LIKE and Wildcards", "topics": ["sql_like", "sql_wildcards"] },
+        { "id": "in", "title": "IN", "topics": ["sql_in"] },
+        { "id": "between", "title": "BETWEEN", "topics": ["sql_between"] }
+      ]
+    },
+    {
+      "id": "07-joins",
+      "order": 7,
+      "title": "Joins",
+      "description": "Combine tables with INNER, LEFT, and self joins.",
+      "duration": "50 min",
+      "status": "coming_soon",
+      "href": null,
+      "icon": "bi-diagram-3",
+      "topics": ["sql_join", "sql_join_inner", "sql_join_left", "sql_join_self"],
+      "lessons": [
+        { "id": "joins-intro", "title": "SQL Joins", "topics": ["sql_join"] },
+        { "id": "inner-join", "title": "INNER JOIN", "topics": ["sql_join_inner"] },
+        { "id": "left-join", "title": "LEFT JOIN", "topics": ["sql_join_left"] },
+        { "id": "self-join", "title": "Self Join", "topics": ["sql_join_self"] }
+      ],
+      "notes": "RIGHT JOIN and FULL JOIN are not supported in SQLite; covered conceptually only."
+    },
+    {
+      "id": "08-grouping",
+      "order": 8,
+      "title": "GROUP BY & HAVING",
+      "description": "Group rows and filter aggregated results.",
+      "duration": "40 min",
+      "status": "coming_soon",
+      "href": null,
+      "icon": "bi-collection",
+      "topics": ["sql_groupby", "sql_having"],
+      "lessons": [
+        { "id": "groupby", "title": "GROUP BY", "topics": ["sql_groupby"] },
+        { "id": "having", "title": "HAVING", "topics": ["sql_having"] }
+      ]
+    },
+    {
+      "id": "09-advanced-queries",
+      "order": 9,
+      "title": "Advanced Queries",
+      "description": "UNION, subqueries, EXISTS, and CASE expressions.",
+      "duration": "50 min",
+      "status": "coming_soon",
+      "href": null,
+      "icon": "bi-layers",
+      "topics": ["sql_union", "sql_union_all", "sql_exists", "sql_any_all", "sql_all", "sql_case", "sql_insert_into_select"],
+      "lessons": [
+        { "id": "union", "title": "UNION and UNION ALL", "topics": ["sql_union", "sql_union_all"] },
+        { "id": "exists", "title": "EXISTS and Subqueries", "topics": ["sql_exists", "sql_any_all", "sql_all"] },
+        { "id": "case", "title": "CASE", "topics": ["sql_case"] },
+        { "id": "insert-select", "title": "INSERT INTO SELECT", "topics": ["sql_insert_into_select"] }
+      ]
+    },
+    {
+      "id": "10-null-functions",
+      "order": 10,
+      "title": "Null Handling",
+      "description": "COALESCE, IFNULL, and other null-handling patterns in SQLite.",
+      "duration": "25 min",
+      "status": "coming_soon",
+      "href": null,
+      "icon": "bi-question-circle",
+      "topics": ["sql_isnull"],
+      "lessons": [
+        { "id": "null-functions", "title": "Null Functions", "topics": ["sql_isnull"] }
+      ],
+      "notes": "Uses SQLite-specific IFNULL/COALESCE instead of SQL Server ISNULL."
+    },
+    {
+      "id": "11-schema",
+      "order": 11,
+      "title": "Database & Tables",
+      "description": "Create databases and tables, alter schema, and understand data types.",
+      "duration": "45 min",
+      "status": "coming_soon",
+      "href": null,
+      "icon": "bi-table",
+      "topics": ["sql_create_db", "sql_drop_db", "sql_create_table", "sql_drop_table", "sql_alter", "sql_datatypes"],
+      "lessons": [
+        { "id": "create-db", "title": "CREATE DATABASE", "topics": ["sql_create_db"] },
+        { "id": "create-table", "title": "CREATE TABLE", "topics": ["sql_create_table", "sql_datatypes"] },
+        { "id": "alter-table", "title": "ALTER TABLE", "topics": ["sql_alter"] },
+        { "id": "drop", "title": "DROP TABLE / DATABASE", "topics": ["sql_drop_table", "sql_drop_db"] }
+      ]
+    },
+    {
+      "id": "12-constraints",
+      "order": 12,
+      "title": "Constraints & Keys",
+      "description": "Enforce data integrity with constraints, primary keys, and foreign keys.",
+      "duration": "45 min",
+      "status": "coming_soon",
+      "href": null,
+      "icon": "bi-key",
+      "topics": ["sql_constraints", "sql_notnull", "sql_unique", "sql_primarykey", "sql_foreignkey", "sql_check", "sql_default", "sql_autoincrement"],
+      "lessons": [
+        { "id": "constraints", "title": "Constraints Overview", "topics": ["sql_constraints"] },
+        { "id": "not-null-unique", "title": "NOT NULL and UNIQUE", "topics": ["sql_notnull", "sql_unique"] },
+        { "id": "primary-key", "title": "Primary Key", "topics": ["sql_primarykey"] },
+        { "id": "foreign-key", "title": "Foreign Key", "topics": ["sql_foreignkey"] },
+        { "id": "check-default", "title": "CHECK and DEFAULT", "topics": ["sql_check", "sql_default"] },
+        { "id": "autoincrement", "title": "AUTOINCREMENT", "topics": ["sql_autoincrement"] }
+      ]
+    },
+    {
+      "id": "13-indexes-views",
+      "order": 13,
+      "title": "Indexes & Views",
+      "description": "Speed up queries with indexes and simplify access with views.",
+      "duration": "35 min",
+      "status": "coming_soon",
+      "href": null,
+      "icon": "bi-eye",
+      "topics": ["sql_create_index", "sql_view", "sql_dates"],
+      "lessons": [
+        { "id": "indexes", "title": "CREATE INDEX", "topics": ["sql_create_index"] },
+        { "id": "views", "title": "Views", "topics": ["sql_view"] },
+        { "id": "dates", "title": "Dates in SQLite", "topics": ["sql_dates"] }
+      ]
+    },
+    {
+      "id": "14-security",
+      "order": 14,
+      "title": "Security Best Practices",
+      "description": "Understand SQL injection and the importance of parameterized queries.",
+      "duration": "30 min",
+      "status": "coming_soon",
+      "href": null,
+      "icon": "bi-shield-check",
+      "topics": ["sql_injection", "sql_parameterized_queries", "sql_prepared_statements"],
+      "lessons": [
+        { "id": "injection", "title": "SQL Injection", "topics": ["sql_injection"] },
+        { "id": "parameters", "title": "Parameterized Queries", "topics": ["sql_parameterized_queries", "sql_prepared_statements"] }
+      ],
+      "notes": "Conceptual lessons; sql.js exercises demonstrate safe vs unsafe patterns."
+    }
+  ],
+  "excludedTopics": {
+    "reason": "Not applicable to SQLite or deferred to reference appendix",
+    "items": [
+      "sql_stored_procedures",
+      "sql_select_into",
+      "sql_backup_db",
+      "sql_hosting",
+      "sql_join_right",
+      "sql_join_full",
+      "sql_operators",
+      "sql_ref_mysql",
+      "sql_ref_sqlserver",
+      "sql_ref_msaccess",
+      "sql_exam",
+      "sql_cert"
+    ]
+  },
+  "appendix": {
+    "title": "Reference",
+    "topics": ["sql_datatypes", "sql_ref_keywords", "sql_quickref", "sql_examples"]
+  }
+}

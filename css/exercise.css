@@ -1,0 +1,49 @@
+.sql-sandbox {
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  overflow: hidden;
+}
+
+.sql-sandbox .sql-editor {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 0;
+  resize: vertical;
+  min-height: 120px;
+  background-color: #f8f9fa;
+}
+
+.sql-sandbox .sql-toolbar {
+  background-color: var(--bs-light);
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.sql-sandbox .sql-output {
+  min-height: 80px;
+  max-height: 400px;
+  overflow: auto;
+  background-color: #fff;
+}
+
+.sql-sandbox .sql-output table {
+  font-size: 0.85rem;
+}
+
+.sql-sandbox .sql-meta {
+  font-size: 0.8rem;
+}
+
+.lesson-sidebar {
+  font-size: 0.9rem;
+}
+
+.lesson-sidebar .nav-link {
+  padding: 0.25rem 0;
+  color: var(--bs-secondary);
+}
+
+.lesson-sidebar .nav-link.active {
+  color: var(--bs-primary);
+  font-weight: 600;
+}
