@@ -3,6 +3,42 @@
  * Reads exercise config from data-exercise JSON on the container element.
  */
 const LessonPage = (function () {
+  function getAllExerciseConfigs() {
+    return Array.from(document.querySelectorAll("[data-exercise]"))
+      .map((el) => {
+        try {
+          return JSON.parse(el.dataset.exercise || "{}");
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
+  }
+
+  function updateCompletionBanner() {
+    const banner = document.getElementById("lesson-complete-alert");
+    if (!banner || !window.ProgressTracker) return;
+
+    const configs = getAllExerciseConfigs().filter(
+      (config) => config.moduleId && config.lessonId && config.exerciseId
+    );
+
+    if (configs.length === 0) {
+      banner.classList.add("d-none");
+      return;
+    }
+
+    const allCompleted = configs.every(
+      (config) => window.ProgressTracker.getLocalExerciseStatus({
+        module_id: config.moduleId,
+        lesson_id: config.lessonId,
+        exercise_id: config.exerciseId,
+      }) === "completed"
+    );
+
+    banner.classList.toggle("d-none", !allCompleted);
+  }
+
   async function init(container) {
     const configRaw = container.dataset.exercise;
     if (!configRaw) return;
@@ -10,7 +46,7 @@ const LessonPage = (function () {
     const config = JSON.parse(configRaw);
     const editor = container.querySelector(".sql-editor");
     const runBtn = container.querySelector(".btn-run");
-    const checkBtn = container.querySelector(".btn-check");
+    const checkBtn = container.querySelector(".btn-validate");
     const resetBtn = container.querySelector(".btn-reset");
     const outputEl = container.querySelector(".sql-output");
     const feedbackEl = container.querySelector(".sql-feedback");
@@ -24,10 +60,29 @@ const LessonPage = (function () {
     let validator;
     const starterSql = config.starterSql || "";
 
+    async function saveProgress(status) {
+      if (!window.ProgressTracker || !config.moduleId || !config.lessonId || !config.exerciseId) return;
+      const payload = {
+        module_id: config.moduleId,
+        lesson_id: config.lessonId,
+        exercise_id: config.exerciseId,
+        status,
+      };
+      if (status === "completed") {
+        payload.completed_at = new Date().toISOString();
+      }
+      await window.ProgressTracker.saveExerciseProgress(payload);
+      updateCompletionBanner();
+    }
+
     try {
       container.querySelector(".sql-loading")?.classList.remove("d-none");
       runner = await SqlRunner.createFromFile(dbPath);
       validator = new Exercise.Validator(runner);
+      if (window.ProgressTracker) {
+        await window.ProgressTracker.syncLocalProgressForCurrentUser();
+        updateCompletionBanner();
+      }
 
       if (tablesEl) {
         const tables = runner.getTableNames();
@@ -89,8 +144,10 @@ const LessonPage = (function () {
         const result = freshValidator.validate(sql, config.validation);
 
         if (result.passed) {
+          await saveProgress("completed");
           feedbackEl.innerHTML = `<div class="alert alert-success mb-0"><i class="bi bi-check-circle me-1"></i>${result.message}</div>`;
         } else {
+          await saveProgress("in_progress");
           feedbackEl.innerHTML = `<div class="alert alert-danger mb-0"><i class="bi bi-x-circle me-1"></i>${result.message}</div>`;
         }
 
@@ -114,6 +171,7 @@ const LessonPage = (function () {
 
   document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("[data-exercise]").forEach((el) => init(el));
+    updateCompletionBanner();
   });
 
   return { init };

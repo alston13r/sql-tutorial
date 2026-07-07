@@ -43,39 +43,147 @@
       <div class="col-lg-9">
         <span class="badge bg-secondary mb-2">Module 1</span>
         <h1 class="display-6 fw-bold mb-3">Introduction to SQL & SQLite</h1>
+        <div class="alert alert-success d-none" id="lesson-complete-alert">
+          <i class="bi bi-trophy me-2"></i>All exercises in this lesson have been completed.
+        </div>
         <p class="lead text-muted">
           SQL (Structured Query Language) is the standard language for working with relational databases.
-          SQLite is a lightweight, file-based database built into browsers via sql.js — no server required.
+          In this tutorial, you'll use SQLite to explore data, answer questions, and gradually build confidence with queries.
         </p>
 
         <h2 class="h4 mt-5 mb-3">What you'll learn</h2>
         <ul>
           <li>What a relational database and table are</li>
+          <li>How rows and columns organize information</li>
           <li>Basic SQL syntax: statements end with <code>;</code></li>
           <li>How to write a <code>SELECT</code> query to read data</li>
         </ul>
 
-        <h2 class="h4 mt-5 mb-3">Example</h2>
+        <h2 class="h4 mt-5 mb-3">What is a table?</h2>
+        <p>
+          A database stores information in <strong>tables</strong>. You can think of a table like a spreadsheet:
+          it has named columns across the top and rows of data underneath.
+        </p>
+        <p>
+          In this lesson, you'll work with an <code>employees</code> table. Each row represents one employee,
+          and each column tells you something about that employee, such as their name, department, salary,
+          or hire date.
+        </p>
+
+        <h2 class="h4 mt-5 mb-3">Rows and columns</h2>
+        <p>
+          A <strong>column</strong> describes one type of information. In the <code>employees</code> table,
+          the columns are <code>id</code>, <code>name</code>, <code>department</code>, <code>salary</code>,
+          and <code>hired_date</code>.
+        </p>
+        <p>
+          A <strong>row</strong> is one complete record. For example, Alice Chen is one row in the table because
+          her ID, name, department, salary, and hire date are all stored together.
+        </p>
+
+        <h2 class="h4 mt-5 mb-3">Example: the <code>employees</code> table</h2>
+        <p class="text-muted">
+          Here is a sample of the data loaded for this lesson:
+        </p>
+        <div class="table-responsive">
+          <table class="table table-sm table-striped table-bordered align-middle">
+            <thead class="table-light">
+              <tr>
+                <th scope="col">id</th>
+                <th scope="col">name</th>
+                <th scope="col">department</th>
+                <th scope="col">salary</th>
+                <th scope="col">hired_date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Alice Chen</td>
+                <td>Engineering</td>
+                <td>95000</td>
+                <td>2021-03-15</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Bob Martinez</td>
+                <td>Engineering</td>
+                <td>88000</td>
+                <td>2020-07-01</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Carol Williams</td>
+                <td>Marketing</td>
+                <td>72000</td>
+                <td>2022-01-10</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-muted">
+          When you query this table, SQLite will return some or all of these columns depending on what you ask for.
+        </p>
+
+        <h2 class="h4 mt-5 mb-3">Basic SQL syntax</h2>
+        <p>
+          SQL statements are made of keywords and names. Keywords like <code>SELECT</code> and <code>FROM</code>
+          tell SQLite what action to perform. Names like <code>employees</code> tell it which table to use.
+        </p>
+        <p>
+          SQL keywords are not case-sensitive, but it is common to write them in uppercase because they are easier to spot.
+          Statements are often ended with a semicolon:
+        </p>
+        <pre class="bg-light p-3 rounded border"><code>SELECT * FROM employees;</code></pre>
+
+        <h2 class="h4 mt-5 mb-3">What does <code>SELECT</code> do?</h2>
+        <p>
+          The <code>SELECT</code> command reads data from a table. It does not change the table; it only displays results.
+        </p>
+        <ul>
+          <li><code>SELECT</code> says you want to retrieve data</li>
+          <li><code>*</code> means “all columns”</li>
+          <li><code>FROM employees</code> says the data should come from the <code>employees</code> table</li>
+        </ul>
+        <p>
+          If you only want a few columns, you can list them by name:
+        </p>
         <pre class="bg-light p-3 rounded border"><code>SELECT name, department FROM employees;</code></pre>
-        <p class="text-muted">This returns the <code>name</code> and <code>department</code> columns from every row in the <code>employees</code> table.</p>
+        <p class="text-muted">
+          This returns only the <code>name</code> and <code>department</code> columns from every row in the
+          <code>employees</code> table.
+        </p>
+        <p class="text-muted">
+          The order of the columns in your <code>SELECT</code> list does not have to match the order of the table.
+          You can request columns in whatever order you want, such as
+          <code>SELECT department, name FROM employees;</code>, and the results will follow that order.
+        </p>
 
         <h2 class="h4 mt-5 mb-3">Exercise</h2>
-        <p>Select all columns from the <code>employees</code> table.</p>
+        <p>
+          You have just seen that the <code>employees</code> table contains columns like <code>id</code>,
+          <code>name</code>, <code>department</code>, <code>salary</code>, and <code>hired_date</code>.
+          To display every column for every employee, use:
+        </p>
+        <pre class="bg-light p-3 rounded border"><code>SELECT * FROM employees;</code></pre>
+        <p>
+          Now type that query yourself and run it. You should see all rows and all columns from the table.
+        </p>
 
         <div class="sql-sandbox"
-             data-exercise='{"type":"query","database":"employees.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT * FROM employees"}}'>
+             data-exercise='{"type":"query","moduleId":"01-foundations","lessonId":"intro","exerciseId":"intro-01","database":"employees.sql","starterSql":"SELECT ","validation":{"type":"exactSqlMatch","expectedSql":"SELECT * FROM employees;","options":{"caseSensitive":false,"collapseWhitespace":true,"trim":true}}}'>
           <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
             <span class="sql-meta text-muted">
               <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
             </span>
-            <div class="btn-group btn-group-sm">
+            <div class="btn-group btn-group-sm" role="group" aria-label="SQL exercise actions">
               <button type="button" class="btn btn-outline-secondary btn-reset" title="Reset database">
                 <i class="bi bi-arrow-counterclockwise"></i> Reset
               </button>
               <button type="button" class="btn btn-outline-primary btn-run">
                 <i class="bi bi-play-fill"></i> Run
               </button>
-              <button type="button" class="btn btn-primary btn-check">
+              <button type="button" class="btn btn-primary btn-validate">
                 <i class="bi bi-check-lg"></i> Check
               </button>
             </div>
@@ -107,6 +215,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
   <script src="../js/sql-runner.js"></script>
   <script src="../js/exercise.js"></script>
+  <script type="module" src="../js/progress.js"></script>
   <script src="../js/lesson-page.js"></script>
   <script type="module" src="../js/auth-ui.js"></script>
 </body>
