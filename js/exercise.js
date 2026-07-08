@@ -21,7 +21,7 @@ const Exercise = (function () {
     return values.map((row) => {
       const obj = {};
       columns.forEach((col, i) => {
-        obj[col] = row[i];
+        obj[col.toLowerCase()] = row[i];
       });
       return obj;
     });
@@ -75,7 +75,10 @@ const Exercise = (function () {
       const actualRows = normalizeRows(actual.columns, actual.values);
       const expectedRows = normalizeRows(expected.columns, expected.values);
 
-      if (actual.columns.join() !== expected.columns.join()) {
+      if (
+        actual.columns.map((c) => c.toLowerCase()).join() !==
+        expected.columns.map((c) => c.toLowerCase()).join()
+      ) {
         return {
           passed: false,
           message: "Column names or order do not match expected output.",
