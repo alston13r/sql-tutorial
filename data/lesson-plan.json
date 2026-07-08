@@ -38,8 +38,8 @@
       "title": "Modifying Data",
       "description": "Insert, update, and delete rows. Work with NULL values.",
       "duration": "45 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/04-modifying.html",
       "icon": "bi-pencil-square"
     },
     {
