@@ -18,8 +18,8 @@
       "title": "SELECT Basics",
       "description": "Retrieve data with SELECT, DISTINCT, aliases, and LIMIT.",
       "duration": "35 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/02-select.html",
       "icon": "bi-search"
     },
     {
@@ -28,8 +28,8 @@
       "title": "Filtering & Sorting",
       "description": "Filter rows with WHERE, combine conditions, and sort results.",
       "duration": "40 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/03-filtering.html",
       "icon": "bi-funnel"
     },
     {
@@ -38,8 +38,8 @@
       "title": "Modifying Data",
       "description": "Insert, update, and delete rows. Work with NULL values.",
       "duration": "45 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/04-modifying.html",
       "icon": "bi-pencil-square"
     },
     {
