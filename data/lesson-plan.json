@@ -48,8 +48,8 @@
       "title": "Aggregate Functions",
       "description": "Summarize data with COUNT, SUM, AVG, MIN, and MAX.",
       "duration": "35 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/05-aggregates.html",
       "icon": "bi-bar-chart"
     },
     {
