@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Aggregate Functions — SQLite Tutorial</title>
+  <title>Pattern Matching &amp; Ranges — SQLite Tutorial</title>
   <!-- from bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
@@ -27,7 +27,7 @@
     <nav aria-label="breadcrumb" class="mb-4">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="../index.html">Modules</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Aggregate Functions</li>
+        <li class="breadcrumb-item active" aria-current="page">Pattern Matching &amp; Ranges</li>
       </ol>
     </nav>
 
@@ -35,57 +35,57 @@
       <aside class="col-lg-3 mb-4 lesson-sidebar">
         <h6 class="text-uppercase text-muted small">In this module</h6>
         <nav class="nav flex-column">
-          <a class="nav-link py-1" href="#count">COUNT</a>
-          <a class="nav-link py-1" href="#sum">SUM</a>
-          <a class="nav-link py-1" href="#avg">AVG</a>
-          <a class="nav-link py-1" href="#min-max">MIN and MAX</a>
+          <a class="nav-link py-1" href="#like">LIKE and Wildcards</a>
+          <a class="nav-link py-1" href="#in">IN</a>
+          <a class="nav-link py-1" href="#between">BETWEEN</a>
         </nav>
       </aside>
 
       <div class="col-lg-9">
-        <span class="badge bg-secondary mb-2">Module 5</span>
-        <h1 class="display-6 fw-bold mb-3">Aggregate Functions</h1>
+        <span class="badge bg-secondary mb-2">Module 6</span>
+        <h1 class="display-6 fw-bold mb-3">Pattern Matching &amp; Ranges</h1>
         <div class="alert alert-success d-none" id="lesson-complete-alert">
           <i class="bi bi-trophy me-2"></i>All exercises in this lesson have been completed.
         </div>
         <p class="lead text-muted">
-          So far, your queries return individual rows. <strong>Aggregate functions</strong> summarize
-          many rows into a single value — for example, how many employees there are, or what the average
-          salary is.
+          Module 3 introduced <code>WHERE</code> with operators like <code>=</code> and <code>&gt;</code>.
+          This module adds more ways to filter text: pattern matching with <code>LIKE</code>, lists with
+          <code>IN</code>, and ranges with <code>BETWEEN</code>.
         </p>
 
-        <h2 class="h4 mt-5 mb-3">Recap: rows vs summaries</h2>
+        <h2 class="h4 mt-5 mb-3">Recap: filtering rows</h2>
         <p>
-          A normal <code>SELECT</code> lists rows from a table. An aggregate query returns one result
-          row that describes the whole set, such as a count or an average.
-        </p>
-        <p class="text-muted">
-          The practice database has 14 employees. Frank Lee has a <code>NULL</code> salary, which matters
-          for some aggregates — <code>COUNT(*)</code> still counts his row, but <code>COUNT(salary)</code>
-          does not.
+          All exercises in this module filter on the <code>name</code> column and return employee names.
+          The practice database has 14 employees with varied first and last names.
         </p>
 
-        <h2 class="h4 mt-5 mb-3" id="count">COUNT()</h2>
+        <h2 class="h4 mt-5 mb-3" id="like">LIKE and Wildcards</h2>
         <p>
-          <code>COUNT()</code> tells you how many rows match. <code>COUNT(*)</code> counts every row;
-          <code>COUNT(column)</code> counts only rows where that column is not <code>NULL</code>.
+          <code>LIKE</code> matches text patterns. <code>%</code> stands for any number of characters
+          (including none); <code>_</code> stands for exactly one character.
         </p>
         <p>
-          To count all employees:
+          In SQLite, <code>LIKE</code> is <strong>case-insensitive</strong> for ASCII letters:
+          <code>'%lee%'</code>, <code>'%Lee%'</code>, and <code>'%LEE%'</code> all match Frank Lee.
+          That is different from <code>=</code>, which is case-sensitive —
+          <code>name = 'frank lee'</code> would not match <code>Frank Lee</code>.
         </p>
-        <pre class="bg-light p-3 rounded border"><code>SELECT COUNT(*) FROM employees;</code></pre>
+        <p>
+          To find names containing <code>Lee</code>:
+        </p>
+        <pre class="bg-light p-3 rounded border"><code>SELECT name FROM employees WHERE name LIKE '%Lee%';</code></pre>
         <p class="text-muted">
-          In this database, <code>COUNT(*)</code> returns 14 and <code>COUNT(salary)</code> returns 13
-          because Frank Lee's salary is unknown.
+          Result: Frank Lee
         </p>
 
         <h3 class="h5 mt-4 mb-3">Exercise</h3>
         <p>
-          How many employees are in the <strong>Engineering</strong> department?
+          Return the <code>name</code> of every employee whose name <strong>ends with</strong>
+          <code>son</code>.
         </p>
 
         <div class="sql-sandbox"
-             data-exercise='{"type":"query","moduleId":"05-aggregates","lessonId":"count","exerciseId":"count-01","database":"employees_modifying.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT COUNT(*) FROM employees WHERE department = \u0027Engineering\u0027"}}'>
+             data-exercise='{"type":"query","moduleId":"06-pattern-matching","lessonId":"like","exerciseId":"like-01","database":"employees_modifying.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT name FROM employees WHERE name LIKE \u0027%son\u0027"}}'>
           <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
             <span class="sql-meta text-muted">
               <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
@@ -110,23 +110,25 @@
           <div class="sql-feedback p-3 border-top"></div>
         </div>
 
-        <h2 class="h4 mt-5 mb-3" id="sum">SUM()</h2>
+        <h2 class="h4 mt-5 mb-3" id="in">IN</h2>
         <p>
-          <code>SUM()</code> adds up values in a numeric column. Rows where the column is
-          <code>NULL</code> are skipped.
+          <code>IN</code> checks whether a value appears in a list. It is often clearer than writing
+          several <code>OR</code> conditions.
         </p>
         <p>
-          To find total payroll for all employees:
+          To find three specific employees by name:
         </p>
-        <pre class="bg-light p-3 rounded border"><code>SELECT SUM(salary) FROM employees;</code></pre>
+        <pre class="bg-light p-3 rounded border"><code>SELECT name FROM employees
+WHERE name IN ('Alice Chen', 'Bob Martinez', 'Mia Santos');</code></pre>
 
         <h3 class="h5 mt-4 mb-3">Exercise</h3>
         <p>
-          What is the <strong>total salary</strong> for employees in <strong>Sales</strong>?
+          Return the <code>name</code> of employees named <strong>David Kim</strong>,
+          <strong>Eve Johnson</strong>, or <strong>Noah Taylor</strong>.
         </p>
 
         <div class="sql-sandbox"
-             data-exercise='{"type":"query","moduleId":"05-aggregates","lessonId":"sum-avg","exerciseId":"sum-01","database":"employees_modifying.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT SUM(salary) FROM employees WHERE department = \u0027Sales\u0027"}}'>
+             data-exercise='{"type":"query","moduleId":"06-pattern-matching","lessonId":"in","exerciseId":"in-01","database":"employees_modifying.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT name FROM employees WHERE name IN (\u0027David Kim\u0027, \u0027Eve Johnson\u0027, \u0027Noah Taylor\u0027)"}}'>
           <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
             <span class="sql-meta text-muted">
               <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
@@ -151,70 +153,29 @@
           <div class="sql-feedback p-3 border-top"></div>
         </div>
 
-        <h2 class="h4 mt-5 mb-3" id="avg">AVG()</h2>
+        <h2 class="h4 mt-5 mb-3" id="between">BETWEEN</h2>
         <p>
-          <code>AVG()</code> calculates the average of a numeric column, again ignoring
-          <code>NULL</code> values.
+          <code>BETWEEN</code> selects values within a range, inclusive of both endpoints. It works on
+          text as well as numbers — strings are compared in alphabetical order.
         </p>
         <p>
-          To find the average salary company-wide:
+          To find names from Alice Chen through David Kim:
         </p>
-        <pre class="bg-light p-3 rounded border"><code>SELECT AVG(salary) FROM employees;</code></pre>
-
-        <h3 class="h5 mt-4 mb-3">Exercise</h3>
-        <p>
-          What is the <strong>average salary</strong> in the <strong>Finance</strong> department?
-        </p>
-
-        <div class="sql-sandbox"
-             data-exercise='{"type":"query","moduleId":"05-aggregates","lessonId":"sum-avg","exerciseId":"avg-01","database":"employees_modifying.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT AVG(salary) FROM employees WHERE department = \u0027Finance\u0027"}}'>
-          <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
-            <span class="sql-meta text-muted">
-              <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
-            </span>
-            <div class="btn-group btn-group-sm" role="group" aria-label="SQL exercise actions">
-              <button type="button" class="btn btn-outline-secondary btn-reset" title="Reset database">
-                <i class="bi bi-arrow-counterclockwise"></i> Reset
-              </button>
-              <button type="button" class="btn btn-outline-primary btn-run">
-                <i class="bi bi-play-fill"></i> Run
-              </button>
-              <button type="button" class="btn btn-primary btn-validate">
-                <i class="bi bi-check-lg"></i> Check
-              </button>
-            </div>
-          </div>
-          <textarea class="form-control sql-editor" rows="4" spellcheck="false" placeholder="Write your SQL here…"></textarea>
-          <div class="sql-loading d-none px-3 py-2 text-muted small border-top">
-            <span class="spinner-border spinner-border-sm me-1"></span> Loading database…
-          </div>
-          <div class="sql-output p-3 border-top"></div>
-          <div class="sql-feedback p-3 border-top"></div>
-        </div>
-
-        <h2 class="h4 mt-5 mb-3" id="min-max">MIN() and MAX()</h2>
-        <p>
-          <code>MIN()</code> and <code>MAX()</code> return the smallest and largest values in a column.
-          They work on numbers, dates, and text.
-        </p>
-        <p>
-          To find the lowest and highest salary:
-        </p>
-        <pre class="bg-light p-3 rounded border"><code>SELECT MIN(salary), MAX(salary) FROM employees;</code></pre>
+        <pre class="bg-light p-3 rounded border"><code>SELECT name FROM employees
+WHERE name BETWEEN 'Alice Chen' AND 'David Kim';</code></pre>
         <p class="text-muted">
-          To get averages or totals <em>per department</em>, you will use <code>GROUP BY</code> in a
-          later module. For now, aggregates run over the whole table (or whatever rows your
-          <code>WHERE</code> clause selects).
+          Comparison uses the full <code>name</code> string alphabetically, and both boundary names are
+          included in the result.
         </p>
 
         <h3 class="h5 mt-4 mb-3">Exercise</h3>
         <p>
-          Return the <strong>earliest</strong> and <strong>latest</strong> <code>hired_date</code> in
-          the company. Name the output columns <code>earliest_hire</code> and <code>latest_hire</code>.
+          Return the <code>name</code> of employees whose name falls <strong>between</strong>
+          <code>Grace Patel</code> and <code>Mia Santos</code> (inclusive).
         </p>
 
         <div class="sql-sandbox"
-             data-exercise='{"type":"query","moduleId":"05-aggregates","lessonId":"min-max","exerciseId":"min-max-01","database":"employees_modifying.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT MIN(hired_date) AS earliest_hire, MAX(hired_date) AS latest_hire FROM employees"}}'>
+             data-exercise='{"type":"query","moduleId":"06-pattern-matching","lessonId":"between","exerciseId":"between-01","database":"employees_modifying.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT name FROM employees WHERE name BETWEEN \u0027Grace Patel\u0027 AND \u0027Mia Santos\u0027"}}'>
           <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
             <span class="sql-meta text-muted">
               <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
@@ -242,14 +203,11 @@
     </div>
 
     <div class="mt-5 d-flex flex-wrap gap-2">
-      <a href="04-modifying.html" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left me-1"></i>Module 4
+      <a href="05-aggregates.html" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Module 5
       </a>
       <a href="../index.html" class="btn btn-outline-primary">
         <i class="bi bi-grid me-1"></i>Back to modules
-      </a>
-      <a href="06-pattern-matching.html" class="btn btn-primary">
-        Module 6<i class="bi bi-arrow-right ms-1"></i>
       </a>
     </div>
   </main>
