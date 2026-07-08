@@ -38,6 +38,11 @@ const Exercise = (function () {
     return JSON.stringify(a) === JSON.stringify(e);
   }
 
+  function rowsEqualInOrder(actual, expected) {
+    if (actual.length !== expected.length) return false;
+    return JSON.stringify(actual) === JSON.stringify(expected);
+  }
+
   function isMutation(sql) {
     return /^\s*(INSERT|UPDATE|DELETE|CREATE|DROP|ALTER|REPLACE)\b/i.test(sql);
   }
@@ -57,6 +62,32 @@ const Exercise = (function () {
         return {
           passed: false,
           message: "Result does not match expected output.",
+          actual: actual,
+          expected: expected,
+        };
+      }
+      return { passed: true, message: "Correct!", actual };
+    }
+
+    checkOrderedResultMatch(userSql, expectedQuery) {
+      const actual = this.runner.query(userSql);
+      const expected = this.runner.query(expectedQuery);
+      const actualRows = normalizeRows(actual.columns, actual.values);
+      const expectedRows = normalizeRows(expected.columns, expected.values);
+
+      if (actual.columns.join() !== expected.columns.join()) {
+        return {
+          passed: false,
+          message: "Column names or order do not match expected output.",
+          actual: actual,
+          expected: expected,
+        };
+      }
+
+      if (!rowsEqualInOrder(actualRows, expectedRows)) {
+        return {
+          passed: false,
+          message: "Result does not match expected output (check row order).",
           actual: actual,
           expected: expected,
         };
@@ -130,6 +161,8 @@ const Exercise = (function () {
       switch (validation.type) {
         case "resultMatch":
           return this.checkResultMatch(userSql, validation.query);
+        case "orderedResultMatch":
+          return this.checkOrderedResultMatch(userSql, validation.query);
         case "rowCount":
           return this.checkRowCount(userSql, validation.count);
         case "exactSqlMatch":
