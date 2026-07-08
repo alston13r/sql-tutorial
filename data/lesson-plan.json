@@ -28,8 +28,8 @@
       "title": "Filtering & Sorting",
       "description": "Filter rows with WHERE, combine conditions, and sort results.",
       "duration": "40 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/03-filtering.html",
       "icon": "bi-funnel"
     },
     {
