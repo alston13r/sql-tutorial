@@ -39,6 +39,7 @@
           <a class="nav-link py-1" href="#and-or">AND, OR</a>
           <a class="nav-link py-1" href="#not">NOT</a>
           <a class="nav-link py-1" href="#orderby">ORDER BY</a>
+          <a class="nav-link py-1" href="#orderby-multi">Multiple columns</a>
         </nav>
       </aside>
 
@@ -224,6 +225,55 @@ WHERE department = 'Engineering' AND salary > 80000;</code></pre>
 
         <div class="sql-sandbox"
              data-exercise='{"type":"query","moduleId":"03-filtering","lessonId":"orderby","exerciseId":"orderby-01","database":"employees_extended.sql","starterSql":"SELECT ","validation":{"type":"orderedResultMatch","query":"SELECT name, salary FROM employees ORDER BY salary DESC LIMIT 3"}}'>
+          <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
+            <span class="sql-meta text-muted">
+              <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
+            </span>
+            <div class="btn-group btn-group-sm" role="group" aria-label="SQL exercise actions">
+              <button type="button" class="btn btn-outline-secondary btn-reset" title="Reset database">
+                <i class="bi bi-arrow-counterclockwise"></i> Reset
+              </button>
+              <button type="button" class="btn btn-outline-primary btn-run">
+                <i class="bi bi-play-fill"></i> Run
+              </button>
+              <button type="button" class="btn btn-primary btn-validate">
+                <i class="bi bi-check-lg"></i> Check
+              </button>
+            </div>
+          </div>
+          <textarea class="form-control sql-editor" rows="4" spellcheck="false" placeholder="Write your SQL here…"></textarea>
+          <div class="sql-loading d-none px-3 py-2 text-muted small border-top">
+            <span class="spinner-border spinner-border-sm me-1"></span> Loading database…
+          </div>
+          <div class="sql-output p-3 border-top"></div>
+          <div class="sql-feedback p-3 border-top"></div>
+        </div>
+
+        <h2 class="h4 mt-5 mb-3" id="orderby-multi">Sorting by multiple columns</h2>
+        <p>
+          When two rows have the same value in the first sort column, SQLite does not guarantee
+          which comes first. Add another column to <code>ORDER BY</code> to break ties — and you can
+          list as many columns as you need, not just two.
+        </p>
+        <p>
+          List employees by department, then alphabetically by name within each department:
+        </p>
+        <pre class="bg-light p-3 rounded border"><code>SELECT name, department FROM employees
+ORDER BY department ASC, name ASC;</code></pre>
+        <p class="text-muted">
+          Columns are evaluated left to right: sort by <code>department</code> first, then use
+          <code>name</code> only when the department matches. If those still tie, you could add a
+          third column (such as <code>salary</code>) to sort further.
+        </p>
+
+        <h3 class="h5 mt-4 mb-3">Exercise</h3>
+        <p>
+          Return <code>name</code>, <code>department</code>, and <code>salary</code> for all employees,
+          sorted by department alphabetically. Within each department, show the <strong>highest salaries first</strong>.
+        </p>
+
+        <div class="sql-sandbox"
+             data-exercise='{"type":"query","moduleId":"03-filtering","lessonId":"orderby","exerciseId":"orderby-02","database":"employees_extended.sql","starterSql":"SELECT ","validation":{"type":"orderedResultMatch","query":"SELECT name, department, salary FROM employees ORDER BY department ASC, salary DESC"}}'>
           <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
             <span class="sql-meta text-muted">
               <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
