@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SELECT Basics — SQLite Tutorial</title>
+  <!-- from bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../css/site.css">
+  <link rel="stylesheet" href="../css/exercise.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="../index.html"><i class="bi bi-database me-2"></i>SQLite Tutorial</a>
+      <div class="navbar-nav ms-auto align-items-lg-center">
+        <a class="nav-link" href="../pages/login.html" id="nav-auth-login">Log in</a>
+        <a class="nav-link d-none" href="../pages/profile.html" id="nav-auth-profile">Profile</a>
+        <a class="nav-link d-none" href="#" id="nav-auth-logout">Log out</a>
+        <span class="navbar-text text-white-50 ms-lg-2 d-none d-lg-inline" id="nav-auth-email"></span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-5 flex-grow-1">
+    <nav aria-label="breadcrumb" class="mb-4">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="../index.html">Modules</a></li>
+        <li class="breadcrumb-item active" aria-current="page">SELECT Basics</li>
+      </ol>
+    </nav>
+
+    <div class="row">
+      <aside class="col-lg-3 mb-4 lesson-sidebar">
+        <h6 class="text-uppercase text-muted small">In this module</h6>
+        <nav class="nav flex-column">
+          <a class="nav-link py-1" href="#distinct">SELECT DISTINCT</a>
+          <a class="nav-link py-1" href="#aliases">Aliases</a>
+          <a class="nav-link py-1" href="#limit">LIMIT</a>
+        </nav>
+      </aside>
+
+      <div class="col-lg-9">
+        <span class="badge bg-secondary mb-2">Module 2</span>
+        <h1 class="display-6 fw-bold mb-3">SELECT Basics</h1>
+        <div class="alert alert-success d-none" id="lesson-complete-alert">
+          <i class="bi bi-trophy me-2"></i>All exercises in this lesson have been completed.
+        </div>
+        <p class="lead text-muted">
+          You already know how to read data with <code>SELECT</code>. This module adds three common patterns
+          for shaping query results: removing duplicates, renaming columns, and limiting how many rows you get back.
+        </p>
+
+        <h2 class="h4 mt-5 mb-3">Recap: reading data</h2>
+        <p>
+          A basic query selects columns from a table:
+        </p>
+        <pre class="bg-light p-3 rounded border"><code>SELECT name, department FROM employees;</code></pre>
+        <p class="text-muted">
+          This returns every row from <code>employees</code>, showing only the columns you listed.
+        </p>
+
+        <h2 class="h4 mt-5 mb-3" id="distinct">SELECT DISTINCT</h2>
+        <p>
+          Sometimes a column contains duplicate values. In the <code>employees</code> table, multiple people
+          work in the same department. If you run:
+        </p>
+        <pre class="bg-light p-3 rounded border"><code>SELECT department FROM employees;</code></pre>
+        <p>
+          you will see <code>Engineering</code> and <code>Sales</code> more than once.
+        </p>
+        <p>
+          To list each department only once, add <code>DISTINCT</code>:
+        </p>
+        <pre class="bg-light p-3 rounded border"><code>SELECT DISTINCT department FROM employees;</code></pre>
+        <p class="text-muted">
+          The result contains four unique departments: Engineering, Marketing, Sales, and HR.
+        </p>
+
+        <h3 class="h5 mt-4 mb-3">Exercise</h3>
+        <p>Write a query that lists each department exactly once.</p>
+
+        <div class="sql-sandbox"
+             data-exercise='{"type":"query","moduleId":"02-select","lessonId":"distinct","exerciseId":"distinct-01","database":"employees.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT DISTINCT department FROM employees"}}'>
+          <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
+            <span class="sql-meta text-muted">
+              <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
+            </span>
+            <div class="btn-group btn-group-sm" role="group" aria-label="SQL exercise actions">
+              <button type="button" class="btn btn-outline-secondary btn-reset" title="Reset database">
+                <i class="bi bi-arrow-counterclockwise"></i> Reset
+              </button>
+              <button type="button" class="btn btn-outline-primary btn-run">
+                <i class="bi bi-play-fill"></i> Run
+              </button>
+              <button type="button" class="btn btn-primary btn-validate">
+                <i class="bi bi-check-lg"></i> Check
+              </button>
+            </div>
+          </div>
+          <textarea class="form-control sql-editor" rows="4" spellcheck="false" placeholder="Write your SQL here…"></textarea>
+          <div class="sql-loading d-none px-3 py-2 text-muted small border-top">
+            <span class="spinner-border spinner-border-sm me-1"></span> Loading database…
+          </div>
+          <div class="sql-output p-3 border-top"></div>
+          <div class="sql-feedback p-3 border-top"></div>
+        </div>
+
+        <h2 class="h4 mt-5 mb-3" id="aliases">Aliases</h2>
+        <p>
+          An <strong>alias</strong> gives a column (or table) a temporary name in the query result.
+          This is useful when you want clearer or shorter column headings.
+        </p>
+        <p>
+          Use the <code>AS</code> keyword to rename a column:
+        </p>
+        <pre class="bg-light p-3 rounded border"><code>SELECT name AS employee_name, department AS dept
+FROM employees;</code></pre>
+        <p class="text-muted">
+          The output columns will be labeled <code>employee_name</code> and <code>dept</code> instead of
+          <code>name</code> and <code>department</code>. The underlying table is not changed.
+        </p>
+
+        <h3 class="h5 mt-4 mb-3">Exercise</h3>
+        <p>
+          Return each employee's name and department, with the output columns named
+          <code>employee_name</code> and <code>dept</code>.
+        </p>
+
+        <div class="sql-sandbox"
+             data-exercise='{"type":"query","moduleId":"02-select","lessonId":"aliases","exerciseId":"aliases-01","database":"employees.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT name AS employee_name, department AS dept FROM employees"}}'>
+          <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
+            <span class="sql-meta text-muted">
+              <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
+            </span>
+            <div class="btn-group btn-group-sm" role="group" aria-label="SQL exercise actions">
+              <button type="button" class="btn btn-outline-secondary btn-reset" title="Reset database">
+                <i class="bi bi-arrow-counterclockwise"></i> Reset
+              </button>
+              <button type="button" class="btn btn-outline-primary btn-run">
+                <i class="bi bi-play-fill"></i> Run
+              </button>
+              <button type="button" class="btn btn-primary btn-validate">
+                <i class="bi bi-check-lg"></i> Check
+              </button>
+            </div>
+          </div>
+          <textarea class="form-control sql-editor" rows="4" spellcheck="false" placeholder="Write your SQL here…"></textarea>
+          <div class="sql-loading d-none px-3 py-2 text-muted small border-top">
+            <span class="spinner-border spinner-border-sm me-1"></span> Loading database…
+          </div>
+          <div class="sql-output p-3 border-top"></div>
+          <div class="sql-feedback p-3 border-top"></div>
+        </div>
+
+        <h2 class="h4 mt-5 mb-3" id="limit">LIMIT</h2>
+        <p>
+          The <code>LIMIT</code> clause restricts how many rows a query returns. In SQLite, you use
+          <code>LIMIT</code> where some other databases use <code>TOP</code>.
+        </p>
+        <p>
+          To return only the first three rows:
+        </p>
+        <pre class="bg-light p-3 rounded border"><code>SELECT * FROM employees LIMIT 3;</code></pre>
+        <p class="text-muted">
+          This gives you three rows from the result set. Sorting with <code>ORDER BY</code> comes in a later module;
+          for now, think of <code>LIMIT</code> as capping the number of rows you see.
+        </p>
+
+        <h3 class="h5 mt-4 mb-3">Exercise</h3>
+        <p>Return only the first 3 employees (all columns).</p>
+
+        <div class="sql-sandbox"
+             data-exercise='{"type":"query","moduleId":"02-select","lessonId":"limit","exerciseId":"limit-01","database":"employees.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT * FROM employees LIMIT 3"}}'>
+          <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
+            <span class="sql-meta text-muted">
+              <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
+            </span>
+            <div class="btn-group btn-group-sm" role="group" aria-label="SQL exercise actions">
+              <button type="button" class="btn btn-outline-secondary btn-reset" title="Reset database">
+                <i class="bi bi-arrow-counterclockwise"></i> Reset
+              </button>
+              <button type="button" class="btn btn-outline-primary btn-run">
+                <i class="bi bi-play-fill"></i> Run
+              </button>
+              <button type="button" class="btn btn-primary btn-validate">
+                <i class="bi bi-check-lg"></i> Check
+              </button>
+            </div>
+          </div>
+          <textarea class="form-control sql-editor" rows="4" spellcheck="false" placeholder="Write your SQL here…"></textarea>
+          <div class="sql-loading d-none px-3 py-2 text-muted small border-top">
+            <span class="spinner-border spinner-border-sm me-1"></span> Loading database…
+          </div>
+          <div class="sql-output p-3 border-top"></div>
+          <div class="sql-feedback p-3 border-top"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-5 d-flex flex-wrap gap-2">
+      <a href="01-foundations.html" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Module 1
+      </a>
+      <a href="../index.html" class="btn btn-outline-primary">
+        <i class="bi bi-grid me-1"></i>Back to modules
+      </a>
+    </div>
+  </main>
+
+  <footer class="bg-light py-3 mt-auto border-top">
+    <div class="container text-center text-muted small">
+      SQLite Tutorial &mdash; MIT License<br>
+      <a href="https://github.com/alston13r/sql-tutorial" class="link-secondary">GitHub Repository</a>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+  <script src="../js/sql-runner.js"></script>
+  <script src="../js/exercise.js"></script>
+  <script type="module" src="../js/progress.js"></script>
+  <script src="../js/lesson-page.js"></script>
+  <script type="module" src="../js/auth-ui.js"></script>
+</body>
+</html>

@@ -18,8 +18,8 @@
       "title": "SELECT Basics",
       "description": "Retrieve data with SELECT, DISTINCT, aliases, and LIMIT.",
       "duration": "35 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/02-select.html",
       "icon": "bi-search"
     },
     {
