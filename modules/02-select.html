@@ -79,10 +79,14 @@
         </p>
 
         <h3 class="h5 mt-4 mb-3">Exercise</h3>
-        <p>Write a query that lists each department exactly once.</p>
+        <p>
+          The sandbox below loads a larger <code>employees</code> table with more rows and a
+          <code>job_title</code> column. Several employees share the same title.
+          Write a query that lists each <strong>job title</strong> exactly once.
+        </p>
 
         <div class="sql-sandbox"
-             data-exercise='{"type":"query","moduleId":"02-select","lessonId":"distinct","exerciseId":"distinct-01","database":"employees.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT DISTINCT department FROM employees"}}'>
+             data-exercise='{"type":"query","moduleId":"02-select","lessonId":"distinct","exerciseId":"distinct-01","database":"employees_extended.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT DISTINCT job_title FROM employees"}}'>
           <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
             <span class="sql-meta text-muted">
               <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
@@ -124,12 +128,13 @@ FROM employees;</code></pre>
 
         <h3 class="h5 mt-4 mb-3">Exercise</h3>
         <p>
-          Return each employee's name and department, with the output columns named
-          <code>employee_name</code> and <code>dept</code>.
+          Using the larger <code>employees</code> table in the sandbox, return each person's
+          <code>name</code> and <code>department</code> with the output columns named
+          <code>staff_name</code> and <code>team</code>.
         </p>
 
         <div class="sql-sandbox"
-             data-exercise='{"type":"query","moduleId":"02-select","lessonId":"aliases","exerciseId":"aliases-01","database":"employees.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT name AS employee_name, department AS dept FROM employees"}}'>
+             data-exercise='{"type":"query","moduleId":"02-select","lessonId":"aliases","exerciseId":"aliases-01","database":"employees_extended.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT name AS staff_name, department AS team FROM employees"}}'>
           <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
             <span class="sql-meta text-muted">
               <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
@@ -169,10 +174,13 @@ FROM employees;</code></pre>
         </p>
 
         <h3 class="h5 mt-4 mb-3">Exercise</h3>
-        <p>Return only the first 3 employees (all columns).</p>
+        <p>
+          The extended <code>employees</code> table has 14 rows. Return only the
+          <strong>first 5</strong> employees, showing all columns.
+        </p>
 
         <div class="sql-sandbox"
-             data-exercise='{"type":"query","moduleId":"02-select","lessonId":"limit","exerciseId":"limit-01","database":"employees.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT * FROM employees LIMIT 3"}}'>
+             data-exercise='{"type":"query","moduleId":"02-select","lessonId":"limit","exerciseId":"limit-01","database":"employees_extended.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT * FROM employees LIMIT 5"}}'>
           <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
             <span class="sql-meta text-muted">
               <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
