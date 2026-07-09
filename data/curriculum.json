@@ -221,8 +221,8 @@
       "title": "Constraints & Keys",
       "description": "Enforce data integrity with constraints, primary keys, and foreign keys.",
       "duration": "45 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/12-constraints.html",
       "icon": "bi-key",
       "topics": ["sql_constraints", "sql_notnull", "sql_unique", "sql_primarykey", "sql_foreignkey", "sql_check", "sql_default", "sql_autoincrement"],
       "lessons": [
@@ -265,6 +265,20 @@
         { "id": "parameters", "title": "Parameterized Queries", "topics": ["sql_parameterized_queries", "sql_prepared_statements"] }
       ],
       "notes": "Conceptual lessons; sql.js exercises demonstrate safe vs unsafe patterns."
+    },
+    {
+      "id": "15-moving-data",
+      "order": 15,
+      "title": "Moving Data Between Tables",
+      "description": "Copy and archive data with INSERT INTO SELECT and related data-movement patterns.",
+      "duration": "30 min",
+      "status": "coming_soon",
+      "href": null,
+      "icon": "bi-arrow-left-right",
+      "topics": ["sql_insert_into_select"],
+      "lessons": [
+        { "id": "insert-select", "title": "INSERT INTO SELECT", "topics": ["sql_insert_into_select"] }
+      ]
     }
   ],
   "excludedTopics": {

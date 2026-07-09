@@ -118,8 +118,8 @@
       "title": "Constraints & Keys",
       "description": "NOT NULL, UNIQUE, primary keys, foreign keys, and CHECK.",
       "duration": "45 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/12-constraints.html",
       "icon": "bi-key"
     },
     {
@@ -141,6 +141,16 @@
       "status": "coming_soon",
       "href": null,
       "icon": "bi-shield-check"
+    },
+    {
+      "id": "15-moving-data",
+      "order": 15,
+      "title": "Moving Data Between Tables",
+      "description": "Copy and archive data with INSERT INTO SELECT and related data-movement patterns.",
+      "duration": "30 min",
+      "status": "coming_soon",
+      "href": null,
+      "icon": "bi-arrow-left-right"
     }
   ]
 }
