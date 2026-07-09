@@ -35,6 +35,7 @@
       <aside class="col-lg-3 mb-4 lesson-sidebar">
         <h6 class="text-uppercase text-muted small">In this module</h6>
         <nav class="nav flex-column">
+          <a class="nav-link py-1" href="#data-types">Data Types</a>
           <a class="nav-link py-1" href="#create-table">CREATE TABLE</a>
           <a class="nav-link py-1" href="#alter-table">ALTER TABLE</a>
           <a class="nav-link py-1" href="#drop-table">DROP TABLE</a>
@@ -64,20 +65,37 @@
           The next module adds rules about what data those tables should allow.
         </p>
 
+        <h2 class="h4 mt-5 mb-3" id="data-types">Data Types</h2>
+        <p>
+          Before creating a table, you need to decide what kind of data each column will store. In this
+          module, the most common SQLite types are <code>INTEGER</code> for whole numbers,
+          <code>TEXT</code> for strings, and <code>REAL</code> for decimal values.
+        </p>
+        <p>
+          You will also often see dates stored as <code>TEXT</code> in SQLite, especially when using a
+          format like <code>YYYY-MM-DD</code>.
+        </p>
+        <p class="text-muted">
+          Choosing a sensible type helps make the table structure clear before you start inserting data or
+          adding constraints in the next module.
+        </p>
+
         <h2 class="h4 mt-5 mb-3" id="create-table">CREATE TABLE and Data Types</h2>
         <p>
-          <code>CREATE TABLE</code> defines a new table and its columns. In SQLite, common data types
-          include <code>INTEGER</code> for whole numbers, <code>REAL</code> for decimals, and
-          <code>TEXT</code> for strings.
+          <code>CREATE TABLE</code> defines a new table and its columns. Once you know the column names
+          and types you need, you can describe the structure directly in the table definition.
         </p>
         <p>
-          To create a table for clients:
+          For example, here is a table shaped like the expanded <code>employees</code> table used in other
+          modules:
         </p>
-        <pre class="bg-light p-3 rounded border"><code>CREATE TABLE clients (
+        <pre class="bg-light p-3 rounded border"><code>CREATE TABLE employees (
   id INTEGER,
   name TEXT,
-  credit_limit REAL,
-  joined_on TEXT
+  department TEXT,
+  job_title TEXT,
+  salary REAL,
+  hired_date TEXT
 );</code></pre>
         <p class="text-muted">
           This defines the table structure only. It does not insert any rows yet.
