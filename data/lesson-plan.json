@@ -88,8 +88,8 @@
       "title": "Advanced Queries",
       "description": "UNION, subqueries, EXISTS, and CASE expressions.",
       "duration": "50 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/09-advanced-queries.html",
       "icon": "bi-layers"
     },
     {
