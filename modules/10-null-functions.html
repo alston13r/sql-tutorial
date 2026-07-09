@@ -119,25 +119,23 @@ FROM employees;</code></pre>
           flexible when you want to try multiple fallback values from left to right.
         </p>
         <p>
-          To build a display name from several possible columns:
+          To show a fallback label for missing salaries:
         </p>
-        <pre class="bg-light p-3 rounded border"><code>SELECT full_name,
-       COALESCE(preferred_name, nickname, full_name) AS display_name
-FROM contact_names;</code></pre>
+        <pre class="bg-light p-3 rounded border"><code>SELECT name, COALESCE(salary, 'Unknown') AS salary_label
+FROM employees;</code></pre>
         <p class="text-muted">
-          This checks <code>preferred_name</code> first, then <code>nickname</code>, and finally falls
-          back to <code>full_name</code>. The helper table includes several rows for each case so you can
-          see all three paths in the result.
+          With two arguments, <code>COALESCE</code> behaves like <code>IFNULL</code>. Frank Lee's salary
+          becomes <code>Unknown</code> because his stored <code>salary</code> value is <code>NULL</code>.
         </p>
 
         <h3 class="h5 mt-4 mb-3">Exercise</h3>
         <p>
-          Return each employee's <code>name</code> and a <code>salary_label</code> column that shows the
-          salary when present, otherwise <code>Unknown</code>.
+          Return each contact's <code>full_name</code> and a <code>display_name</code> column using
+          <code>COALESCE(preferred_name, nickname, full_name)</code>.
         </p>
 
         <div class="sql-sandbox"
-             data-exercise='{"type":"query","moduleId":"10-null-functions","lessonId":"null-functions","exerciseId":"coalesce-01","database":"employees_modifying.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT name, COALESCE(salary, \u0027Unknown\u0027) AS salary_label FROM employees"}}'>
+             data-exercise='{"type":"query","moduleId":"10-null-functions","lessonId":"null-functions","exerciseId":"coalesce-01","database":"employees_modifying.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT full_name, COALESCE(preferred_name, nickname, full_name) AS display_name FROM contact_names"}}'>
           <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
             <span class="sql-meta text-muted">
               <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
@@ -162,8 +160,9 @@ FROM contact_names;</code></pre>
           <div class="sql-feedback p-3 border-top"></div>
         </div>
         <p class="text-muted mt-3">
-          In this exercise, Frank Lee's salary becomes <code>Unknown</code> because his stored
-          <code>salary</code> value is <code>NULL</code>.
+          This exercise demonstrates all three fallback paths: some rows use
+          <code>preferred_name</code>, some fall back to <code>nickname</code>, and some fall all the way
+          back to <code>full_name</code>.
         </p>
 
         <h2 class="h4 mt-5 mb-3" id="summary">Summary</h2>
