@@ -55,8 +55,9 @@
 
         <h2 class="h4 mt-5 mb-3">Recap: filtering rows</h2>
         <p>
-          All exercises in this module filter on the <code>name</code> column and return employee names.
-          The practice database has 14 employees with varied first and last names.
+          Exercises in this module return employee <code>name</code> values while filtering on
+          <code>name</code>, <code>department</code>, or first-name ranges. The practice database has
+          14 employees across several departments.
         </p>
 
         <h2 class="h4 mt-5 mb-3" id="like">LIKE and Wildcards</h2>
@@ -116,19 +117,19 @@
           several <code>OR</code> conditions.
         </p>
         <p>
-          To find three specific employees by name:
+          To find employees in a few departments:
         </p>
         <pre class="bg-light p-3 rounded border"><code>SELECT name FROM employees
-WHERE name IN ('Alice Chen', 'Bob Martinez', 'Mia Santos');</code></pre>
+WHERE department IN ('Engineering', 'Finance', 'Legal');</code></pre>
 
         <h3 class="h5 mt-4 mb-3">Exercise</h3>
         <p>
-          Return the <code>name</code> of employees named <strong>David Kim</strong>,
-          <strong>Eve Johnson</strong>, or <strong>Noah Taylor</strong>.
+          Return the <code>name</code> of every employee in the <strong>Sales</strong>,
+          <strong>Marketing</strong>, or <strong>HR</strong> department.
         </p>
 
         <div class="sql-sandbox"
-             data-exercise='{"type":"query","moduleId":"06-pattern-matching","lessonId":"in","exerciseId":"in-01","database":"employees_modifying.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT name FROM employees WHERE name IN (\u0027David Kim\u0027, \u0027Eve Johnson\u0027, \u0027Noah Taylor\u0027)"}}'>
+             data-exercise='{"type":"query","moduleId":"06-pattern-matching","lessonId":"in","exerciseId":"in-01","database":"employees_modifying.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT name FROM employees WHERE department IN (\u0027Sales\u0027, \u0027Marketing\u0027, \u0027HR\u0027)"}}'>
           <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
             <span class="sql-meta text-muted">
               <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
@@ -170,12 +171,13 @@ WHERE name BETWEEN 'Alice Chen' AND 'David Kim';</code></pre>
 
         <h3 class="h5 mt-4 mb-3">Exercise</h3>
         <p>
-          Return the <code>name</code> of employees whose name falls <strong>between</strong>
-          <code>Grace Patel</code> and <code>Mia Santos</code> (inclusive).
+          Return the <code>name</code> of employees whose first name falls <strong>between</strong>
+          <code>Grace</code> and <code>Mia</code>. Use those first names as the range boundaries in
+          your <code>BETWEEN</code> clause.
         </p>
 
         <div class="sql-sandbox"
-             data-exercise='{"type":"query","moduleId":"06-pattern-matching","lessonId":"between","exerciseId":"between-01","database":"employees_modifying.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT name FROM employees WHERE name BETWEEN \u0027Grace Patel\u0027 AND \u0027Mia Santos\u0027"}}'>
+             data-exercise='{"type":"query","moduleId":"06-pattern-matching","lessonId":"between","exerciseId":"between-01","database":"employees_modifying.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT name FROM employees WHERE name BETWEEN \u0027Grace\u0027 AND \u0027Mia\u0027"}}'>
           <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
             <span class="sql-meta text-muted">
               <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
@@ -199,6 +201,11 @@ WHERE name BETWEEN 'Alice Chen' AND 'David Kim';</code></pre>
           <div class="sql-output p-3 border-top"></div>
           <div class="sql-feedback p-3 border-top"></div>
         </div>
+        <p class="text-muted mt-3">
+          Six employees match. <code>Mia Santos</code> is not included: <code>BETWEEN</code> compares the
+          full stored <code>name</code> value, and <code>'Mia Santos'</code> sorts after
+          <code>'Mia'</code> because of the extra characters.
+        </p>
       </div>
     </div>
 
