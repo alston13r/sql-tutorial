@@ -204,8 +204,8 @@
       "title": "Database & Tables",
       "description": "Create databases and tables, alter schema, and understand data types.",
       "duration": "45 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/11-schema.html",
       "icon": "bi-table",
       "topics": ["sql_create_db", "sql_drop_db", "sql_create_table", "sql_drop_table", "sql_alter", "sql_datatypes"],
       "lessons": [

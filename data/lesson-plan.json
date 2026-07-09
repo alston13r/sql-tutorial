@@ -108,8 +108,8 @@
       "title": "Database & Tables",
       "description": "Create databases and tables, alter schema, and data types.",
       "duration": "45 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/11-schema.html",
       "icon": "bi-table"
     },
     {
