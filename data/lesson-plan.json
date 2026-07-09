@@ -58,8 +58,8 @@
       "title": "Pattern Matching & Ranges",
       "description": "Filter with LIKE, wildcards, IN, and BETWEEN.",
       "duration": "35 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/06-pattern-matching.html",
       "icon": "bi-regex"
     },
     {
