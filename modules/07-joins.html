@@ -39,6 +39,7 @@
           <a class="nav-link py-1" href="#inner-join">INNER JOIN</a>
           <a class="nav-link py-1" href="#left-join">LEFT JOIN</a>
           <a class="nav-link py-1" href="#self-join">Self Join</a>
+          <a class="nav-link py-1" href="#summary">Summary</a>
         </nav>
       </aside>
 
@@ -153,8 +154,7 @@ INNER JOIN departments d ON e.department_id = d.id;</code></pre>
 FROM departments d
 LEFT JOIN employees e ON e.department_id = d.id;</code></pre>
         <p class="text-muted">
-          Result: 15 rows. Departments with several employees appear on multiple rows. <strong>Research</strong>
-          appears once with <code>employee</code> as <code>NULL</code> because no one works there yet.
+          Result: 15 rows. Departments with several employees appear on multiple rows.
         </p>
 
         <h3 class="h5 mt-4 mb-3">Exercise</h3>
@@ -244,6 +244,29 @@ LEFT JOIN employees m ON e.manager_id = m.id;</code></pre>
         <p class="text-muted mt-3">
           A <code>NULL</code> in the <code>manager</code> column means that employee has no manager
           assigned.
+        </p>
+
+        <h2 class="h4 mt-5 mb-3" id="summary">Summary</h2>
+        <p>
+          Joins combine related rows from two tables (or the same table twice, in a self join). The join
+          type decides which rows make it into the result:
+        </p>
+        <ul>
+          <li>
+            <strong>INNER JOIN</strong> returns only the <strong>intersection</strong> — rows that match
+            on both sides. Unmatched rows from either table are dropped. In this module, that is why
+            <strong>Research</strong> does not appear in an inner join between departments and employees.
+          </li>
+          <li>
+            <strong>LEFT JOIN</strong> keeps <strong>every row from the left table</strong> and appends
+            matching columns from the right when a match exists. When there is no match, the right-hand
+            columns are <code>NULL</code>.
+          </li>
+        </ul>
+        <p>
+          Which table you put on the left matters for a <code>LEFT JOIN</code>. Starting from
+          <code>departments</code> lists every department; starting from <code>employees</code> would list
+          every employee instead.
         </p>
       </div>
     </div>
