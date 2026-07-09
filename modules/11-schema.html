@@ -142,8 +142,16 @@
           To add a new column to the <code>projects</code> table:
         </p>
         <pre class="bg-light p-3 rounded border"><code>ALTER TABLE projects ADD COLUMN budget REAL;</code></pre>
+        <p>
+          To rename a table:
+        </p>
+        <pre class="bg-light p-3 rounded border"><code>ALTER TABLE projects RENAME TO client_projects;</code></pre>
+        <p>
+          To rename a column:
+        </p>
+        <pre class="bg-light p-3 rounded border"><code>ALTER TABLE projects RENAME COLUMN owner TO project_owner;</code></pre>
         <p class="text-muted">
-          This keeps the existing rows and adds the new column to the table definition.
+          These commands keep the existing rows while changing the table definition.
         </p>
 
         <h3 class="h5 mt-4 mb-3">Exercise</h3>
