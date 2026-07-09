@@ -141,17 +141,16 @@
       "title": "Joins",
       "description": "Combine tables with INNER, LEFT, and self joins.",
       "duration": "50 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/07-joins.html",
       "icon": "bi-diagram-3",
       "topics": ["sql_join", "sql_join_inner", "sql_join_left", "sql_join_self"],
       "lessons": [
-        { "id": "joins-intro", "title": "SQL Joins", "topics": ["sql_join"] },
+        { "id": "joins-intro", "title": "Relating Tables", "topics": ["sql_join"] },
         { "id": "inner-join", "title": "INNER JOIN", "topics": ["sql_join_inner"] },
         { "id": "left-join", "title": "LEFT JOIN", "topics": ["sql_join_left"] },
         { "id": "self-join", "title": "Self Join", "topics": ["sql_join_self"] }
-      ],
-      "notes": "RIGHT JOIN and FULL JOIN are not supported in SQLite; covered conceptually only."
+      ]
     },
     {
       "id": "08-grouping",

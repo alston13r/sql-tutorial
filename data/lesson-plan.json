@@ -68,8 +68,8 @@
       "title": "Joins",
       "description": "Combine tables with INNER, LEFT, and self joins.",
       "duration": "50 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/07-joins.html",
       "icon": "bi-diagram-3"
     },
     {
