@@ -39,3 +39,20 @@ INSERT INTO departments (id, name, budget) VALUES
   (6, 'Support', 180000),
   (7, 'Legal', 220000),
   (8, 'Operations', 175000);
+
+CREATE TABLE contact_names (
+  id INTEGER PRIMARY KEY,
+  full_name TEXT NOT NULL,
+  preferred_name TEXT,
+  nickname TEXT
+);
+
+INSERT INTO contact_names (id, full_name, preferred_name, nickname) VALUES
+  (1, 'Alice Chen', 'Alice', NULL),
+  (2, 'Robert Martinez', NULL, 'Bob'),
+  (3, 'Evelyn Johnson', NULL, NULL),
+  (4, 'Samuel Patel', 'Sam', NULL),
+  (5, 'Katherine Davis', NULL, 'Kat'),
+  (6, 'Michael Santos', NULL, NULL),
+  (7, 'Jennifer Brown', 'Jen', 'JB'),
+  (8, 'Daniel Nguyen', NULL, 'Danny');

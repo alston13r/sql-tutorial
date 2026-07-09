@@ -98,8 +98,8 @@
       "title": "Null Handling",
       "description": "COALESCE, IFNULL, and null-handling patterns in SQLite.",
       "duration": "25 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/10-null-functions.html",
       "icon": "bi-question-circle"
     },
     {
