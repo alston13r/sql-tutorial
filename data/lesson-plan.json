@@ -48,8 +48,8 @@
       "title": "Aggregate Functions",
       "description": "Summarize data with COUNT, SUM, AVG, MIN, and MAX.",
       "duration": "35 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/05-aggregates.html",
       "icon": "bi-bar-chart"
     },
     {
@@ -58,8 +58,8 @@
       "title": "Pattern Matching & Ranges",
       "description": "Filter with LIKE, wildcards, IN, and BETWEEN.",
       "duration": "35 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/06-pattern-matching.html",
       "icon": "bi-regex"
     },
     {
@@ -68,8 +68,8 @@
       "title": "Joins",
       "description": "Combine tables with INNER, LEFT, and self joins.",
       "duration": "50 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/07-joins.html",
       "icon": "bi-diagram-3"
     },
     {
@@ -78,8 +78,8 @@
       "title": "GROUP BY & HAVING",
       "description": "Group rows and filter aggregated results.",
       "duration": "40 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/08-grouping.html",
       "icon": "bi-collection"
     },
     {
@@ -88,8 +88,8 @@
       "title": "Advanced Queries",
       "description": "UNION, subqueries, EXISTS, and CASE expressions.",
       "duration": "50 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/09-advanced-queries.html",
       "icon": "bi-layers"
     },
     {
@@ -98,8 +98,8 @@
       "title": "Null Handling",
       "description": "COALESCE, IFNULL, and null-handling patterns in SQLite.",
       "duration": "25 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/10-null-functions.html",
       "icon": "bi-question-circle"
     },
     {
@@ -108,8 +108,8 @@
       "title": "Database & Tables",
       "description": "Create databases and tables, alter schema, and data types.",
       "duration": "45 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/11-schema.html",
       "icon": "bi-table"
     },
     {
@@ -118,8 +118,8 @@
       "title": "Constraints & Keys",
       "description": "NOT NULL, UNIQUE, primary keys, foreign keys, and CHECK.",
       "duration": "45 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/12-constraints.html",
       "icon": "bi-key"
     },
     {
@@ -141,6 +141,16 @@
       "status": "coming_soon",
       "href": null,
       "icon": "bi-shield-check"
+    },
+    {
+      "id": "15-moving-data",
+      "order": 15,
+      "title": "Moving Data Between Tables",
+      "description": "Copy and archive data with INSERT INTO SELECT and related data-movement patterns.",
+      "duration": "30 min",
+      "status": "coming_soon",
+      "href": null,
+      "icon": "bi-arrow-left-right"
     }
   ]
 }

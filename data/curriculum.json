@@ -141,17 +141,16 @@
       "title": "Joins",
       "description": "Combine tables with INNER, LEFT, and self joins.",
       "duration": "50 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/07-joins.html",
       "icon": "bi-diagram-3",
       "topics": ["sql_join", "sql_join_inner", "sql_join_left", "sql_join_self"],
       "lessons": [
-        { "id": "joins-intro", "title": "SQL Joins", "topics": ["sql_join"] },
+        { "id": "joins-intro", "title": "Relating Tables", "topics": ["sql_join"] },
         { "id": "inner-join", "title": "INNER JOIN", "topics": ["sql_join_inner"] },
         { "id": "left-join", "title": "LEFT JOIN", "topics": ["sql_join_left"] },
         { "id": "self-join", "title": "Self Join", "topics": ["sql_join_self"] }
-      ],
-      "notes": "RIGHT JOIN and FULL JOIN are not supported in SQLite; covered conceptually only."
+      ]
     },
     {
       "id": "08-grouping",
@@ -159,8 +158,8 @@
       "title": "GROUP BY & HAVING",
       "description": "Group rows and filter aggregated results.",
       "duration": "40 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/08-grouping.html",
       "icon": "bi-collection",
       "topics": ["sql_groupby", "sql_having"],
       "lessons": [
@@ -174,15 +173,14 @@
       "title": "Advanced Queries",
       "description": "UNION, subqueries, EXISTS, and CASE expressions.",
       "duration": "50 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/09-advanced-queries.html",
       "icon": "bi-layers",
-      "topics": ["sql_union", "sql_union_all", "sql_exists", "sql_any_all", "sql_all", "sql_case", "sql_insert_into_select"],
+      "topics": ["sql_union", "sql_union_all", "sql_exists", "sql_any_all", "sql_all", "sql_case"],
       "lessons": [
         { "id": "union", "title": "UNION and UNION ALL", "topics": ["sql_union", "sql_union_all"] },
         { "id": "exists", "title": "EXISTS and Subqueries", "topics": ["sql_exists", "sql_any_all", "sql_all"] },
-        { "id": "case", "title": "CASE", "topics": ["sql_case"] },
-        { "id": "insert-select", "title": "INSERT INTO SELECT", "topics": ["sql_insert_into_select"] }
+        { "id": "case", "title": "CASE", "topics": ["sql_case"] }
       ]
     },
     {
@@ -191,8 +189,8 @@
       "title": "Null Handling",
       "description": "COALESCE, IFNULL, and other null-handling patterns in SQLite.",
       "duration": "25 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/10-null-functions.html",
       "icon": "bi-question-circle",
       "topics": ["sql_isnull"],
       "lessons": [
@@ -206,8 +204,8 @@
       "title": "Database & Tables",
       "description": "Create databases and tables, alter schema, and understand data types.",
       "duration": "45 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/11-schema.html",
       "icon": "bi-table",
       "topics": ["sql_create_db", "sql_drop_db", "sql_create_table", "sql_drop_table", "sql_alter", "sql_datatypes"],
       "lessons": [
@@ -223,8 +221,8 @@
       "title": "Constraints & Keys",
       "description": "Enforce data integrity with constraints, primary keys, and foreign keys.",
       "duration": "45 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/12-constraints.html",
       "icon": "bi-key",
       "topics": ["sql_constraints", "sql_notnull", "sql_unique", "sql_primarykey", "sql_foreignkey", "sql_check", "sql_default", "sql_autoincrement"],
       "lessons": [
@@ -267,6 +265,20 @@
         { "id": "parameters", "title": "Parameterized Queries", "topics": ["sql_parameterized_queries", "sql_prepared_statements"] }
       ],
       "notes": "Conceptual lessons; sql.js exercises demonstrate safe vs unsafe patterns."
+    },
+    {
+      "id": "15-moving-data",
+      "order": 15,
+      "title": "Moving Data Between Tables",
+      "description": "Copy and archive data with INSERT INTO SELECT and related data-movement patterns.",
+      "duration": "30 min",
+      "status": "coming_soon",
+      "href": null,
+      "icon": "bi-arrow-left-right",
+      "topics": ["sql_insert_into_select"],
+      "lessons": [
+        { "id": "insert-select", "title": "INSERT INTO SELECT", "topics": ["sql_insert_into_select"] }
+      ]
     }
   ],
   "excludedTopics": {
