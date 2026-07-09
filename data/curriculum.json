@@ -173,15 +173,14 @@
       "title": "Advanced Queries",
       "description": "UNION, subqueries, EXISTS, and CASE expressions.",
       "duration": "50 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/09-advanced-queries.html",
       "icon": "bi-layers",
-      "topics": ["sql_union", "sql_union_all", "sql_exists", "sql_any_all", "sql_all", "sql_case", "sql_insert_into_select"],
+      "topics": ["sql_union", "sql_union_all", "sql_exists", "sql_any_all", "sql_all", "sql_case"],
       "lessons": [
         { "id": "union", "title": "UNION and UNION ALL", "topics": ["sql_union", "sql_union_all"] },
         { "id": "exists", "title": "EXISTS and Subqueries", "topics": ["sql_exists", "sql_any_all", "sql_all"] },
-        { "id": "case", "title": "CASE", "topics": ["sql_case"] },
-        { "id": "insert-select", "title": "INSERT INTO SELECT", "topics": ["sql_insert_into_select"] }
+        { "id": "case", "title": "CASE", "topics": ["sql_case"] }
       ]
     },
     {
