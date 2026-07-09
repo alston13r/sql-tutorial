@@ -208,7 +208,8 @@
     REFERENCES courses(department, course_number)
 );</code></pre>
         <p class="text-muted">
-          If you insert a foreign key value that does not match a parent row, SQLite rejects the insert.
+          If you insert a foreign key value that does not match a parent row, meaning a parent row with
+          that key does not exist, SQLite rejects the insert.
         </p>
 
         <h3 class="h5 mt-4 mb-3">Exercise</h3>
@@ -263,6 +264,15 @@
           A row that fails the <code>CHECK</code> condition is rejected. A missing <code>status</code>
           value uses the default.
         </p>
+        <div class="alert alert-light border mt-3">
+          <strong>Tip:</strong> In SQLite, you can inspect a table's schema before inserting rows. These
+          two commands are especially useful when you want to confirm a <code>DEFAULT</code> value or other
+          constraints on <code>users</code>:
+          <pre class="bg-white p-3 rounded border mt-2 mb-2"><code>SELECT sql
+FROM sqlite_master
+WHERE type = 'table' AND name = 'users';</code></pre>
+          <pre class="bg-white p-3 rounded border mb-0"><code>PRAGMA table_info('users');</code></pre>
+        </div>
 
         <h3 class="h5 mt-4 mb-3">Exercise</h3>
         <p>
@@ -309,7 +319,8 @@
 );</code></pre>
         <p class="text-muted">
           Each new row gets the next integer id automatically. You usually do not include the id in your
-          <code>INSERT</code> statement.
+          <code>INSERT</code> statement. If you do provide an id yourself, SQLite uses that value for the
+          row, and the next auto-generated id will continue from the largest id that has been used so far.
         </p>
 
         <h2 class="h4 mt-5 mb-3" id="summary">Summary</h2>
