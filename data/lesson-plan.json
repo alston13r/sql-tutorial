@@ -78,8 +78,8 @@
       "title": "GROUP BY & HAVING",
       "description": "Group rows and filter aggregated results.",
       "duration": "40 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/08-grouping.html",
       "icon": "bi-collection"
     },
     {
