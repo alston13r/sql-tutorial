@@ -122,6 +122,17 @@
           multiple columns.
         </p>
         <p>
+          In practice, a primary key is usually the table's main identity column or identity column set.
+          Other tables can reference it with foreign keys, and it gives the database one clear way to tell
+          rows apart.
+        </p>
+        <p>
+          You could sometimes combine <code>UNIQUE</code> and <code>NOT NULL</code> to enforce similar
+          rules on a column, but a primary key has a more specific job: it marks the official identifier
+          for the row. Each table has one primary key definition, even if that definition uses multiple
+          columns.
+        </p>
+        <p>
           Single-column example:
         </p>
         <pre class="bg-light p-3 rounded border"><code>CREATE TABLE departments (
@@ -142,12 +153,13 @@
 
         <h3 class="h5 mt-4 mb-3">Exercise</h3>
         <p>
-          Create a table named <code>enrollments</code> with columns <code>student_id INTEGER</code> and
-          <code>course_id INTEGER</code>, then make those two columns a composite primary key.
+          Create a table named <code>seat_assignments</code> with columns
+          <code>event_id INTEGER</code> and <code>seat_number INTEGER</code>, then make those two columns
+          a composite primary key.
         </p>
 
         <div class="sql-sandbox"
-             data-exercise='{"type":"mutation","moduleId":"12-constraints","lessonId":"primary-key","exerciseId":"primary-key-01","database":"constraints_workshop.sql","starterSql":"CREATE TABLE enrollments (\n  ","validation":{"type":"mutation","verifyQuery":"SELECT name, pk FROM pragma_table_info(\u0027enrollments\u0027) WHERE name IN (\u0027student_id\u0027, \u0027course_id\u0027)","expectedQuery":"SELECT \u0027student_id\u0027 AS name, 1 AS pk UNION ALL SELECT \u0027course_id\u0027 AS name, 2 AS pk"}}'>
+             data-exercise='{"type":"mutation","moduleId":"12-constraints","lessonId":"primary-key","exerciseId":"primary-key-01","database":"constraints_workshop.sql","starterSql":"CREATE TABLE seat_assignments (\n  ","validation":{"type":"mutation","verifyQuery":"SELECT name, pk FROM pragma_table_info(\u0027seat_assignments\u0027) WHERE name IN (\u0027event_id\u0027, \u0027seat_number\u0027)","expectedQuery":"SELECT \u0027event_id\u0027 AS name, 1 AS pk UNION ALL SELECT \u0027seat_number\u0027 AS name, 2 AS pk"}}'>
           <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
             <span class="sql-meta text-muted">
               <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
@@ -201,14 +213,15 @@
 
         <h3 class="h5 mt-4 mb-3">Exercise</h3>
         <p>
-          Create a table named <code>course_sessions_copy</code> with columns
-          <code>department TEXT</code>, <code>course_number INTEGER</code>, and <code>term TEXT</code>,
-          then add a composite foreign key from <code>(department, course_number)</code> to
+          Create a table named <code>course_materials</code> with columns
+          <code>course_department TEXT</code>, <code>course_number INTEGER</code>, and
+          <code>file_name TEXT</code>, then add a composite foreign key from
+          <code>(course_department, course_number)</code> to
           <code>courses(department, course_number)</code>.
         </p>
 
         <div class="sql-sandbox"
-             data-exercise='{"type":"mutation","moduleId":"12-constraints","lessonId":"foreign-key","exerciseId":"foreign-key-01","database":"constraints_workshop.sql","starterSql":"CREATE TABLE course_sessions_copy (\n  ","validation":{"type":"mutation","verifyQuery":"SELECT \"from\", \"to\", seq FROM pragma_foreign_key_list(\u0027course_sessions_copy\u0027)","expectedQuery":"SELECT \u0027department\u0027 AS \"from\", \u0027department\u0027 AS \"to\", 0 AS seq UNION ALL SELECT \u0027course_number\u0027 AS \"from\", \u0027course_number\u0027 AS \"to\", 1 AS seq"}}'>
+             data-exercise='{"type":"mutation","moduleId":"12-constraints","lessonId":"foreign-key","exerciseId":"foreign-key-01","database":"constraints_workshop.sql","starterSql":"CREATE TABLE course_materials (\n  ","validation":{"type":"mutation","verifyQuery":"SELECT \"from\", \"to\", seq FROM pragma_foreign_key_list(\u0027course_materials\u0027)","expectedQuery":"SELECT \u0027course_department\u0027 AS \"from\", \u0027department\u0027 AS \"to\", 0 AS seq UNION ALL SELECT \u0027course_number\u0027 AS \"from\", \u0027course_number\u0027 AS \"to\", 1 AS seq"}}'>
           <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
             <span class="sql-meta text-muted">
               <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
