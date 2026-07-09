@@ -139,17 +139,17 @@
           renaming a table, renaming a column, and adding a new column.
         </p>
         <p>
-          To add a new column to the <code>projects</code> table:
+          To add a new column:
         </p>
-        <pre class="bg-light p-3 rounded border"><code>ALTER TABLE projects ADD COLUMN budget REAL;</code></pre>
+        <pre class="bg-light p-3 rounded border"><code>ALTER TABLE employees ADD COLUMN email TEXT;</code></pre>
         <p>
           To rename a table:
         </p>
-        <pre class="bg-light p-3 rounded border"><code>ALTER TABLE projects RENAME TO client_projects;</code></pre>
+        <pre class="bg-light p-3 rounded border"><code>ALTER TABLE employees RENAME TO staff;</code></pre>
         <p>
           To rename a column:
         </p>
-        <pre class="bg-light p-3 rounded border"><code>ALTER TABLE projects RENAME COLUMN owner TO project_owner;</code></pre>
+        <pre class="bg-light p-3 rounded border"><code>ALTER TABLE employees RENAME COLUMN hired_date TO start_date;</code></pre>
         <p class="text-muted">
           These commands keep the existing rows while changing the table definition.
         </p>
