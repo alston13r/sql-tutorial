@@ -160,8 +160,7 @@ LEFT JOIN employees e ON e.department_id = d.id;</code></pre>
         <h3 class="h5 mt-4 mb-3">Exercise</h3>
         <p>
           Return every department name and the name of any employee in that department. Name the output
-          columns <code>department</code> and <code>employee</code>. Use <code>NULL</code> for departments
-          with no employees.
+          columns <code>department</code> and <code>employee</code>.
         </p>
 
         <div class="sql-sandbox"
@@ -189,6 +188,10 @@ LEFT JOIN employees e ON e.department_id = d.id;</code></pre>
           <div class="sql-output p-3 border-top"></div>
           <div class="sql-feedback p-3 border-top"></div>
         </div>
+        <p class="text-muted mt-3">
+          A <code>NULL</code> in the <code>employee</code> column — such as for the
+          <strong>Research</strong> department — means that department has no employees yet.
+        </p>
 
         <h2 class="h4 mt-5 mb-3" id="self-join">Self Join</h2>
         <p>
@@ -210,8 +213,7 @@ LEFT JOIN employees m ON e.manager_id = m.id;</code></pre>
         <h3 class="h5 mt-4 mb-3">Exercise</h3>
         <p>
           Return each employee's name and their manager's name. Name the output columns
-          <code>employee</code> and <code>manager</code>. Use <code>NULL</code> when an employee has no
-          manager.
+          <code>employee</code> and <code>manager</code>.
         </p>
 
         <div class="sql-sandbox"
@@ -239,6 +241,10 @@ LEFT JOIN employees m ON e.manager_id = m.id;</code></pre>
           <div class="sql-output p-3 border-top"></div>
           <div class="sql-feedback p-3 border-top"></div>
         </div>
+        <p class="text-muted mt-3">
+          A <code>NULL</code> in the <code>manager</code> column means that employee has no manager
+          assigned.
+        </p>
       </div>
     </div>
 
