@@ -84,13 +84,13 @@
 
         <h3 class="h5 mt-4 mb-3">Exercise</h3>
         <p>
-          Create a table named <code>members</code> with these columns:
-          <code>id INTEGER</code>, <code>username TEXT NOT NULL UNIQUE</code>, and
-          <code>email TEXT UNIQUE</code>.
+          Create a table named <code>products</code> with these columns:
+          <code>id INTEGER</code>, <code>sku TEXT NOT NULL UNIQUE</code>, and
+          <code>serial_number TEXT UNIQUE</code>.
         </p>
 
         <div class="sql-sandbox"
-             data-exercise='{"type":"mutation","moduleId":"12-constraints","lessonId":"not-null-unique","exerciseId":"not-null-unique-01","database":"constraints_workshop.sql","starterSql":"CREATE TABLE members (\n  ","validation":{"type":"mutation","verifyQuery":"SELECT name, type, \u0022notnull\u0022 FROM pragma_table_info(\u0027members\u0027) WHERE name IN (\u0027id\u0027, \u0027username\u0027, \u0027email\u0027) UNION ALL SELECT ii.name AS name, \u0027UNIQUE\u0027 AS type, 0 AS \u0022notnull\u0022 FROM pragma_index_list(\u0027members\u0027) il JOIN pragma_index_info(il.name) ii WHERE il.origin = \u0027u\u0027 AND ii.name IN (\u0027username\u0027, \u0027email\u0027)","expectedQuery":"SELECT \u0027id\u0027 AS name, \u0027INTEGER\u0027 AS type, 0 AS \u0022notnull\u0022 UNION ALL SELECT \u0027username\u0027 AS name, \u0027TEXT\u0027 AS type, 1 AS \u0022notnull\u0022 UNION ALL SELECT \u0027email\u0027 AS name, \u0027TEXT\u0027 AS type, 0 AS \u0022notnull\u0022 UNION ALL SELECT \u0027username\u0027 AS name, \u0027UNIQUE\u0027 AS type, 0 AS \u0022notnull\u0022 UNION ALL SELECT \u0027email\u0027 AS name, \u0027UNIQUE\u0027 AS type, 0 AS \u0022notnull\u0022"}}'>
+             data-exercise='{"type":"mutation","moduleId":"12-constraints","lessonId":"not-null-unique","exerciseId":"not-null-unique-01","database":"constraints_workshop.sql","starterSql":"CREATE TABLE products (\n  ","validation":{"type":"mutation","verifyQuery":"SELECT name, type, \u0022notnull\u0022 FROM pragma_table_info(\u0027products\u0027) WHERE name IN (\u0027id\u0027, \u0027sku\u0027, \u0027serial_number\u0027) UNION ALL SELECT ii.name AS name, \u0027UNIQUE\u0027 AS type, 0 AS \u0022notnull\u0022 FROM pragma_index_list(\u0027products\u0027) il JOIN pragma_index_info(il.name) ii WHERE il.origin = \u0027u\u0027 AND ii.name IN (\u0027sku\u0027, \u0027serial_number\u0027)","expectedQuery":"SELECT \u0027id\u0027 AS name, \u0027INTEGER\u0027 AS type, 0 AS \u0022notnull\u0022 UNION ALL SELECT \u0027sku\u0027 AS name, \u0027TEXT\u0027 AS type, 1 AS \u0022notnull\u0022 UNION ALL SELECT \u0027serial_number\u0027 AS name, \u0027TEXT\u0027 AS type, 0 AS \u0022notnull\u0022 UNION ALL SELECT \u0027sku\u0027 AS name, \u0027UNIQUE\u0027 AS type, 0 AS \u0022notnull\u0022 UNION ALL SELECT \u0027serial_number\u0027 AS name, \u0027UNIQUE\u0027 AS type, 0 AS \u0022notnull\u0022"}}'>
           <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
             <span class="sql-meta text-muted">
               <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
