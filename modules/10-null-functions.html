@@ -60,8 +60,7 @@
           missing value in the query result.
         </p>
         <p class="text-muted">
-          The practice database still uses Frank Lee's unknown salary as the main example, but this lesson
-          also includes a small <code>contact_names</code> table to demonstrate multiple fallback values.
+          The practice database still uses Frank Lee's unknown salary as the main example.
         </p>
 
         <h2 class="h4 mt-5 mb-3" id="ifnull">IFNULL()</h2>
@@ -130,8 +129,9 @@ FROM employees;</code></pre>
 
         <h3 class="h5 mt-4 mb-3">Exercise</h3>
         <p>
-          Return each contact's <code>full_name</code> and a <code>display_name</code> column using
-          <code>COALESCE(preferred_name, nickname, full_name)</code>.
+          Return each contact's <code>full_name</code> and a <code>display_name</code> column that shows
+          the preferred name when available, the nickname when there is no preferred name, and the full
+          name as a fallback.
         </p>
         <p class="text-muted">
           Hint: first inspect the <code>contact_names</code> table. A query like
@@ -164,12 +164,6 @@ FROM employees;</code></pre>
           <div class="sql-output p-3 border-top"></div>
           <div class="sql-feedback p-3 border-top"></div>
         </div>
-        <p class="text-muted mt-3">
-          This exercise demonstrates all three fallback paths across the full employee list: some rows use
-          <code>preferred_name</code>, some fall back to <code>nickname</code>, and some fall all the way
-          back to <code>full_name</code>.
-        </p>
-
         <h2 class="h4 mt-5 mb-3" id="summary">Summary</h2>
         <p>
           SQLite gives you a couple of simple ways to replace missing values:
