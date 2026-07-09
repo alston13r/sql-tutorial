@@ -49,10 +49,16 @@ CREATE TABLE contact_names (
 
 INSERT INTO contact_names (id, full_name, preferred_name, nickname) VALUES
   (1, 'Alice Chen', 'Alice', NULL),
-  (2, 'Robert Martinez', NULL, 'Bob'),
-  (3, 'Evelyn Johnson', NULL, NULL),
-  (4, 'Samuel Patel', 'Sam', NULL),
-  (5, 'Katherine Davis', NULL, 'Kat'),
-  (6, 'Michael Santos', NULL, NULL),
-  (7, 'Jennifer Brown', 'Jen', 'JB'),
-  (8, 'Daniel Nguyen', NULL, 'Danny');
+  (2, 'Bob Martinez', NULL, 'Bob'),
+  (3, 'Carol Williams', 'Carol', NULL),
+  (4, 'David Kim', NULL, 'Dave'),
+  (5, 'Eve Johnson', NULL, NULL),
+  (6, 'Frank Lee', 'Frank', NULL),
+  (7, 'Grace Patel', NULL, 'Grace'),
+  (8, 'Henry Brown', NULL, NULL),
+  (9, 'Iris Nguyen', 'Iris', NULL),
+  (10, 'Jack Wilson', NULL, 'Jack'),
+  (11, 'Kara Davis', NULL, NULL),
+  (12, 'Liam O''Brien', 'Liam', NULL),
+  (13, 'Mia Santos', NULL, 'Mia'),
+  (14, 'Noah Taylor', NULL, NULL);

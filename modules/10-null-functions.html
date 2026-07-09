@@ -133,6 +133,11 @@ FROM employees;</code></pre>
           Return each contact's <code>full_name</code> and a <code>display_name</code> column using
           <code>COALESCE(preferred_name, nickname, full_name)</code>.
         </p>
+        <p class="text-muted">
+          Hint: first inspect the <code>contact_names</code> table. A query like
+          <code>SELECT * FROM contact_names;</code> will show you the available columns and help you see
+          how <code>preferred_name</code>, <code>nickname</code>, and <code>full_name</code> relate.
+        </p>
 
         <div class="sql-sandbox"
              data-exercise='{"type":"query","moduleId":"10-null-functions","lessonId":"null-functions","exerciseId":"coalesce-01","database":"employees_modifying.sql","starterSql":"SELECT ","validation":{"type":"resultMatch","query":"SELECT full_name, COALESCE(preferred_name, nickname, full_name) AS display_name FROM contact_names"}}'>
@@ -160,7 +165,7 @@ FROM employees;</code></pre>
           <div class="sql-feedback p-3 border-top"></div>
         </div>
         <p class="text-muted mt-3">
-          This exercise demonstrates all three fallback paths: some rows use
+          This exercise demonstrates all three fallback paths across the full employee list: some rows use
           <code>preferred_name</code>, some fall back to <code>nickname</code>, and some fall all the way
           back to <code>full_name</code>.
         </p>
