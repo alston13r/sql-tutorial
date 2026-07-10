@@ -240,15 +240,15 @@
       "title": "Indexes & Views",
       "description": "Speed up queries with indexes and simplify access with views.",
       "duration": "35 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/13-indexes-views.html",
       "icon": "bi-eye",
-      "topics": ["sql_create_index", "sql_view", "sql_dates"],
+      "topics": ["sql_create_index", "sql_view"],
       "lessons": [
         { "id": "indexes", "title": "CREATE INDEX", "topics": ["sql_create_index"] },
-        { "id": "views", "title": "Views", "topics": ["sql_view"] },
-        { "id": "dates", "title": "Dates in SQLite", "topics": ["sql_dates"] }
-      ]
+        { "id": "views", "title": "Views", "topics": ["sql_view"] }
+      ],
+      "notes": "Dates in SQLite deferred to a short Module 11 Data Types follow-up rather than this module."
     },
     {
       "id": "14-security",

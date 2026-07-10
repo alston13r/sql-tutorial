@@ -128,8 +128,8 @@
       "title": "Indexes & Views",
       "description": "Speed up queries with indexes and simplify access with views.",
       "duration": "35 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/13-indexes-views.html",
       "icon": "bi-eye"
     },
     {
