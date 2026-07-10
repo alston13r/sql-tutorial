@@ -1,4 +1,5 @@
 import { supabase } from "./supabase-client.js";
+import { getProfile, getDisplayName } from "./auth-helpers.js";
 
 function el(id) {
   return document.getElementById(id);
@@ -38,13 +39,24 @@ export async function hydrateAuthUI() {
   setHidden(authLogin, Boolean(user));
   setHidden(authProfile, !user);
   setHidden(authLogout, !user);
-  safeSetText(authEmail, user?.email ?? "");
 
-  if (authLogout) {
+  if (user) {
+    try {
+      const profile = await getProfile(user.id);
+      safeSetText(authEmail, getDisplayName(profile, user));
+    } catch (err) {
+      console.warn("Failed to load profile for navbar:", err);
+      safeSetText(authEmail, user.email ?? "");
+    }
+  } else {
+    safeSetText(authEmail, "");
+  }
+
+  if (authLogout && !authLogout.dataset.bound) {
+    authLogout.dataset.bound = "true";
     authLogout.addEventListener("click", async (e) => {
       e.preventDefault();
       await supabase.auth.signOut();
-      // Re-render UI to logged-out state.
       await hydrateAuthUI();
     });
   }
