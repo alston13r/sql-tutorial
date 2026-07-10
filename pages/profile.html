@@ -7,6 +7,7 @@
 
   <!-- from bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../css/site.css" />
 </head>
 
@@ -41,6 +42,25 @@
           <div class="card-body">
             <div class="text-muted small">Signed in as</div>
             <div id="userEmail" class="fw-semibold">—</div>
+            <hr />
+            <div class="mb-3">
+              <label for="usernameInput" class="form-label text-muted small mb-1">Username</label>
+              <div class="input-group input-group-sm">
+                <input
+                  id="usernameInput"
+                  type="text"
+                  class="form-control"
+                  pattern="[A-Za-z0-9_]{3,20}"
+                  autocomplete="username"
+                  spellcheck="false"
+                />
+                <button type="button" class="btn btn-outline-primary" id="saveUsernameBtn">Save</button>
+              </div>
+              <div id="usernameHint" class="text-muted small mt-1">
+                Choose a username to log in without your email.
+              </div>
+              <div id="usernameError" class="text-danger small mt-1 d-none"></div>
+            </div>
             <hr />
             <div class="d-flex justify-content-between">
               <span class="text-muted">Completed exercises</span>
@@ -87,6 +107,12 @@
   <script type="module">
     import { supabase } from "../js/supabase-client.js";
     import "../js/progress.js";
+    import { hydrateAuthUI } from "../js/auth-ui.js";
+    import {
+      ensureProfile,
+      saveUsername,
+      validateUsername,
+    } from "../js/auth-helpers.js";
 
     const alertEl = document.getElementById("alert");
     function showAlert(message, type = "danger") {
@@ -100,6 +126,10 @@
     }
 
     const userEmailEl = document.getElementById("userEmail");
+    const usernameInputEl = document.getElementById("usernameInput");
+    const usernameHintEl = document.getElementById("usernameHint");
+    const usernameErrorEl = document.getElementById("usernameError");
+    const saveUsernameBtn = document.getElementById("saveUsernameBtn");
     const countCompletedEl = document.getElementById("countCompleted");
     const countInProgressEl = document.getElementById("countInProgress");
     const countNotStartedEl = document.getElementById("countNotStarted");
@@ -219,6 +249,30 @@
       await loadLastCompleted(rows);
     }
 
+    let currentProfile = null;
+
+    function showUsernameError(message) {
+      if (!message) {
+        usernameErrorEl.classList.add("d-none");
+        usernameErrorEl.textContent = "";
+        return;
+      }
+      usernameErrorEl.textContent = message;
+      usernameErrorEl.classList.remove("d-none");
+    }
+
+    function renderUsernameSection(profile) {
+      currentProfile = profile;
+      usernameInputEl.value = profile?.username || "";
+      if (profile?.username) {
+        usernameHintEl.textContent =
+          "Letters, numbers, and underscores only (3–20 characters). You can change this anytime.";
+      } else {
+        usernameHintEl.textContent =
+          "Choose a username to log in without your email. Letters, numbers, and underscores only (3–20 characters).";
+      }
+    }
+
     async function init() {
       const { data: sessionData } = await supabase.auth.getSession();
       const session = sessionData?.session;
@@ -231,6 +285,42 @@
       }
 
       userEmailEl.textContent = session.user.email || session.user.id;
+
+      const profile = await ensureProfile(session.user);
+      renderUsernameSection(profile);
+
+      saveUsernameBtn?.addEventListener("click", async () => {
+        hideAlert();
+        showUsernameError("");
+
+        const username = usernameInputEl.value.trim();
+        const formatError = validateUsername(username);
+        if (formatError) {
+          showUsernameError(formatError);
+          return;
+        }
+
+        saveUsernameBtn.disabled = true;
+        try {
+          const { profile: updated, error } = await saveUsername(
+            session.user.id,
+            username,
+            currentProfile?.username
+          );
+          if (error) {
+            showUsernameError(error);
+            return;
+          }
+
+          renderUsernameSection(updated);
+          showAlert("Username saved.", "success");
+          await hydrateAuthUI();
+        } catch (err) {
+          showAlert(err.message || String(err), "danger");
+        } finally {
+          saveUsernameBtn.disabled = false;
+        }
+      });
 
       const rows = await loadProgressRows();
       await renderProgress(rows);
