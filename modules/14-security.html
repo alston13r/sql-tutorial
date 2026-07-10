@@ -37,6 +37,7 @@
         <nav class="nav flex-column">
           <a class="nav-link py-1" href="#overview">Overview</a>
           <a class="nav-link py-1" href="#injection">SQL Injection</a>
+          <a class="nav-link py-1" href="#comments">SQL Comments</a>
           <a class="nav-link py-1" href="#parameters">Parameterized Queries</a>
           <a class="nav-link py-1" href="#summary">Summary</a>
         </nav>
@@ -67,12 +68,20 @@
 
         <h2 class="h4 mt-5 mb-3" id="injection">SQL Injection</h2>
         <p>
-          Imagine a login page that builds a query like this in application code:
+          Imagine a login page that builds a query like this in application code. In JavaScript,
+          that often looks like string concatenation:
         </p>
         <pre class="bg-light p-3 rounded border"><code>const sql =
   "SELECT username FROM users " +
   "WHERE username = '" + username + "' " +
   "AND password = '" + password + "';";</code></pre>
+        <p>
+          In Python, the same unsafe pattern often uses an f-string or other template string:
+        </p>
+        <pre class="bg-light p-3 rounded border"><code>sql = f"""
+SELECT username FROM users
+WHERE username = '{username}' AND password = '{password}';
+"""</code></pre>
         <p>
           If someone types a normal username and password, that works. If they type SQL into the
           fields, they can change the <code>WHERE</code> clause — for example by closing the quote
@@ -82,6 +91,34 @@
           Passwords in this demo are stored as plain text so the lesson stays simple. Real apps
           should store hashed passwords. Injection can also lead to reading, changing, or deleting
           data beyond a login form.
+        </p>
+
+        <h2 class="h4 mt-5 mb-3" id="comments">SQL Comments</h2>
+        <p>
+          SQL comments let you ignore part of a statement. Attackers often use them during injection
+          to disable the rest of a query after they close a quote.
+        </p>
+        <p>
+          SQLite supports two common comment styles:
+        </p>
+        <ul>
+          <li>
+            <code>--</code> starts a line comment. Everything from <code>--</code> to the end of that
+            line is ignored.
+          </li>
+          <li>
+            <code>/* ... */</code> is a block comment. Everything between the markers is ignored,
+            even across multiple lines.
+          </li>
+        </ul>
+        <p>
+          Example — a username of <code>admin'--</code> can turn this:
+        </p>
+        <pre class="bg-light p-3 rounded border"><code>SELECT username FROM users
+WHERE username = 'admin'--' AND password = 'nope';</code></pre>
+        <p class="text-muted">
+          into a query that only checks the username. The password condition is commented out, so
+          the login no longer requires the real admin password.
         </p>
 
         <h3 class="h5 mt-4 mb-3">Challenge: log in as admin</h3>
@@ -167,12 +204,15 @@
         <h2 class="h4 mt-5 mb-3" id="summary">Summary</h2>
         <ul>
           <li>
-            <strong>SQL injection</strong> happens when user input is concatenated into a query and
-            changes the SQL structure.
+            <strong>SQL injection</strong> happens when user input is concatenated or interpolated
+            into a query and changes the SQL structure.
           </li>
           <li>
-            A login form is a common place this appears: username and password become part of a
-            <code>WHERE</code> clause.
+            The same risk shows up in JavaScript concatenation and Python template strings.
+          </li>
+          <li>
+            <strong>SQL comments</strong> (<code>--</code> and <code>/* */</code>) are often used in
+            injection payloads to ignore the rest of a clause, such as a password check.
           </li>
           <li>
             <strong>Parameterized queries</strong> keep values separate from the SQL text so quote
