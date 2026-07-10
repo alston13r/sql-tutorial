@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Moving Data Between Tables — SQLite Tutorial</title>
+  <!-- from bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../css/site.css">
+  <link rel="stylesheet" href="../css/exercise.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="../index.html"><i class="bi bi-database me-2"></i>SQLite Tutorial</a>
+      <div class="navbar-nav ms-auto align-items-lg-center">
+        <a class="nav-link" href="../pages/login.html" id="nav-auth-login">Log in</a>
+        <a class="nav-link d-none" href="../pages/profile.html" id="nav-auth-profile">Profile</a>
+        <a class="nav-link d-none" href="#" id="nav-auth-logout">Log out</a>
+        <span class="navbar-text text-white-50 ms-lg-2 d-none d-lg-inline" id="nav-auth-email"></span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-5 flex-grow-1">
+    <nav aria-label="breadcrumb" class="mb-4">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="../index.html">Modules</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Moving Data Between Tables</li>
+      </ol>
+    </nav>
+
+    <div class="row">
+      <aside class="col-lg-3 mb-4 lesson-sidebar">
+        <h6 class="text-uppercase text-muted small">In this module</h6>
+        <nav class="nav flex-column">
+          <a class="nav-link py-1" href="#overview">Overview</a>
+          <a class="nav-link py-1" href="#insert-select">INSERT INTO SELECT</a>
+          <a class="nav-link py-1" href="#filtered-copy">Filtered copies</a>
+          <a class="nav-link py-1" href="#summary">Summary</a>
+        </nav>
+      </aside>
+
+      <div class="col-lg-9">
+        <span class="badge bg-secondary mb-2">Module 15</span>
+        <h1 class="display-6 fw-bold mb-3">Moving Data Between Tables</h1>
+        <div class="alert alert-success d-none" id="lesson-complete-alert">
+          <i class="bi bi-trophy me-2"></i>All exercises in this lesson have been completed.
+        </div>
+        <p class="lead text-muted">
+          Copy rows from one table into another with <code>INSERT INTO ... SELECT</code> — useful for
+          archives, backups, and bulk transfers without retyping values.
+        </p>
+
+        <h2 class="h4 mt-5 mb-3" id="overview">Overview</h2>
+        <p>
+          Module 4 taught single-row <code>INSERT</code> statements where you list each value by hand.
+          That works for one new employee, but it is a poor fit when you already have matching rows in
+          another table — for example, finished tasks you want to keep in an archive.
+        </p>
+        <p>
+          <code>INSERT INTO ... SELECT</code> reads rows from a source query and writes them into a
+          target table in one step. The column lists must line up: each selected expression fills the
+          matching target column.
+        </p>
+        <p class="text-muted">
+          After a successful archive copy, some apps also <code>DELETE</code> the originals from the
+          active table. You already know <code>DELETE</code> from Module 4; this module focuses on the
+          copy step.
+        </p>
+
+        <h2 class="h4 mt-5 mb-3" id="insert-select">INSERT INTO SELECT</h2>
+        <p>
+          The pattern is: name the target table and columns, then supply a <code>SELECT</code> that
+          returns one value per column for each row to insert.
+        </p>
+        <p>
+          Example — archive every <code>Planned</code> task and stamp the archive date in the
+          <code>SELECT</code> list:
+        </p>
+        <pre class="bg-light p-3 rounded border"><code>INSERT INTO tasks_archive (id, project_id, title, archived_on)
+SELECT id, project_id, title, '2024-11-01'
+FROM tasks
+WHERE status = 'Planned';</code></pre>
+        <p class="text-muted">
+          Notice <code>archived_on</code> is not a column on <code>tasks</code>. The <code>SELECT</code>
+          can mix source columns with literal values. SQLite does not use <code>SELECT INTO</code> the
+          way some other databases do; use <code>INSERT INTO ... SELECT</code> instead.
+        </p>
+
+        <h3 class="h5 mt-4 mb-3">Exercise</h3>
+        <p>
+          Copy every task with status <code>Done</code> into <code>tasks_archive</code>. Include
+          <code>id</code>, <code>project_id</code>, and <code>title</code>, and set
+          <code>archived_on</code> to <code>'2024-12-01'</code>.
+        </p>
+
+        <div class="sql-sandbox"
+             data-exercise='{"type":"mutation","moduleId":"15-moving-data","lessonId":"insert-select","exerciseId":"insert-select-01","database":"moving_data.sql","starterSql":"INSERT INTO tasks_archive ","validation":{"type":"mutation","verifyQuery":"SELECT id, project_id, title, archived_on FROM tasks_archive ORDER BY id","expectedQuery":"SELECT id, project_id, title, \u00272024-12-01\u0027 AS archived_on FROM tasks WHERE status = \u0027Done\u0027 ORDER BY id"}}'>
+          <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
+            <span class="sql-meta text-muted">
+              <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
+            </span>
+            <div class="btn-group btn-group-sm" role="group" aria-label="SQL exercise actions">
+              <button type="button" class="btn btn-outline-secondary btn-reset" title="Reset database">
+                <i class="bi bi-arrow-counterclockwise"></i> Reset
+              </button>
+              <button type="button" class="btn btn-outline-primary btn-run">
+                <i class="bi bi-play-fill"></i> Run
+              </button>
+              <button type="button" class="btn btn-primary btn-validate">
+                <i class="bi bi-check-lg"></i> Check
+              </button>
+            </div>
+          </div>
+          <textarea class="form-control sql-editor" rows="6" spellcheck="false" placeholder="Write your SQL here…"></textarea>
+          <div class="sql-loading d-none px-3 py-2 text-muted small border-top">
+            <span class="spinner-border spinner-border-sm me-1"></span> Loading database…
+          </div>
+          <div class="sql-output p-3 border-top"></div>
+          <div class="sql-feedback p-3 border-top"></div>
+        </div>
+
+        <h2 class="h4 mt-5 mb-3" id="filtered-copy">Filtered copies</h2>
+        <p>
+          The <code>WHERE</code> clause on the <code>SELECT</code> controls which source rows move.
+          You can filter on status, project, date ranges, or any other condition you would use in a
+          normal query.
+        </p>
+        <p>
+          Example — copy only in-progress work for project <code>3</code>:
+        </p>
+        <pre class="bg-light p-3 rounded border"><code>INSERT INTO tasks_archive (id, project_id, title, archived_on)
+SELECT id, project_id, title, '2024-11-15'
+FROM tasks
+WHERE status = 'In Progress' AND project_id = 3;</code></pre>
+        <p class="text-muted">
+          Always list target columns explicitly when the tables do not share the same shape. That keeps
+          the mapping clear and avoids inserting into the wrong column.
+        </p>
+
+        <h3 class="h5 mt-4 mb-3">Exercise</h3>
+        <p>
+          Archive every <code>In Progress</code> task for project <code>1</code>. Copy
+          <code>id</code>, <code>project_id</code>, and <code>title</code> into
+          <code>tasks_archive</code>, and set <code>archived_on</code> to <code>'2024-12-15'</code>.
+        </p>
+
+        <div class="sql-sandbox"
+             data-exercise='{"type":"mutation","moduleId":"15-moving-data","lessonId":"filtered-copy","exerciseId":"insert-select-02","database":"moving_data.sql","starterSql":"INSERT INTO tasks_archive ","validation":{"type":"mutation","verifyQuery":"SELECT id, project_id, title, archived_on FROM tasks_archive ORDER BY id","expectedQuery":"SELECT id, project_id, title, \u00272024-12-15\u0027 AS archived_on FROM tasks WHERE status = \u0027In Progress\u0027 AND project_id = 1 ORDER BY id"}}'>
+          <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
+            <span class="sql-meta text-muted">
+              <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
+            </span>
+            <div class="btn-group btn-group-sm" role="group" aria-label="SQL exercise actions">
+              <button type="button" class="btn btn-outline-secondary btn-reset" title="Reset database">
+                <i class="bi bi-arrow-counterclockwise"></i> Reset
+              </button>
+              <button type="button" class="btn btn-outline-primary btn-run">
+                <i class="bi bi-play-fill"></i> Run
+              </button>
+              <button type="button" class="btn btn-primary btn-validate">
+                <i class="bi bi-check-lg"></i> Check
+              </button>
+            </div>
+          </div>
+          <textarea class="form-control sql-editor" rows="6" spellcheck="false" placeholder="Write your SQL here…"></textarea>
+          <div class="sql-loading d-none px-3 py-2 text-muted small border-top">
+            <span class="spinner-border spinner-border-sm me-1"></span> Loading database…
+          </div>
+          <div class="sql-output p-3 border-top"></div>
+          <div class="sql-feedback p-3 border-top"></div>
+        </div>
+
+        <h2 class="h4 mt-5 mb-3" id="summary">Summary</h2>
+        <ul>
+          <li>
+            <strong>INSERT INTO ... SELECT</strong> copies query results into another table without
+            listing each value by hand.
+          </li>
+          <li>
+            Target columns and selected expressions must match in order and count.
+          </li>
+          <li>
+            Use <code>WHERE</code> on the <code>SELECT</code> to archive or copy only the rows you want.
+          </li>
+          <li>
+            Literals in the <code>SELECT</code> list can fill columns the source table does not have,
+            such as <code>archived_on</code>.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-5 d-flex flex-wrap gap-2">
+      <a href="14-security.html" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Module 14
+      </a>
+      <a href="../index.html" class="btn btn-outline-primary">
+        <i class="bi bi-grid me-1"></i>Back to modules
+      </a>
+    </div>
+  </main>
+
+  <footer class="bg-light py-3 mt-auto border-top">
+    <div class="container text-center text-muted small">
+      SQLite Tutorial &mdash; MIT License<br>
+      <a href="https://github.com/alston13r/sql-tutorial" class="link-secondary">GitHub Repository</a>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+  <script src="../js/sql-runner.js"></script>
+  <script src="../js/exercise.js"></script>
+  <script type="module" src="../js/progress.js"></script>
+  <script src="../js/lesson-page.js"></script>
+  <script type="module" src="../js/auth-ui.js"></script>
+</body>
+</html>

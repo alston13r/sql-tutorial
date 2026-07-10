@@ -272,12 +272,13 @@
       "title": "Moving Data Between Tables",
       "description": "Copy and archive data with INSERT INTO SELECT and related data-movement patterns.",
       "duration": "30 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/15-moving-data.html",
       "icon": "bi-arrow-left-right",
       "topics": ["sql_insert_into_select"],
       "lessons": [
-        { "id": "insert-select", "title": "INSERT INTO SELECT", "topics": ["sql_insert_into_select"] }
+        { "id": "insert-select", "title": "INSERT INTO SELECT", "topics": ["sql_insert_into_select"] },
+        { "id": "filtered-copy", "title": "Filtered copies", "topics": ["sql_insert_into_select"] }
       ]
     }
   ],
