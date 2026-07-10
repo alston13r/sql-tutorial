@@ -138,8 +138,8 @@
       "title": "Security Best Practices",
       "description": "SQL injection risks and parameterized query patterns.",
       "duration": "30 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/14-security.html",
       "icon": "bi-shield-check"
     },
     {

@@ -44,6 +44,9 @@ const LessonPage = (function () {
     if (!configRaw) return;
 
     const config = JSON.parse(configRaw);
+    // Challenge widgets (e.g. Module 14 login CTF) track progress but have no SQL sandbox.
+    if (!config.database) return;
+
     const editor = container.querySelector(".sql-editor");
     const runBtn = container.querySelector(".btn-run");
     const checkBtn = container.querySelector(".btn-validate");

@@ -256,15 +256,15 @@
       "title": "Security Best Practices",
       "description": "Understand SQL injection and the importance of parameterized queries.",
       "duration": "30 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/14-security.html",
       "icon": "bi-shield-check",
       "topics": ["sql_injection", "sql_parameterized_queries", "sql_prepared_statements"],
       "lessons": [
         { "id": "injection", "title": "SQL Injection", "topics": ["sql_injection"] },
         { "id": "parameters", "title": "Parameterized Queries", "topics": ["sql_parameterized_queries", "sql_prepared_statements"] }
       ],
-      "notes": "Conceptual lessons; sql.js exercises demonstrate safe vs unsafe patterns."
+      "notes": "Mock login CTF demonstrates injection; parameterized queries shown via host-code examples plus a safe lookup exercise."
     },
     {
       "id": "15-moving-data",
