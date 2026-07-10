@@ -54,6 +54,13 @@
               <span class="text-muted">Not started</span>
               <span id="countNotStarted" class="fw-semibold">0</span>
             </div>
+            <hr />
+            <button type="button" class="btn btn-outline-danger btn-sm w-100" id="resetProgressBtn">
+              Reset all progress
+            </button>
+            <p class="text-muted small mt-2 mb-0">
+              Modules can be completed in any order; this only clears your exercise history.
+            </p>
           </div>
         </div>
       </div>
@@ -79,6 +86,7 @@
   <script type="module" src="../js/auth-ui.js"></script>
   <script type="module">
     import { supabase } from "../js/supabase-client.js";
+    import "../js/progress.js";
 
     const alertEl = document.getElementById("alert");
     function showAlert(message, type = "danger") {
@@ -87,11 +95,16 @@
       alertEl.classList.remove("d-none");
     }
 
+    function hideAlert() {
+      alertEl.classList.add("d-none");
+    }
+
     const userEmailEl = document.getElementById("userEmail");
     const countCompletedEl = document.getElementById("countCompleted");
     const countInProgressEl = document.getElementById("countInProgress");
     const countNotStartedEl = document.getElementById("countNotStarted");
     const lastCompletedEl = document.getElementById("lastCompleted");
+    const resetProgressBtn = document.getElementById("resetProgressBtn");
     const knownExercises = [
       { module_id: "01-foundations", lesson_id: "intro", exercise_id: "intro-01" },
       { module_id: "02-select", lesson_id: "distinct", exercise_id: "distinct-01" },
@@ -179,20 +192,7 @@
       `;
     }
 
-    async function init() {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const session = sessionData?.session;
-
-      if (!session?.user) {
-        const loginUrl = new URL("./login.html", window.location.href);
-        loginUrl.searchParams.set("returnTo", window.location.href);
-        window.location.href = loginUrl.toString();
-        return;
-      }
-
-      userEmailEl.textContent = session.user.email || session.user.id;
-
-      const rows = await loadProgressRows();
+    async function renderProgress(rows) {
       const rowMap = new Map(
         rows.map((row) => [`${row.module_id}:${row.lesson_id}:${row.exercise_id}`, row.status])
       );
@@ -217,6 +217,52 @@
       countNotStartedEl.textContent = notStarted;
 
       await loadLastCompleted(rows);
+    }
+
+    async function init() {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const session = sessionData?.session;
+
+      if (!session?.user) {
+        const loginUrl = new URL("./login.html", window.location.href);
+        loginUrl.searchParams.set("returnTo", window.location.href);
+        window.location.href = loginUrl.toString();
+        return;
+      }
+
+      userEmailEl.textContent = session.user.email || session.user.id;
+
+      const rows = await loadProgressRows();
+      await renderProgress(rows);
+
+      resetProgressBtn?.addEventListener("click", async () => {
+        const confirmed = window.confirm(
+          "This clears all completed and in-progress exercises locally and in your account. This cannot be undone."
+        );
+        if (!confirmed) return;
+
+        resetProgressBtn.disabled = true;
+        hideAlert();
+
+        try {
+          const result = await window.ProgressTracker.resetAllProgress();
+          const rowsAfterReset = await loadProgressRows();
+          await renderProgress(rowsAfterReset);
+
+          if (result.remoteCleared) {
+            showAlert("All exercise progress has been reset.", "success");
+          } else {
+            showAlert(
+              "Local progress was cleared, but account progress could not be reset. You may need a Supabase DELETE policy on exercise_progress.",
+              "warning"
+            );
+          }
+        } catch (err) {
+          showAlert(err.message || String(err), "danger");
+        } finally {
+          resetProgressBtn.disabled = false;
+        }
+      });
     }
 
     init().catch((err) => {
