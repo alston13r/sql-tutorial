@@ -148,8 +148,8 @@
       "title": "Moving Data Between Tables",
       "description": "Copy and archive data with INSERT INTO SELECT and related data-movement patterns.",
       "duration": "30 min",
-      "status": "coming_soon",
-      "href": null,
+      "status": "available",
+      "href": "modules/15-moving-data.html",
       "icon": "bi-arrow-left-right"
     }
   ]
