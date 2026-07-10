@@ -101,10 +101,38 @@ function getLocalExerciseStatus(record) {
   return getLocalExercise(record)?.status || "not_started";
 }
 
+function clearLocalProgress() {
+  writeStore({ exercises: {} });
+}
+
+// Requires a Supabase RLS DELETE policy on exercise_progress for auth.uid() = user_id.
+async function resetRemoteProgress(user) {
+  const { error } = await supabase.from("exercise_progress").delete().eq("user_id", user.id);
+  if (error) throw error;
+}
+
+async function resetAllProgress() {
+  clearLocalProgress();
+  const user = await currentUser();
+  if (!user) {
+    return { localCleared: true, remoteCleared: false };
+  }
+
+  try {
+    await resetRemoteProgress(user);
+    return { localCleared: true, remoteCleared: true };
+  } catch (error) {
+    console.warn("Remote progress reset failed; local progress was cleared.", error);
+    return { localCleared: true, remoteCleared: false, error };
+  }
+}
+
 window.ProgressTracker = {
   saveExerciseProgress,
   syncLocalProgressForCurrentUser,
   getLocalExercise,
   getLocalExerciseStatus,
+  clearLocalProgress,
+  resetAllProgress,
 };
 
