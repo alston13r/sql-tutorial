@@ -207,10 +207,11 @@
       "status": "available",
       "href": "modules/11-schema.html",
       "icon": "bi-table",
-      "topics": ["sql_create_db", "sql_drop_db", "sql_create_table", "sql_drop_table", "sql_alter", "sql_datatypes"],
+      "topics": ["sql_create_db", "sql_drop_db", "sql_create_table", "sql_drop_table", "sql_alter", "sql_datatypes", "sql_dates"],
       "lessons": [
         { "id": "create-db", "title": "CREATE DATABASE", "topics": ["sql_create_db"] },
         { "id": "create-table", "title": "CREATE TABLE", "topics": ["sql_create_table", "sql_datatypes"] },
+        { "id": "dates", "title": "Dates in SQLite", "topics": ["sql_dates"] },
         { "id": "alter-table", "title": "ALTER TABLE", "topics": ["sql_alter"] },
         { "id": "drop", "title": "DROP TABLE / DATABASE", "topics": ["sql_drop_table", "sql_drop_db"] }
       ]

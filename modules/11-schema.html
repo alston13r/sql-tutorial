@@ -36,6 +36,7 @@
         <h6 class="text-uppercase text-muted small">In this module</h6>
         <nav class="nav flex-column">
           <a class="nav-link py-1" href="#data-types">Data Types</a>
+          <a class="nav-link py-1" href="#dates">Dates in SQLite</a>
           <a class="nav-link py-1" href="#create-table">CREATE TABLE</a>
           <a class="nav-link py-1" href="#alter-table">ALTER TABLE</a>
           <a class="nav-link py-1" href="#drop-table">DROP TABLE</a>
@@ -79,6 +80,62 @@
           Choosing a sensible type helps make the table structure clear before you start inserting data or
           adding constraints in the next module.
         </p>
+
+        <h2 class="h4 mt-5 mb-3" id="dates">Dates in SQLite</h2>
+        <p>
+          SQLite does not have a dedicated <code>DATE</code> type. Dates are often stored as
+          <code>TEXT</code> in <code>YYYY-MM-DD</code> form, though you may also see
+          <code>INTEGER</code> (Unix time) or <code>REAL</code> (Julian day). This tutorial focuses on
+          the <code>TEXT</code> approach because it is easy to read and compare.
+        </p>
+        <p>
+          When every date uses the same format, comparisons work as you would expect:
+        </p>
+        <pre class="bg-light p-3 rounded border"><code>SELECT name, hired_date
+FROM employees
+WHERE hired_date >= '2020-01-01';</code></pre>
+        <p>
+          SQLite also provides date helpers such as <code>date()</code> and <code>strftime()</code> for
+          formatting and extracting parts of a date:
+        </p>
+        <pre class="bg-light p-3 rounded border"><code>SELECT name, strftime('%Y', hired_date) AS hire_year
+FROM employees;</code></pre>
+        <p class="text-muted">
+          Inconsistent formats break sorting and filtering, so pick one convention and stick with it
+          when you design a column like <code>hired_date</code>.
+        </p>
+
+        <h3 class="h5 mt-4 mb-3">Exercise</h3>
+        <p>
+          Return <code>name</code> and <code>hired_date</code> for employees hired on or after
+          <code>2020-01-01</code>.
+        </p>
+
+        <div class="sql-sandbox"
+             data-exercise='{"type":"query","moduleId":"11-schema","lessonId":"dates","exerciseId":"dates-01","database":"employees_modifying.sql","starterSql":"SELECT name, hired_date\nFROM employees\nWHERE ","validation":{"type":"resultMatch","query":"SELECT name, hired_date FROM employees WHERE hired_date >= \u00272020-01-01\u0027"}}'>
+          <div class="sql-toolbar d-flex justify-content-between align-items-center px-3 py-2">
+            <span class="sql-meta text-muted">
+              <i class="bi bi-database me-1"></i>Tables: <span class="sql-tables">loading…</span>
+            </span>
+            <div class="btn-group btn-group-sm" role="group" aria-label="SQL exercise actions">
+              <button type="button" class="btn btn-outline-secondary btn-reset" title="Reset database">
+                <i class="bi bi-arrow-counterclockwise"></i> Reset
+              </button>
+              <button type="button" class="btn btn-outline-primary btn-run">
+                <i class="bi bi-play-fill"></i> Run
+              </button>
+              <button type="button" class="btn btn-primary btn-validate">
+                <i class="bi bi-check-lg"></i> Check
+              </button>
+            </div>
+          </div>
+          <textarea class="form-control sql-editor" rows="5" spellcheck="false" placeholder="Write your SQL here…"></textarea>
+          <div class="sql-loading d-none px-3 py-2 text-muted small border-top">
+            <span class="spinner-border spinner-border-sm me-1"></span> Loading database…
+          </div>
+          <div class="sql-output p-3 border-top"></div>
+          <div class="sql-feedback p-3 border-top"></div>
+        </div>
 
         <h2 class="h4 mt-5 mb-3" id="create-table">CREATE TABLE and Data Types</h2>
         <p>
@@ -310,6 +367,10 @@
           </li>
           <li>
             <strong>DROP TABLE</strong> removes a table completely.
+          </li>
+          <li>
+            <strong>Dates</strong> are often stored as <code>TEXT</code> in <code>YYYY-MM-DD</code> form
+            and compared directly when the format is consistent.
           </li>
         </ul>
         <p>
