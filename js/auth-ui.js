@@ -1,7 +1,6 @@
 import { supabase } from "./supabase-client.js";
 import { getProfile, getDisplayName } from "./auth-helpers.js";
 import {
-  authPageUrl,
   getAuthPaths,
   loginUrlWithReturn,
   currentPathWithQuery,
@@ -38,7 +37,7 @@ export async function hydrateAuthUI() {
   }
 
   if (authProfile) {
-    authProfile.setAttribute("href", authPageUrl(paths.profile));
+    authProfile.setAttribute("href", paths.profile);
   }
 
   setHidden(authLogin, Boolean(user));
@@ -62,7 +61,7 @@ export async function hydrateAuthUI() {
     authLogout.addEventListener("click", async (e) => {
       e.preventDefault();
       await supabase.auth.signOut();
-      window.location.href = authPageUrl(paths.login);
+      window.location.href = paths.login;
     });
   }
 
