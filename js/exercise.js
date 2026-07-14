@@ -209,7 +209,7 @@ const Exercise = (function () {
     container.innerHTML = `
       <div class="table-responsive">
         <table class="table table-sm table-striped table-bordered mb-0">
-          <thead class="table-light"><tr>${thead}</tr></thead>
+          <thead><tr>${thead}</tr></thead>
           <tbody>${tbody}</tbody>
         </table>
       </div>`;
