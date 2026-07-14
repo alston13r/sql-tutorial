@@ -11,7 +11,7 @@
   border-radius: 0;
   resize: vertical;
   min-height: 120px;
-  background-color: #f8f9fa;
+  background-color: var(--bs-secondary-bg);
 }
 
 .sql-sandbox .sql-toolbar {
@@ -33,7 +33,7 @@
   min-height: 80px;
   max-height: 400px;
   overflow: auto;
-  background-color: #fff;
+  background-color: var(--bs-body-bg);
 }
 
 .sql-sandbox .sql-output table {
