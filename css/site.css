@@ -1,7 +1,36 @@
+html,
+body {
+  height: 100%;
+}
+
 body {
   min-height: 100vh;
+}
+
+/* Navbar stays fixed at top; only .site-scroll scrolls (no scrollbar over nav). */
+body:has(> nav.navbar) {
   display: flex;
   flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+body:has(> nav.navbar) > nav.navbar {
+  flex-shrink: 0;
+}
+
+body:has(> nav.navbar) > .site-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+body:not(:has(> nav.navbar)) {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .theme-switcher .dropdown-toggle::after {
