@@ -1,0 +1,15 @@
+module 1: 10 minutes for reading (442 words), 1 exercise
+module 2: 7-8 minutes for reading (320 words), 3 exercises
+module 3: 12-13 minutes for reading (495 words), 5 exercises
+module 4: 7-8 minutes for reading (343 words), 4 exercises
+module 5: 7-8 minutes for reading (303 words), 4 exercises
+module 6: 12-13 minutes for reading (502 words), 3 exercises
+module 7: 16-17 minutes for reading (678 words), 3 exercises
+module 8: 8-9 minutes for reading (380 words), 2 exercises
+module 9: 8-9 minutes for reading (363 words), 3 exercises
+module 10: 8-9 minutes for reading (363 words), 2 exercises
+module 11: 16-17 minutes for reading (650 words), 6 exercises
+module 12: 19-20 minutes for reading (721 words), 4 exercises
+module 13: 8-9 minutes for reading (373 words), 2 exercises
+module 14: 14-15 minutes for reading (614 words), 2 exercises
+module 15: 13-14 minutes for reading (563 words), 3 exercises
