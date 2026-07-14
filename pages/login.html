@@ -88,9 +88,10 @@
   <script type="module">
     import { supabase } from "../js/supabase-client.js";
     import { signInWithIdentifier } from "../js/auth-helpers.js";
+    import { authPageUrl, getAuthPaths } from "../js/auth-paths.js";
 
     const params = new URLSearchParams(window.location.search);
-    const returnTo = params.get("returnTo") || "../pages/profile.html";
+    const returnTo = params.get("returnTo") || authPageUrl(getAuthPaths().profile);
 
     const alertEl = document.getElementById("alert");
     function showAlert(message, type = "danger") {

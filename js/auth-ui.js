@@ -1,5 +1,11 @@
 import { supabase } from "./supabase-client.js";
 import { getProfile, getDisplayName } from "./auth-helpers.js";
+import {
+  authPageUrl,
+  getAuthPaths,
+  loginUrlWithReturn,
+  currentPathWithQuery,
+} from "./auth-paths.js";
 import "./theme.js";
 
 function el(id) {
@@ -16,25 +22,23 @@ function setHidden(node, hidden) {
   node.classList.toggle("d-none", hidden);
 }
 
-function currentPathWithQuery() {
-  return window.location.pathname + window.location.search + window.location.hash;
-}
-
 export async function hydrateAuthUI() {
   const { data } = await supabase.auth.getSession();
   const session = data?.session ?? null;
   const user = session?.user ?? null;
 
-  // Navbar targets (optional, depending on page)
+  const paths = getAuthPaths();
   const authLogin = el("nav-auth-login");
   const authProfile = el("nav-auth-profile");
   const authLogout = el("nav-auth-logout");
   const authEmail = el("nav-auth-email");
 
   if (authLogin) {
-    const loginUrl = new URL("./pages/login.html", window.location.href);
-    loginUrl.searchParams.set("returnTo", currentPathWithQuery());
-    authLogin.setAttribute("href", loginUrl.toString());
+    authLogin.setAttribute("href", loginUrlWithReturn(currentPathWithQuery()));
+  }
+
+  if (authProfile) {
+    authProfile.setAttribute("href", authPageUrl(paths.profile));
   }
 
   setHidden(authLogin, Boolean(user));
@@ -58,15 +62,13 @@ export async function hydrateAuthUI() {
     authLogout.addEventListener("click", async (e) => {
       e.preventDefault();
       await supabase.auth.signOut();
-      await hydrateAuthUI();
+      window.location.href = authPageUrl(paths.login);
     });
   }
 
   return { session, user };
 }
 
-// Auto-run if included with type=module
 document.addEventListener("DOMContentLoaded", () => {
   hydrateAuthUI().catch((err) => console.error(err));
 });
-
