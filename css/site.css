@@ -4,6 +4,40 @@ body {
   flex-direction: column;
 }
 
+.theme-switcher .dropdown-toggle::after {
+  margin-left: 0.35rem;
+}
+
+.theme-switcher .theme-icon-active {
+  filter: brightness(0) invert(1);
+}
+
+.theme-switcher .dropdown-item {
+  display: flex;
+  align-items: center;
+}
+
+.theme-switcher .dropdown-item.active {
+  background-color: var(--bs-primary);
+  color: #fff;
+}
+
+.theme-switcher .dropdown-item.active .theme-icon {
+  filter: brightness(0) invert(1);
+}
+
+[data-bs-theme="dark"] .theme-switcher .dropdown-item:not(.active) .theme-icon {
+  filter: brightness(0) invert(1);
+}
+
+[data-bs-theme="dark"] .bg-light {
+  background-color: var(--bs-secondary-bg) !important;
+}
+
+[data-bs-theme="dark"] pre.bg-light {
+  color: var(--bs-body-color);
+}
+
 #module-grid .card {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
