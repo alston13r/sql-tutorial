@@ -1,5 +1,6 @@
 import { supabase } from "./supabase-client.js";
 import { getProfile, getDisplayName } from "./auth-helpers.js";
+import "./theme.js";
 
 function el(id) {
   return document.getElementById(id);
