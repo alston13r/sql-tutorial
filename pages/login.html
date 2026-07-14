@@ -65,9 +65,8 @@
               </div>
             </div>
 
-            <div class="mt-3 small text-muted d-flex justify-content-between">
+            <div class="mt-3 small text-muted">
               <a href="../index.html">Back to modules</a>
-              <a href="./profile.html">Profile</a>
             </div>
           </div>
         </div>
@@ -88,9 +87,10 @@
   <script type="module">
     import { supabase } from "../js/supabase-client.js";
     import { signInWithIdentifier } from "../js/auth-helpers.js";
+    import { getAuthPaths } from "../js/auth-paths.js";
 
     const params = new URLSearchParams(window.location.search);
-    const returnTo = params.get("returnTo") || "../pages/profile.html";
+    const returnTo = params.get("returnTo") || getAuthPaths().profile;
 
     const alertEl = document.getElementById("alert");
     function showAlert(message, type = "danger") {

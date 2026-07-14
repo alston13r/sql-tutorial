@@ -111,6 +111,7 @@
     import { supabase } from "../js/supabase-client.js";
     import "../js/progress.js";
     import { hydrateAuthUI } from "../js/auth-ui.js";
+    import { loginUrlWithReturn } from "../js/auth-paths.js";
     import {
       ensureProfile,
       saveUsername,
@@ -281,9 +282,7 @@
       const session = sessionData?.session;
 
       if (!session?.user) {
-        const loginUrl = new URL("./login.html", window.location.href);
-        loginUrl.searchParams.set("returnTo", window.location.href);
-        window.location.href = loginUrl.toString();
+        window.location.href = loginUrlWithReturn(window.location.href);
         return;
       }
 
