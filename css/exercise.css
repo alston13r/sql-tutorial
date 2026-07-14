@@ -2,6 +2,23 @@
   border: 1px solid var(--bs-border-color);
   border-radius: var(--bs-border-radius);
   overflow: hidden;
+  background-color: var(--bs-body-bg);
+}
+
+.sql-sandbox .sql-toolbar {
+  background-color: var(--bs-tertiary-bg);
+  border-bottom: 1px solid var(--bs-border-color);
+  position: relative;
+}
+
+.sql-sandbox .sql-toolbar .sql-meta {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--bs-secondary-color);
+}
+
+.sql-sandbox .sql-toolbar .btn-group {
+  flex: 0 0 auto;
 }
 
 .sql-sandbox .sql-editor {
@@ -12,28 +29,25 @@
   resize: vertical;
   min-height: 120px;
   background-color: var(--bs-secondary-bg);
+  color: var(--bs-body-color);
 }
 
-.sql-sandbox .sql-toolbar {
-  background-color: var(--bs-light);
-  border-bottom: 1px solid var(--bs-border-color);
-  position: relative;
+.sql-sandbox .sql-editor:focus {
+  background-color: var(--bs-secondary-bg);
+  color: var(--bs-body-color);
+  box-shadow: none;
 }
 
-.sql-sandbox .sql-toolbar .sql-meta {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.sql-sandbox .sql-toolbar .btn-group {
-  flex: 0 0 auto;
+.sql-sandbox .sql-editor::placeholder {
+  color: var(--bs-secondary-color);
 }
 
 .sql-sandbox .sql-output {
   min-height: 80px;
   max-height: 400px;
   overflow: auto;
-  background-color: var(--bs-body-bg);
+  background-color: var(--bs-secondary-bg);
+  color: var(--bs-body-color);
 }
 
 .sql-sandbox .sql-output table {
@@ -42,6 +56,23 @@
 
 .sql-sandbox .sql-meta {
   font-size: 0.8rem;
+}
+
+[data-bs-theme="dark"] .sql-sandbox {
+  color-scheme: dark;
+}
+
+[data-bs-theme="dark"] .sql-sandbox .table {
+  --bs-table-bg: transparent;
+  --bs-table-striped-bg: rgba(255, 255, 255, 0.04);
+  --bs-table-hover-bg: rgba(255, 255, 255, 0.08);
+  --bs-table-border-color: var(--bs-border-color);
+}
+
+[data-bs-theme="dark"] .sql-sandbox .table thead th {
+  background-color: var(--bs-tertiary-bg);
+  color: var(--bs-body-color);
+  border-color: var(--bs-border-color);
 }
 
 .lesson-sidebar {
