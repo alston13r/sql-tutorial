@@ -59,11 +59,13 @@ body:not(:has(> nav.navbar)) {
   filter: brightness(0) invert(1);
 }
 
-[data-bs-theme="dark"] .bg-light {
+[data-bs-theme="dark"] .bg-light,
+[data-bs-theme="dark"] .bg-white {
   background-color: var(--bs-secondary-bg) !important;
 }
 
-[data-bs-theme="dark"] pre.bg-light {
+[data-bs-theme="dark"] pre.bg-light,
+[data-bs-theme="dark"] pre.bg-white {
   color: var(--bs-body-color);
 }
 
