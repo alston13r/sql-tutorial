@@ -267,14 +267,14 @@
           A row that fails the <code>CHECK</code> condition is rejected. A missing <code>status</code>
           value uses the default.
         </p>
-        <div class="alert alert-light border mt-3">
+        <div class="alert alert-info border mt-3">
           <strong>Tip:</strong> In SQLite, you can inspect a table's schema before inserting rows. These
           two commands are especially useful when you want to confirm a <code>DEFAULT</code> value or other
           constraints on <code>users</code>:
-          <pre class="bg-white p-3 rounded border mt-2 mb-2"><code>SELECT sql
+          <pre class="bg-light p-3 rounded border mt-2 mb-2"><code>SELECT sql
 FROM sqlite_master
 WHERE type = 'table' AND name = 'users';</code></pre>
-          <pre class="bg-white p-3 rounded border mb-0"><code>PRAGMA table_info('users');</code></pre>
+          <pre class="bg-light p-3 rounded border mb-0"><code>PRAGMA table_info('users');</code></pre>
         </div>
 
         <h3 class="h5 mt-4 mb-3">Exercise</h3>
