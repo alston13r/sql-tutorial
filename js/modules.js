@@ -117,7 +117,7 @@
                 </div>
                 <p class="card-text text-muted mb-3">${mod.description}</p>
                 <div class="d-flex gap-2 align-items-center">
-                  <span class="badge bg-light text-dark"><i class="bi bi-clock"></i> ${mod.duration}</span>
+                  <span class="badge text-bg-secondary"><i class="bi bi-clock"></i> ${mod.duration}</span>
                   ${action}
                 </div>
               </div>

@@ -6,7 +6,6 @@
   <title>Security Best Practices — SQLite Tutorial</title>
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <script src="../js/theme-init.js"></script>
-  <!-- from bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../css/site.css">
@@ -27,12 +26,17 @@
 
   <div class="site-scroll">
   <main class="container py-5 flex-grow-1">
-    <nav aria-label="breadcrumb" class="mb-4">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="../index.html">Modules</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Security Best Practices</li>
-      </ol>
-    </nav>
+    <div class="mb-4 d-flex flex-wrap gap-2">
+      <a href="13-indexes-views.html" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Module 13
+      </a>
+      <a href="../index.html" class="btn btn-outline-primary">
+        <i class="bi bi-grid me-1"></i>Back to modules
+      </a>
+      <a href="15-moving-data.html" class="btn btn-primary">
+        Module 15<i class="bi bi-arrow-right ms-1"></i>
+      </a>
+    </div>
 
     <div class="row">
       <aside class="col-lg-3 mb-4 lesson-sidebar">
@@ -150,7 +154,7 @@ WHERE username = 'admin'--' AND password = 'nope';</code></pre>
             </div>
           </form>
           <p class="small text-muted mt-3 mb-1">Generated SQL (built by string concatenation):</p>
-          <pre class="bg-white p-3 rounded border mb-3"><code id="generated-sql"></code></pre>
+          <pre class="bg-light p-3 rounded border mb-3"><code id="generated-sql"></code></pre>
           <div id="login-result"></div>
         </div>
 
