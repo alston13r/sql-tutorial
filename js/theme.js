@@ -126,6 +126,8 @@ export function mountThemeSwitcher() {
   bindSystemThemeListener();
 }
 
+import "./back-to-top.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   mountThemeSwitcher();
 });
