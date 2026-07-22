@@ -33,6 +33,7 @@
     failCount: 0,
     runner: null,
     statusMsg: "",
+    statusKind: "",
     columnOrders: {},
     skillsIntroShown: false,
   };
@@ -235,6 +236,7 @@
 
   function setStatus(msg, kind) {
     state.statusMsg = msg || "";
+    state.statusKind = kind || "";
     if (!el.status) return;
     if (!msg) {
       el.status.innerHTML = "";
@@ -243,6 +245,10 @@
     el.status.innerHTML = alertHtml(msg, kind, {
       dismissible: kind === "success",
     });
+  }
+
+  function hasSuccessFeedback() {
+    return !!el.feedback?.querySelector(".alert-success");
   }
 
   function showModal(title, bodyHtml) {
@@ -621,7 +627,9 @@
       el.editor.value = ticket.starterSql || "SELECT ";
       el.editor.dataset.ticketId = ticket.id;
       el.output.innerHTML = "";
-      el.feedback.innerHTML = "";
+      if (!hasSuccessFeedback()) {
+        el.feedback.innerHTML = "";
+      }
       state.failCount = 0;
       loadRunner().catch((err) => {
         setStatus(`Failed to load database: ${err.message}`, "danger");
@@ -645,7 +653,9 @@
     }
     state.activeId = id;
     state.failCount = 0;
-    setStatus("");
+    if (state.statusKind !== "success") {
+      setStatus("");
+    }
     renderAll();
   }
 
