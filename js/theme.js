@@ -7,9 +7,9 @@ const THEME_OPTIONS = [
 ];
 
 const ICONS = {
-  light: new URL("../icons/theme-light.svg", import.meta.url).href,
-  dark: new URL("../icons/theme-dark.svg", import.meta.url).href,
-  auto: new URL("../icons/theme-auto.svg", import.meta.url).href,
+  light: `${import.meta.env.BASE_URL}icons/theme-light.svg`,
+  dark: `${import.meta.env.BASE_URL}icons/theme-dark.svg`,
+  auto: `${import.meta.env.BASE_URL}icons/theme-auto.svg`,
 };
 
 let mediaQuery = null;
@@ -127,7 +127,3 @@ export function mountThemeSwitcher() {
 }
 
 import "./back-to-top.js";
-
-document.addEventListener("DOMContentLoaded", () => {
-  mountThemeSwitcher();
-});

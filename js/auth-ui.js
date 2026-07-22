@@ -5,7 +5,15 @@ import {
   loginUrlWithReturn,
   currentPathWithQuery,
 } from "./auth-paths.js";
-import "./theme.js";
+import { mountSiteNav } from "./site-nav.js";
+import { mountSiteFooter } from "./site-footer.js";
+import { mountThemeSwitcher } from "./theme.js";
+
+function mountSiteChrome() {
+  mountSiteNav();
+  mountSiteFooter();
+  mountThemeSwitcher();
+}
 
 function el(id) {
   return document.getElementById(id);
@@ -69,5 +77,6 @@ export async function hydrateAuthUI() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  mountSiteChrome();
   hydrateAuthUI().catch((err) => console.error(err));
 });

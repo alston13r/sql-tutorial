@@ -140,3 +140,221 @@ body:not(:has(> nav.navbar)) {
 .back-to-top[hidden] {
   display: none !important;
 }
+
+/* Byte Brew practice desk */
+.bytebrew-panel {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.5rem;
+  background: var(--bs-body-bg);
+  overflow: hidden;
+}
+
+.bytebrew-panel-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--bs-secondary-color);
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--bs-border-color);
+  background: var(--bs-tertiary-bg);
+}
+
+.bytebrew-skills {
+  max-height: 32rem;
+  overflow-y: auto;
+  padding: 0.35rem 0;
+}
+
+.bytebrew-skill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.9rem;
+}
+
+.bytebrew-skill.is-locked {
+  opacity: 0.55;
+}
+
+.bytebrew-skill-mark {
+  width: 1rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.bytebrew-skill-label {
+  flex: 0 1 auto;
+}
+
+.bytebrew-skill-prog {
+  margin-left: 0.25rem;
+}
+
+.bytebrew-shop {
+  padding: 0.5rem 0.85rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.bytebrew-shop-item {
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.bytebrew-shop-item:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.bytebrew-inbox-item.active {
+  border-color: var(--bs-primary);
+}
+
+.bytebrew-ticket-meta {
+  padding: 1rem 1.15rem;
+}
+
+.bytebrew-ticket-tags .bytebrew-skill-badge {
+  cursor: pointer;
+}
+
+.bytebrew-ticket-tags .bytebrew-skill-badge:hover {
+  filter: brightness(0.92);
+}
+
+.bytebrew-skill-info {
+  padding: 0.1rem 0.35rem;
+  line-height: 1;
+}
+
+.bytebrew-skill .ms-auto {
+  margin-left: auto !important;
+}
+
+.bytebrew-skill-examples {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  background: var(--bs-tertiary-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.375rem;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+}
+
+.bytebrew-onboarding-card {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.5rem;
+  background: var(--bs-body-bg);
+  padding: 1.25rem 1.35rem;
+}
+
+.bytebrew-skill-tree .bytebrew-tree-row {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.bytebrew-skill-tree .bytebrew-tree-row .bytebrew-skill {
+  flex: 1;
+  min-width: 0;
+  padding-left: 0.25rem;
+  padding-right: 0.5rem;
+}
+
+.bytebrew-tree-spacer {
+  display: inline-block;
+  width: 1.75rem;
+  flex-shrink: 0;
+}
+
+.bytebrew-tree-toggle {
+  width: 1.75rem;
+  flex-shrink: 0;
+  color: var(--bs-secondary-color);
+}
+
+.bytebrew-tree-toggle .bi-chevron-right {
+  transition: transform 0.15s ease;
+  display: inline-block;
+}
+
+.bytebrew-tree-toggle:not(.collapsed) .bi-chevron-right {
+  transform: rotate(90deg);
+}
+
+.bytebrew-tree-children {
+  margin-left: 0.65rem;
+  border-left: 2px solid var(--bs-border-color);
+  padding-left: 0.25rem;
+}
+
+.bytebrew-success-stack {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1035;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1rem 1rem;
+  max-height: min(40vh, 20rem);
+  overflow-y: auto;
+  pointer-events: none;
+}
+
+.bytebrew-success-stack .alert {
+  pointer-events: auto;
+  width: 100%;
+  max-width: 42rem;
+  box-shadow: 0 0.35rem 0.85rem rgba(0, 0, 0, 0.15);
+}
+
+.bytebrew-success-alert {
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 0.65rem;
+}
+
+.bytebrew-success-timer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.bytebrew-success-timer-bar {
+  height: 100%;
+  width: 100%;
+  background: currentColor;
+  opacity: 0.45;
+  transform-origin: left center;
+  transform: scaleX(var(--start-scale, 1));
+  animation: bytebrew-success-countdown var(--dismiss-ms, 10s) linear forwards;
+}
+
+@keyframes bytebrew-success-countdown {
+  from {
+    transform: scaleX(var(--start-scale, 1));
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+.bytebrew-shop-toggle {
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+body.bytebrew-success-visible .back-to-top {
+  bottom: 5.5rem;
+}

@@ -102,4 +102,6 @@ const SqlRunner = (function () {
   };
 })();
 
+window.SqlRunner = SqlRunner;
+
 if (typeof module !== "undefined") module.exports = SqlRunner;

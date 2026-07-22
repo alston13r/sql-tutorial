@@ -222,4 +222,6 @@ const Exercise = (function () {
   };
 })();
 
+window.Exercise = Exercise;
+
 if (typeof module !== "undefined") module.exports = Exercise;

@@ -1,18 +1,18 @@
 /**
- * Auth page URLs: always absolute, anchored to site root via js/ location.
- * js/auth-paths.js lives one level below root, so import.meta.url works from
- * any page depth (index, modules/*, pages/*, or deeper paths later).
- *
- * window.location.origin alone is not enough on subpath deploys
- * (e.g. origin + "/pages/login.html" misses the /sql-tutorial/ prefix).
+ * Auth page URLs: always absolute, using Vite's BASE_URL for subpath deploys
+ * (e.g. https://alston13r.github.io/sql-tutorial/).
  */
 
-const SITE_ROOT = new URL("../", import.meta.url);
+function siteUrl(path) {
+  const base = import.meta.env.BASE_URL;
+  const normalized = path.replace(/^\//, "");
+  return new URL(normalized, window.location.origin + base).href;
+}
 
 export function getAuthPaths() {
   return {
-    login: new URL("pages/login.html", SITE_ROOT).href,
-    profile: new URL("pages/profile.html", SITE_ROOT).href,
+    login: siteUrl("pages/login.html"),
+    profile: siteUrl("pages/profile.html"),
   };
 }
 
