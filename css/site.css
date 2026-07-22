@@ -315,6 +315,39 @@ body:not(:has(> nav.navbar)) {
   box-shadow: 0 0.35rem 0.85rem rgba(0, 0, 0, 0.15);
 }
 
+.bytebrew-success-alert {
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 0.65rem;
+}
+
+.bytebrew-success-timer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.bytebrew-success-timer-bar {
+  height: 100%;
+  width: 100%;
+  background: currentColor;
+  opacity: 0.45;
+  transform-origin: left center;
+  animation: bytebrew-success-countdown 10s linear forwards;
+}
+
+@keyframes bytebrew-success-countdown {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
 body.bytebrew-success-visible .back-to-top {
   bottom: 5.5rem;
 }

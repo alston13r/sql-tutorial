@@ -13,8 +13,11 @@
     "reveal-ticket",
     "reveal-sandbox",
     "early",
+    "upgrades",
     "full",
   ];
+
+  const SUCCESS_AUTO_DISMISS_MS = 10000;
 
   const state = {
     catalog: null,
@@ -36,6 +39,7 @@
     successAlertSeq: 0,
     columnOrders: {},
     skillsIntroShown: false,
+    successTimers: {},
   };
 
   const el = {};
@@ -49,7 +53,11 @@
   }
 
   function isEarlyGame() {
-    return !stageAtLeast("full");
+    return state.stage === "early";
+  }
+
+  function skillsPanelUnlocked() {
+    return stageAtLeast("full");
   }
 
   function skillById(id) {
@@ -88,7 +96,7 @@
   function ticketAvailable(ticket) {
     if (!ticket.requires.every((r) => isUnlocked(r))) return false;
     // Early game: SELECT-only tickets
-    if (isEarlyGame()) {
+    if (state.stage === "early") {
       return ticket.requires.every((r) => r === "select");
     }
     return true;
@@ -175,6 +183,8 @@
       state.hintTokens += effect.value;
     } else if (effect.type === "forceDiscount") {
       state.forceDiscount = Math.max(state.forceDiscount, effect.value);
+    } else if (effect.type === "skillTree") {
+      unlockSkillsPanel();
     }
   }
 
@@ -225,12 +235,34 @@
     return `<div class="alert ${cls}${dismissClass} mb-0${dismissible ? "" : " py-2"}" role="alert"${idAttr}>${msg}${closeBtn}</div>`;
   }
 
+  function dismissSuccessAlert(alertId) {
+    if (state.successTimers[alertId]) {
+      clearTimeout(state.successTimers[alertId]);
+      delete state.successTimers[alertId];
+    }
+    state.successAlerts = state.successAlerts.filter((a) => a.id !== alertId);
+    renderSuccessStack();
+  }
+
+  function successAlertHtml(msg, alertId) {
+    return `<div class="alert alert-success alert-dismissible fade show bytebrew-success-alert mb-0" role="alert" data-alert-id="${alertId}">
+      <i class="bi bi-check-circle me-1"></i>${msg}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      <div class="bytebrew-success-timer" aria-hidden="true"><div class="bytebrew-success-timer-bar"></div></div>
+    </div>`;
+  }
+
   function appendSuccessAlert(msg) {
     state.successAlertSeq += 1;
+    const id = state.successAlertSeq;
     state.successAlerts.push({
-      id: state.successAlertSeq,
+      id,
       msg: escapeHtml(msg),
     });
+    state.successTimers[id] = setTimeout(
+      () => dismissSuccessAlert(id),
+      SUCCESS_AUTO_DISMISS_MS
+    );
     renderSuccessStack();
   }
 
@@ -246,20 +278,12 @@
     el.successStack.classList.remove("d-none");
     document.body.classList.add("bytebrew-success-visible");
     el.successStack.innerHTML = state.successAlerts
-      .map(({ id, msg }) =>
-        alertHtml(
-          `<i class="bi bi-check-circle me-1"></i>${msg}`,
-          "success",
-          { dismissible: true, alertId: id }
-        )
-      )
+      .map(({ id, msg }) => successAlertHtml(msg, id))
       .join("");
 
     el.successStack.querySelectorAll(".alert").forEach((alertEl) => {
       alertEl.addEventListener("closed.bs.alert", () => {
-        const alertId = Number(alertEl.dataset.alertId);
-        state.successAlerts = state.successAlerts.filter((a) => a.id !== alertId);
-        renderSuccessStack();
+        dismissSuccessAlert(Number(alertEl.dataset.alertId));
       });
     });
   }
@@ -358,8 +382,7 @@
 
   function maybeShowUnlockInfo(skillIds) {
     if (!skillIds || !skillIds.length) return;
-    // During early game, suppress mass-unlock modals until skills panel opens
-    if (isEarlyGame()) return;
+    if (!skillsPanelUnlocked()) return;
     showSkillInfo(skillIds[0], {
       unlockedBanner: true,
       alsoUnlocked: skillIds.slice(1),
@@ -369,13 +392,16 @@
   function showSkillsIntro() {
     const intro = state.catalog.skillsIntro || {
       title: "Skills unlocked",
-      body: "The Skills panel and Upgrades are now available.",
+      lead: "You have mastered SELECT. The Skills panel is now open.",
+      bullets: [],
     };
-    const paragraphs = String(intro.body)
-      .split(/\n\n+/)
-      .map((p) => `<p>${escapeHtml(p).replace(/\n/g, "<br>")}</p>`)
-      .join("");
-    showModal(intro.title, paragraphs);
+    const lead = intro.lead || "The Skills panel is now open.";
+    const bullets = intro.bullets || [];
+    const list =
+      bullets.length > 0
+        ? `<ul class="mb-0">${bullets.map((b) => `<li>${escapeHtml(b)}</li>`).join("")}</ul>`
+        : "";
+    showModal(intro.title, `<p>${escapeHtml(lead)}</p>${list}`);
     state.skillsIntroShown = true;
   }
 
@@ -407,26 +433,40 @@
     }
   }
 
-  function enterFullDesk() {
-    if (state.stage === "full") return;
-    state.stage = "full";
-    // Drop SELECT-only gate; refill with newly unlocked tickets
+  function enterUpgradesPhase() {
+    if (stageAtLeast("upgrades")) return;
+    state.stage = "upgrades";
     state.inbox = state.inbox.filter((id) => {
       const t = state.catalog.tickets.find((x) => x.id === id);
       return t && ticketAvailable(t);
     });
     fillInbox();
     renderAll();
+    showMessage(
+      "Desk upgrades unlocked. Purchase the skill tree to open the Skills panel.",
+      "info"
+    );
+  }
+
+  function unlockSkillsPanel() {
+    if (state.stage === "full") return;
+    state.stage = "full";
+    fillInbox();
+    renderAll();
     if (!state.skillsIntroShown) showSkillsIntro();
+  }
+
+  function enterFullDesk() {
+    unlockSkillsPanel();
   }
 
   function applyStageVisibility() {
     const showInbox = stageAtLeast("reveal-inbox");
     const showTicket = stageAtLeast("reveal-ticket");
     const showSandbox = stageAtLeast("reveal-sandbox");
-    const showSkills = stageAtLeast("full");
-    const showShop = stageAtLeast("full");
-    const showExtraStats = stageAtLeast("full");
+    const showSkills = skillsPanelUnlocked();
+    const showShop = stageAtLeast("upgrades");
+    const showExtraStats = stageAtLeast("upgrades");
     const showDesk = stageAtLeast("reveal-inbox");
 
     el.panelInbox?.classList.toggle("d-none", !showInbox);
@@ -608,16 +648,25 @@
   }
 
   function renderSkills() {
-    if (!el.skills || !stageAtLeast("full")) return;
+    if (!el.skills || !skillsPanelUnlocked()) return;
     const tree = state.catalog.skillTree || [];
     el.skills.innerHTML = `<div class="bytebrew-skill-tree" id="bb-skill-tree-root">${renderTreeNodes(tree, "bb-skill-tree-root", 0)}</div>`;
     bindSkillControls(el.skills);
   }
 
   function renderShop() {
-    if (!el.shop || !stageAtLeast("full")) return;
+    if (!el.shop || !stageAtLeast("upgrades")) return;
     el.shop.innerHTML = "";
-    for (const upgrade of state.catalog.upgrades) {
+    const upgrades = state.catalog.upgrades.filter((upgrade) => {
+      if (state.stage === "upgrades" && !state.purchased.skill_tree) {
+        return upgrade.id === "skill_tree";
+      }
+      if (upgrade.id === "skill_tree" && state.purchased.skill_tree) {
+        return false;
+      }
+      return true;
+    });
+    for (const upgrade of upgrades) {
       const owned = !!state.purchased[upgrade.id];
       const reqOk =
         !upgrade.requires || upgrade.requires.every((r) => state.purchased[r]);
@@ -684,7 +733,7 @@
 
     el.ticketMeta.querySelectorAll(".bytebrew-skill-badge").forEach((btn) => {
       btn.addEventListener("click", () => {
-        if (stageAtLeast("full") || isUnlocked(btn.dataset.skill)) {
+        if (skillsPanelUnlocked() || isUnlocked(btn.dataset.skill)) {
           showSkillInfo(btn.dataset.skill);
         }
       });
@@ -723,7 +772,7 @@
   }
 
   function forceUnlock(skillId) {
-    if (!stageAtLeast("full")) return;
+    if (!skillsPanelUnlocked()) return;
     const skill = skillById(skillId);
     if (!skill || isUnlocked(skillId)) return;
     if (!parentsUnlocked(skill)) {
@@ -745,7 +794,7 @@
   }
 
   function buyUpgrade(id) {
-    if (!stageAtLeast("full")) return;
+    if (!stageAtLeast("upgrades")) return;
     const upgrade = state.catalog.upgrades.find((u) => u.id === id);
     if (!upgrade) return;
     if (!upgrade.repeatable && state.purchased[id]) return;
@@ -769,7 +818,7 @@
     if (!ticket) return;
     if (state.hintTokens <= 0) {
       showMessage(
-        stageAtLeast("full")
+        stageAtLeast("upgrades")
           ? "No hint tokens — buy a pack in Upgrades."
           : "Hints unlock with the Upgrades panel after you master SELECT.",
         "warning"
@@ -881,7 +930,7 @@
       appendSuccessAlert(msg);
 
       if (wasEarly && masteredNow.includes("select")) {
-        enterFullDesk();
+        enterUpgradesPhase();
       } else {
         renderAll();
         maybeShowUnlockInfo(unlockedNow);

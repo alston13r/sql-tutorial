@@ -340,10 +340,20 @@
   ],
   "upgrades": [
     {
+      "id": "skill_tree",
+      "label": "Unlock skill tree",
+      "description": "Open the Skills panel to track mastery and unlock new SQL topics.",
+      "cost": 0,
+      "effect": {
+        "type": "skillTree"
+      }
+    },
+    {
       "id": "inbox_1",
       "label": "Extra inbox slot",
       "description": "+1 concurrent ticket in the inbox.",
       "cost": 40,
+      "requires": ["skill_tree"],
       "effect": {
         "type": "inboxSlots",
         "value": 1
@@ -355,7 +365,8 @@
       "description": "+1 more inbox slot (needs Extra inbox slot).",
       "cost": 70,
       "requires": [
-        "inbox_1"
+        "inbox_1",
+        "skill_tree"
       ],
       "effect": {
         "type": "inboxSlots",
@@ -367,6 +378,7 @@
       "label": "Reputation booster",
       "description": "+25% reputation from ticket clears.",
       "cost": 60,
+      "requires": ["skill_tree"],
       "effect": {
         "type": "repMultiplier",
         "value": 1.25
@@ -377,6 +389,7 @@
       "label": "Hint tokens (\u00d73)",
       "description": "Buy 3 soft hints for the active ticket.",
       "cost": 25,
+      "requires": ["skill_tree"],
       "repeatable": true,
       "effect": {
         "type": "hintTokens",
@@ -388,6 +401,7 @@
       "label": "Mastery rush",
       "description": "Force-unlock costs 30% less.",
       "cost": 50,
+      "requires": ["skill_tree"],
       "effect": {
         "type": "forceDiscount",
         "value": 0.3
@@ -1065,13 +1079,19 @@
     {
       "id": "reveal-sandbox",
       "title": "SQL sandbox",
-      "body": "Use Run to preview results, then Submit to check your answer against the expected result. Start with the SELECT tickets in your inbox. Master SELECT to unlock the full skill tree and desk upgrades.\n\nSkill badges on each ticket are clickable — tap one for syntax help and examples. After you clear a ticket, select the next one from the inbox yourself before writing a new query.",
+      "body": "Use Run to preview results, then Submit to check your answer against the expected result. Start with the SELECT tickets in your inbox. Master SELECT to unlock desk upgrades — buy the skill tree first.\n\nSkill badges on each ticket are clickable — tap one for syntax help and examples. After you clear a ticket, select the next one from the inbox yourself before writing a new query.",
       "nextLabel": "Let's go"
     }
   ],
   "skillsIntro": {
     "title": "Skills unlocked",
-    "body": "You have mastered SELECT. The Skills panel is now open \u2014 it is a tree, not a flat list.\n\n\u2022 Nested skills unlock when you master their parent.\n\u2022 Each skill has a mastery bar (tickets that credit it).\n\u2022 The info icon shows syntax and examples.\n\u2022 Force spends reputation to unlock a skill early if its parents are available.\n\nUpgrades are also available \u2014 spend reputation on inbox slots, hints, and boosts."
+    "lead": "You have mastered SELECT. The Skills panel is now open.",
+    "bullets": [
+      "Your skill tree has top-level skills; each has sub-skills that only unlock after you build enough mastery on the parent.",
+      "Complete tickets that use a skill to fill its mastery bar.",
+      "Press the info button on any skill for syntax help and examples.",
+      "Spend reputation on Force to unlock a skill early, bypassing the parent's mastery requirement."
+    ]
   },
   "skillTree": [
     {
