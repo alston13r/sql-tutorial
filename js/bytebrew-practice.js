@@ -32,8 +32,6 @@
     cleared: {},
     failCount: 0,
     runner: null,
-    statusMsg: "",
-    statusKind: "",
     successAlerts: [],
     successAlertSeq: 0,
     columnOrders: {},
@@ -266,6 +264,50 @@
     });
   }
 
+  function sandboxVisible() {
+    return (
+      stageAtLeast("reveal-sandbox") &&
+      !el.sandbox?.classList.contains("d-none") &&
+      !!getActiveTicket()
+    );
+  }
+
+  function clearFeedback() {
+    if (el.feedback) el.feedback.innerHTML = "";
+  }
+
+  function clearDeskNotice() {
+    if (!el.deskNotice) return;
+    el.deskNotice.innerHTML = "";
+    el.deskNotice.classList.add("d-none");
+  }
+
+  function clearMessages() {
+    clearFeedback();
+    clearDeskNotice();
+  }
+
+  /** Success → bottom stack; everything else → sandbox or desk notice. */
+  function showMessage(msg, kind) {
+    if (!msg) {
+      if (kind === "success") return;
+      clearMessages();
+      return;
+    }
+    if (kind === "success") {
+      appendSuccessAlert(msg);
+      return;
+    }
+    const html = alertHtml(escapeHtml(msg), kind);
+    if (sandboxVisible() && el.feedback) {
+      clearDeskNotice();
+      el.feedback.innerHTML = html;
+    } else if (el.deskNotice) {
+      el.deskNotice.innerHTML = html;
+      el.deskNotice.classList.remove("d-none");
+    }
+  }
+
   async function loadRunner() {
     const dbPath = DB_BASE + state.catalog.database;
     if (state.runner?.close) state.runner.close();
@@ -274,21 +316,6 @@
       const tables = state.runner.getTableNames();
       el.tables.textContent = tables.length ? tables.join(", ") : "none";
     }
-  }
-
-  function setStatus(msg, kind) {
-    if (kind === "success") {
-      appendSuccessAlert(msg);
-      return;
-    }
-    state.statusMsg = msg || "";
-    state.statusKind = kind || "";
-    if (!el.status) return;
-    if (!msg) {
-      el.status.innerHTML = "";
-      return;
-    }
-    el.status.innerHTML = alertHtml(msg, kind);
   }
 
   function showModal(title, bodyHtml) {
@@ -375,7 +402,7 @@
     renderAll();
     if (state.activeId && stageAtLeast("reveal-sandbox")) {
       loadRunner().catch((err) => {
-        setStatus(`Failed to load database: ${err.message}`, "danger");
+        showMessage(`Failed to load database: ${err.message}`, "danger");
       });
     }
   }
@@ -670,7 +697,7 @@
       el.feedback.innerHTML = "";
       state.failCount = 0;
       loadRunner().catch((err) => {
-        setStatus(`Failed to load database: ${err.message}`, "danger");
+        showMessage(`Failed to load database: ${err.message}`, "danger");
       });
     }
   }
@@ -691,7 +718,7 @@
     }
     state.activeId = id;
     state.failCount = 0;
-    setStatus("");
+    clearMessages();
     renderAll();
   }
 
@@ -700,18 +727,18 @@
     const skill = skillById(skillId);
     if (!skill || isUnlocked(skillId)) return;
     if (!parentsUnlocked(skill)) {
-      setStatus("Unlock prerequisite skills first.", "warning");
+      showMessage("Unlock prerequisite skills first.", "warning");
       return;
     }
     const cost = forceUnlockCost(skillId);
     if (state.rep < cost) {
-      setStatus(`Need ${cost} reputation to force-unlock ${skill.label}.`, "warning");
+      showMessage(`Need ${cost} reputation to force-unlock ${skill.label}.`, "warning");
       return;
     }
     const before = unlockedIds();
     state.rep -= cost;
     state.forceUnlocked[skillId] = true;
-    setStatus(`Force-unlocked ${skill.label} (−${cost} rep).`, "success");
+    showMessage(`Force-unlocked ${skill.label} (−${cost} rep).`, "success");
     fillInbox();
     renderAll();
     maybeShowUnlockInfo(newlyUnlocked(before, unlockedIds()));
@@ -723,17 +750,17 @@
     if (!upgrade) return;
     if (!upgrade.repeatable && state.purchased[id]) return;
     if (upgrade.requires && !upgrade.requires.every((r) => state.purchased[r])) {
-      setStatus("Buy the prerequisite upgrade first.", "warning");
+      showMessage("Buy the prerequisite upgrade first.", "warning");
       return;
     }
     if (state.rep < upgrade.cost) {
-      setStatus(`Need ${upgrade.cost} reputation.`, "warning");
+      showMessage(`Need ${upgrade.cost} reputation.`, "warning");
       return;
     }
     state.rep -= upgrade.cost;
     if (!upgrade.repeatable) state.purchased[id] = true;
     applyUpgrade(upgrade);
-    setStatus(`Purchased ${upgrade.label}.`, "success");
+    showMessage(`Purchased ${upgrade.label}.`, "success");
     renderAll();
   }
 
@@ -741,7 +768,7 @@
     const ticket = getActiveTicket();
     if (!ticket) return;
     if (state.hintTokens <= 0) {
-      setStatus(
+      showMessage(
         stageAtLeast("full")
           ? "No hint tokens — buy a pack in Upgrades."
           : "Hints unlock with the Upgrades panel after you master SELECT.",
@@ -750,7 +777,7 @@
       return;
     }
     state.hintTokens -= 1;
-    setStatus(`Hint: ${ticket.hint || "Try matching the expected result shape."}`, "info");
+    showMessage(`Hint: ${ticket.hint || "Try matching the expected result shape."}`, "info");
     renderHeader();
   }
 
@@ -758,7 +785,7 @@
     if (!stageAtLeast("reveal-sandbox")) return;
     const ticket = getActiveTicket();
     if (!ticket || !state.runner) return;
-    el.feedback.innerHTML = "";
+    clearFeedback();
     try {
       const sql = el.editor.value.trim();
       if (!sql) return;
@@ -784,7 +811,7 @@
         Exercise.renderResultTable(el.output, result);
       }
     } catch (err) {
-      el.feedback.innerHTML = `<div class="alert alert-danger mb-0">${escapeHtml(err.message)}</div>`;
+      showMessage(err.message, "danger");
     }
   }
 
@@ -792,12 +819,11 @@
     if (!stageAtLeast("reveal-sandbox")) return;
     const ticket = getActiveTicket();
     if (!ticket) return;
-    el.feedback.innerHTML = "";
+    clearFeedback();
     try {
       const sql = el.editor.value.trim();
       if (!sql) {
-        el.feedback.innerHTML =
-          '<div class="alert alert-warning mb-0">Write a query first.</div>';
+        showMessage("Write a query first.", "warning");
         return;
       }
 
@@ -811,10 +837,11 @@
 
       if (!result.passed) {
         state.failCount += 1;
-        el.feedback.innerHTML = `<div class="alert alert-danger mb-0"><i class="bi bi-x-circle me-1"></i>${escapeHtml(result.message)}</div>`;
+        let failMsg = result.message;
         if (state.failCount >= 1 && state.hintTokens > 0) {
-          setStatus("Stuck? Use a hint token from the toolbar.", "info");
+          failMsg += " Stuck? Use a hint token from the toolbar.";
         }
+        showMessage(failMsg, "danger");
         return;
       }
 
@@ -860,7 +887,7 @@
         maybeShowUnlockInfo(unlockedNow);
       }
     } catch (err) {
-      el.feedback.innerHTML = `<div class="alert alert-danger mb-0">${escapeHtml(err.message)}</div>`;
+      showMessage(err.message, "danger");
     }
   }
 
@@ -868,7 +895,7 @@
     if (!stageAtLeast("reveal-sandbox")) return;
     const ticket = getActiveTicket();
     if (!ticket) return;
-    el.feedback.innerHTML = "";
+    clearFeedback();
     el.output.innerHTML = "";
     el.editor.value = ticket.starterSql || "SELECT ";
     await loadRunner();
@@ -890,7 +917,7 @@
     el.skills = document.getElementById("bb-skills");
     el.shop = document.getElementById("bb-shop");
     el.ticketMeta = document.getElementById("bb-ticket-meta");
-    el.status = document.getElementById("bb-status");
+    el.deskNotice = document.getElementById("bb-desk-notice");
     el.successStack = document.getElementById("bb-success-stack");
     el.sandbox = document.getElementById("bb-sandbox");
     el.editor = document.querySelector("#bb-sandbox .sql-editor");
@@ -933,9 +960,10 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     init().catch((err) => {
-      const main = document.getElementById("bb-status");
-      if (main) {
-        main.innerHTML = `<div class="alert alert-danger">${escapeHtml(err.message)}</div>`;
+      const notice = document.getElementById("bb-desk-notice");
+      if (notice) {
+        notice.classList.remove("d-none");
+        notice.innerHTML = `<div class="alert alert-danger mb-0">${escapeHtml(err.message)}</div>`;
       }
     });
   });
