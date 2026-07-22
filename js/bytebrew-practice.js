@@ -34,6 +34,8 @@
     runner: null,
     statusMsg: "",
     statusKind: "",
+    successAlerts: [],
+    successAlertSeq: 0,
     columnOrders: {},
     skillsIntroShown: false,
   };
@@ -208,7 +210,7 @@
     };
   }
 
-  function alertHtml(msg, kind, { dismissible = false } = {}) {
+  function alertHtml(msg, kind, { dismissible = false, alertId = null } = {}) {
     const cls =
       kind === "success"
         ? "alert-success"
@@ -221,7 +223,47 @@
     const closeBtn = dismissible
       ? '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
       : "";
-    return `<div class="alert ${cls}${dismissClass} mb-0${dismissible ? "" : " py-2"}" role="alert">${msg}${closeBtn}</div>`;
+    const idAttr = alertId != null ? ` data-alert-id="${alertId}"` : "";
+    return `<div class="alert ${cls}${dismissClass} mb-0${dismissible ? "" : " py-2"}" role="alert"${idAttr}>${msg}${closeBtn}</div>`;
+  }
+
+  function appendSuccessAlert(msg) {
+    state.successAlertSeq += 1;
+    state.successAlerts.push({
+      id: state.successAlertSeq,
+      msg: escapeHtml(msg),
+    });
+    renderSuccessStack();
+  }
+
+  function renderSuccessStack() {
+    if (!el.successStack) return;
+    if (!state.successAlerts.length) {
+      el.successStack.innerHTML = "";
+      el.successStack.classList.add("d-none");
+      document.body.classList.remove("bytebrew-success-visible");
+      return;
+    }
+
+    el.successStack.classList.remove("d-none");
+    document.body.classList.add("bytebrew-success-visible");
+    el.successStack.innerHTML = state.successAlerts
+      .map(({ id, msg }) =>
+        alertHtml(
+          `<i class="bi bi-check-circle me-1"></i>${msg}`,
+          "success",
+          { dismissible: true, alertId: id }
+        )
+      )
+      .join("");
+
+    el.successStack.querySelectorAll(".alert").forEach((alertEl) => {
+      alertEl.addEventListener("closed.bs.alert", () => {
+        const alertId = Number(alertEl.dataset.alertId);
+        state.successAlerts = state.successAlerts.filter((a) => a.id !== alertId);
+        renderSuccessStack();
+      });
+    });
   }
 
   async function loadRunner() {
@@ -235,6 +277,10 @@
   }
 
   function setStatus(msg, kind) {
+    if (kind === "success") {
+      appendSuccessAlert(msg);
+      return;
+    }
     state.statusMsg = msg || "";
     state.statusKind = kind || "";
     if (!el.status) return;
@@ -242,13 +288,7 @@
       el.status.innerHTML = "";
       return;
     }
-    el.status.innerHTML = alertHtml(msg, kind, {
-      dismissible: kind === "success",
-    });
-  }
-
-  function hasSuccessFeedback() {
-    return !!el.feedback?.querySelector(".alert-success");
+    el.status.innerHTML = alertHtml(msg, kind);
   }
 
   function showModal(title, bodyHtml) {
@@ -627,9 +667,7 @@
       el.editor.value = ticket.starterSql || "SELECT ";
       el.editor.dataset.ticketId = ticket.id;
       el.output.innerHTML = "";
-      if (!hasSuccessFeedback()) {
-        el.feedback.innerHTML = "";
-      }
+      el.feedback.innerHTML = "";
       state.failCount = 0;
       loadRunner().catch((err) => {
         setStatus(`Failed to load database: ${err.message}`, "danger");
@@ -653,9 +691,7 @@
     }
     state.activeId = id;
     state.failCount = 0;
-    if (state.statusKind !== "success") {
-      setStatus("");
-    }
+    setStatus("");
     renderAll();
   }
 
@@ -815,12 +851,7 @@
       }
       msg += " Select a ticket from the inbox for your next request.";
 
-      el.feedback.innerHTML = alertHtml(
-        `<i class="bi bi-check-circle me-1"></i>${escapeHtml(msg)}`,
-        "success",
-        { dismissible: true }
-      );
-      setStatus(escapeHtml(msg), "success");
+      appendSuccessAlert(msg);
 
       if (wasEarly && masteredNow.includes("select")) {
         enterFullDesk();
@@ -860,6 +891,7 @@
     el.shop = document.getElementById("bb-shop");
     el.ticketMeta = document.getElementById("bb-ticket-meta");
     el.status = document.getElementById("bb-status");
+    el.successStack = document.getElementById("bb-success-stack");
     el.sandbox = document.getElementById("bb-sandbox");
     el.editor = document.querySelector("#bb-sandbox .sql-editor");
     el.output = document.querySelector("#bb-sandbox .sql-output");
