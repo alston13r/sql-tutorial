@@ -8,7 +8,7 @@
     {
       "id": "select",
       "label": "SELECT",
-      "quota": 2,
+      "quota": 4,
       "parents": [],
       "parentMode": "all",
       "startUnlocked": true,
@@ -25,7 +25,7 @@
     {
       "id": "where",
       "label": "WHERE",
-      "quota": 2,
+      "quota": 4,
       "parents": [
         "select"
       ],
@@ -43,7 +43,7 @@
     {
       "id": "orderby",
       "label": "ORDER BY",
-      "quota": 2,
+      "quota": 4,
       "parents": [
         "select"
       ],
@@ -61,7 +61,7 @@
     {
       "id": "limit",
       "label": "LIMIT",
-      "quota": 2,
+      "quota": 4,
       "parents": [
         "select"
       ],
@@ -79,7 +79,7 @@
     {
       "id": "like",
       "label": "LIKE",
-      "quota": 2,
+      "quota": 4,
       "parents": [
         "where"
       ],
@@ -97,7 +97,7 @@
     {
       "id": "in",
       "label": "IN",
-      "quota": 2,
+      "quota": 4,
       "parents": [
         "where"
       ],
@@ -114,7 +114,7 @@
     {
       "id": "insert",
       "label": "INSERT",
-      "quota": 2,
+      "quota": 4,
       "parents": [
         "select"
       ],
@@ -131,7 +131,7 @@
     {
       "id": "update",
       "label": "UPDATE",
-      "quota": 2,
+      "quota": 4,
       "parents": [
         "select"
       ],
@@ -148,7 +148,7 @@
     {
       "id": "delete",
       "label": "DELETE",
-      "quota": 2,
+      "quota": 4,
       "parents": [
         "select"
       ],
@@ -165,7 +165,7 @@
     {
       "id": "count",
       "label": "COUNT",
-      "quota": 2,
+      "quota": 4,
       "parents": [
         "select"
       ],
@@ -183,7 +183,7 @@
     {
       "id": "sum",
       "label": "SUM",
-      "quota": 2,
+      "quota": 4,
       "parents": [
         "select"
       ],
@@ -200,7 +200,7 @@
     {
       "id": "avg",
       "label": "AVG",
-      "quota": 2,
+      "quota": 4,
       "parents": [
         "select"
       ],
@@ -217,7 +217,7 @@
     {
       "id": "min_max",
       "label": "MIN/MAX",
-      "quota": 2,
+      "quota": 4,
       "parents": [
         "select"
       ],
@@ -234,7 +234,7 @@
     {
       "id": "groupby",
       "label": "GROUP BY",
-      "quota": 2,
+      "quota": 4,
       "parents": [
         "count",
         "sum",
@@ -254,7 +254,7 @@
     {
       "id": "having",
       "label": "HAVING",
-      "quota": 2,
+      "quota": 4,
       "parents": [
         "groupby"
       ],
@@ -271,7 +271,7 @@
     {
       "id": "alias",
       "label": "Aliases",
-      "quota": 2,
+      "quota": 4,
       "parents": [
         "select"
       ],
@@ -288,7 +288,7 @@
     {
       "id": "join",
       "label": "JOIN",
-      "quota": 2,
+      "quota": 4,
       "parents": [
         "where",
         "alias"
@@ -306,7 +306,7 @@
     {
       "id": "create_table",
       "label": "CREATE TABLE",
-      "quota": 1,
+      "quota": 3,
       "parents": [
         "select"
       ],
@@ -323,7 +323,7 @@
     {
       "id": "alter_table",
       "label": "ALTER TABLE",
-      "quota": 1,
+      "quota": 3,
       "parents": [
         "create_table"
       ],
@@ -441,6 +441,54 @@
       "validation": {
         "type": "resultMatch",
         "query": "SELECT name FROM drinks"
+      }
+    },
+    {
+      "id": "t02b",
+      "from": "Sam",
+      "role": "coworker",
+      "title": "Drink categories",
+      "prompt": "List every drink category",
+      "hint": "SELECT category FROM drinks;",
+      "requires": [
+        "select"
+      ],
+      "credits": [
+        "select"
+      ],
+      "starterSql": "SELECT ",
+      "validation": {
+        "type": "resultMatch",
+        "query": "SELECT category FROM drinks"
+      }
+    },
+    {
+      "id": "t02c",
+      "from": "Riley",
+      "role": "coworker",
+      "title": "Ids and names",
+      "prompt": "List each drink id and name",
+      "hint": "SELECT id, name FROM drinks; (column order must match the ticket)",
+      "requires": [
+        "select"
+      ],
+      "credits": [
+        "select"
+      ],
+      "starterSql": "SELECT ",
+      "columns": [
+        {
+          "expr": "id",
+          "label": "id"
+        },
+        {
+          "expr": "name",
+          "label": "name"
+        }
+      ],
+      "validation": {
+        "type": "orderedResultMatch",
+        "queryTemplate": "SELECT {columns} FROM drinks"
       }
     },
     {
@@ -985,6 +1033,135 @@
         {
           "expr": "price",
           "label": "price"
+        }
+      ]
+    }
+  ],
+  "onboarding": [
+    {
+      "id": "intro-1",
+      "title": "Welcome to Byte Brew",
+      "body": "Byte Brew is a busy neighborhood cafe. The register, loyalty app, and menu all run on a small SQLite database \u2014 and that database needs a human at the desk.\n\nYou are the new database attendant. Customers and coworkers will send you requests. Your job is to answer them with SQL.",
+      "nextLabel": "Continue"
+    },
+    {
+      "id": "intro-2",
+      "title": "How the desk works",
+      "body": "Requests show up as tickets in your inbox. Open a ticket, read what they need, then write a query in the SQL sandbox.\n\nCorrect answers earn reputation and build mastery toward new SQL skills. For now, you will start with the basics: reading data with SELECT.",
+      "nextLabel": "Show me the inbox"
+    },
+    {
+      "id": "reveal-inbox",
+      "title": "Your inbox",
+      "body": "This is your inbox. Each item is a ticket waiting for a SQL answer. You will usually have one open slot at a time \u2014 upgrades later can expand that.",
+      "nextLabel": "What is a ticket?"
+    },
+    {
+      "id": "reveal-ticket",
+      "title": "Ticket details",
+      "body": "When you select a ticket, its details appear here: who sent it, what they want, and which skills it uses. Read carefully \u2014 including the column list in parentheses.",
+      "nextLabel": "Open the sandbox"
+    },
+    {
+      "id": "reveal-sandbox",
+      "title": "SQL sandbox",
+      "body": "Use Run to preview results, then Submit to check your answer against the expected result. Start with the SELECT tickets in your inbox. Master SELECT to unlock the full skill tree and desk upgrades.",
+      "nextLabel": "Let's go"
+    }
+  ],
+  "skillsIntro": {
+    "title": "Skills unlocked",
+    "body": "You have mastered SELECT. The Skills panel is now open \u2014 it is a tree, not a flat list.\n\n\u2022 Nested skills unlock when you master their parent.\n\u2022 Each skill has a mastery bar (tickets that credit it).\n\u2022 The info icon shows syntax and examples.\n\u2022 Force spends reputation to unlock a skill early if its parents are available.\n\nUpgrades are also available \u2014 spend reputation on inbox slots, hints, and boosts."
+  },
+  "skillTree": [
+    {
+      "type": "skill",
+      "id": "select",
+      "children": [
+        {
+          "type": "skill",
+          "id": "where",
+          "children": [
+            {
+              "type": "skill",
+              "id": "like"
+            },
+            {
+              "type": "skill",
+              "id": "in"
+            }
+          ]
+        },
+        {
+          "type": "skill",
+          "id": "orderby"
+        },
+        {
+          "type": "skill",
+          "id": "limit"
+        },
+        {
+          "type": "skill",
+          "id": "insert"
+        },
+        {
+          "type": "skill",
+          "id": "update"
+        },
+        {
+          "type": "skill",
+          "id": "delete"
+        },
+        {
+          "type": "group",
+          "id": "aggregates",
+          "label": "Aggregates",
+          "children": [
+            {
+              "type": "skill",
+              "id": "count"
+            },
+            {
+              "type": "skill",
+              "id": "sum"
+            },
+            {
+              "type": "skill",
+              "id": "avg"
+            },
+            {
+              "type": "skill",
+              "id": "min_max"
+            },
+            {
+              "type": "skill",
+              "id": "groupby",
+              "children": [
+                {
+                  "type": "skill",
+                  "id": "having"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "skill",
+          "id": "alias"
+        },
+        {
+          "type": "skill",
+          "id": "join"
+        },
+        {
+          "type": "skill",
+          "id": "create_table",
+          "children": [
+            {
+              "type": "skill",
+              "id": "alter_table"
+            }
+          ]
         }
       ]
     }

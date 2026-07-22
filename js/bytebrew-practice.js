@@ -1,13 +1,24 @@
 /**
- * Byte Brew practice desk — session-only ticket game.
+ * Byte Brew practice desk — session-only ticket game with staged onboarding.
  * Depends on SqlRunner + Exercise (globals from sql-runner.js / exercise.js).
  */
 (function () {
   const DATA_URL = "../data/bytebrew-game.json";
   const DB_BASE = "../data/databases/";
 
+  const STAGES = [
+    "intro-1",
+    "intro-2",
+    "reveal-inbox",
+    "reveal-ticket",
+    "reveal-sandbox",
+    "early",
+    "full",
+  ];
+
   const state = {
     catalog: null,
+    stage: "intro-1",
     rep: 0,
     mastery: {},
     forceUnlocked: {},
@@ -23,9 +34,22 @@
     runner: null,
     statusMsg: "",
     columnOrders: {},
+    skillsIntroShown: false,
   };
 
   const el = {};
+
+  function stageIndex(stage) {
+    return STAGES.indexOf(stage);
+  }
+
+  function stageAtLeast(minStage) {
+    return stageIndex(state.stage) >= stageIndex(minStage);
+  }
+
+  function isEarlyGame() {
+    return !stageAtLeast("full");
+  }
 
   function skillById(id) {
     return state.catalog.skills.find((s) => s.id === id);
@@ -57,20 +81,24 @@
     const skill = skillById(skillId);
     if (!skill) return false;
     if (skill.startUnlocked || state.forceUnlocked[skillId]) return true;
-    // Auto path: parent mastery unlocks children
     return parentsMastered(skill);
   }
 
   function ticketAvailable(ticket) {
-    return ticket.requires.every((r) => isUnlocked(r));
+    if (!ticket.requires.every((r) => isUnlocked(r))) return false;
+    // Early game: SELECT-only tickets
+    if (isEarlyGame()) {
+      return ticket.requires.every((r) => r === "select");
+    }
+    return true;
   }
 
   function fillInbox() {
+    if (!stageAtLeast("reveal-inbox")) return;
     const openIds = new Set(state.inbox);
     const pool = state.catalog.tickets.filter(
       (t) => ticketAvailable(t) && !openIds.has(t.id)
     );
-    // Prefer uncleared tickets, then allow farming cleared ones
     pool.sort((a, b) => {
       const ac = state.cleared[a.id] ? 1 : 0;
       const bc = state.cleared[b.id] ? 1 : 0;
@@ -102,7 +130,6 @@
     return state.columnOrders[ticket.id];
   }
 
-  /** Build display prompt + validation with shuffled column order when applicable. */
   function resolveTicket(ticket) {
     const ordered = ensureColumnOrder(ticket);
     let prompt = ticket.prompt;
@@ -111,7 +138,10 @@
     if (ordered) {
       const labels = ordered.map((c) => c.label || c.expr);
       const exprs = ordered.map((c) => c.expr);
-      const base = ticket.prompt.replace(/\s*\([^)]*\)\s*\.?$/, "").trim().replace(/\.$/, "");
+      const base = ticket.prompt
+        .replace(/\s*\([^)]*\)\s*\.?$/, "")
+        .trim()
+        .replace(/\.$/, "");
       prompt = `${base} (${labels.join(", ")}).`;
       if (validation.queryTemplate) {
         validation.type = "orderedResultMatch";
@@ -197,10 +227,9 @@
     const dbPath = DB_BASE + state.catalog.database;
     if (state.runner?.close) state.runner.close();
     state.runner = await SqlRunner.createFromFile(dbPath);
-    const tablesEl = el.tables;
-    if (tablesEl) {
+    if (el.tables) {
       const tables = state.runner.getTableNames();
-      tablesEl.textContent = tables.length ? tables.join(", ") : "none";
+      el.tables.textContent = tables.length ? tables.join(", ") : "none";
     }
   }
 
@@ -216,13 +245,20 @@
     });
   }
 
+  function showModal(title, bodyHtml) {
+    if (!el.skillModalTitle || !el.skillModalBody) return;
+    el.skillModalTitle.textContent = title;
+    el.skillModalBody.innerHTML = bodyHtml;
+    if (window.bootstrap?.Modal) {
+      bootstrap.Modal.getOrCreateInstance(el.skillModal).show();
+    }
+  }
+
   function showSkillInfo(skillId, { unlockedBanner = false, alsoUnlocked = [] } = {}) {
     const skill = skillById(skillId);
-    if (!skill || !el.skillModalTitle || !el.skillModalBody) return;
+    if (!skill) return;
 
-    const examples = (skill.examples || [])
-      .map((ex) => escapeHtml(ex))
-      .join("\n");
+    const examples = (skill.examples || []).map((ex) => escapeHtml(ex)).join("\n");
     const moduleLink =
       skill.moduleHref && skill.moduleLabel
         ? `<p class="mb-0"><a href="${escapeHtml(skill.moduleHref)}">Learn more: ${escapeHtml(skill.moduleLabel)}</a></p>`
@@ -234,11 +270,7 @@
             .join(", ")}. Open any skill’s <i class="bi bi-info-circle"></i> for details.</p>`
         : "";
 
-    el.skillModalTitle.textContent = unlockedBanner
-      ? `Unlocked: ${skill.label}`
-      : skill.label;
-
-    el.skillModalBody.innerHTML = `
+    showModal(unlockedBanner ? `Unlocked: ${skill.label}` : skill.label, `
       ${unlockedBanner ? '<p class="text-success small mb-2">New skill available in your tree.</p>' : ""}
       ${alsoNote}
       <p>${escapeHtml(skill.summary || "")}</p>
@@ -248,28 +280,140 @@
       <p class="small text-muted mb-1">Using the tutorial <code>employees</code> database:</p>
       <pre class="bytebrew-skill-examples mb-3"><code>${examples}</code></pre>
       ${moduleLink}
-    `;
-
-    if (window.bootstrap?.Modal) {
-      bootstrap.Modal.getOrCreateInstance(el.skillModal).show();
-    }
+    `);
   }
 
   function maybeShowUnlockInfo(skillIds) {
     if (!skillIds || !skillIds.length) return;
+    // During early game, suppress mass-unlock modals until skills panel opens
+    if (isEarlyGame()) return;
     showSkillInfo(skillIds[0], {
       unlockedBanner: true,
       alsoUnlocked: skillIds.slice(1),
     });
   }
 
+  function showSkillsIntro() {
+    const intro = state.catalog.skillsIntro || {
+      title: "Skills unlocked",
+      body: "The Skills panel and Upgrades are now available.",
+    };
+    const paragraphs = String(intro.body)
+      .split(/\n\n+/)
+      .map((p) => `<p>${escapeHtml(p).replace(/\n/g, "<br>")}</p>`)
+      .join("");
+    showModal(intro.title, paragraphs);
+    state.skillsIntroShown = true;
+  }
+
+  function advanceStage() {
+    const i = stageIndex(state.stage);
+    if (i < 0 || i >= STAGES.length - 1) return;
+    const next = STAGES[i + 1];
+    state.stage = next;
+
+    if (
+      next === "reveal-inbox" ||
+      next === "reveal-ticket" ||
+      next === "reveal-sandbox" ||
+      next === "early"
+    ) {
+      fillInbox();
+    }
+    if (next === "reveal-sandbox" || next === "early") {
+      if (!state.activeId && state.inbox.length) {
+        state.activeId = state.inbox[0];
+      }
+    }
+
+    renderAll();
+    if (state.activeId && stageAtLeast("reveal-sandbox")) {
+      loadRunner().catch((err) => {
+        setStatus(`Failed to load database: ${err.message}`, "danger");
+      });
+    }
+  }
+
+  function enterFullDesk() {
+    if (state.stage === "full") return;
+    state.stage = "full";
+    // Drop SELECT-only gate; refill with newly unlocked tickets
+    state.inbox = state.inbox.filter((id) => {
+      const t = state.catalog.tickets.find((x) => x.id === id);
+      return t && ticketAvailable(t);
+    });
+    fillInbox();
+    renderAll();
+    if (!state.skillsIntroShown) showSkillsIntro();
+  }
+
+  function applyStageVisibility() {
+    const showInbox = stageAtLeast("reveal-inbox");
+    const showTicket = stageAtLeast("reveal-ticket");
+    const showSandbox = stageAtLeast("reveal-sandbox");
+    const showSkills = stageAtLeast("full");
+    const showShop = stageAtLeast("full");
+    const showExtraStats = stageAtLeast("full");
+    const showDesk = stageAtLeast("reveal-inbox");
+
+    el.panelInbox?.classList.toggle("d-none", !showInbox);
+    el.panelTicket?.classList.toggle("d-none", !showTicket);
+    el.panelSkills?.classList.toggle("d-none", !showSkills);
+    el.colSkills?.classList.toggle("d-none", !showSkills);
+    el.panelShop?.classList.toggle("d-none", !showShop);
+    el.colLeft?.classList.toggle("d-none", !showDesk);
+
+    document.querySelectorAll(".bb-stat-extra").forEach((node) => {
+      node.classList.toggle("d-none", !showExtraStats);
+    });
+
+    // Sandbox visibility also depends on active ticket (handled in renderTicket)
+    if (!showSandbox) {
+      el.sandbox?.classList.add("d-none");
+    }
+
+    // Widen main column while skills column is hidden
+    if (el.colMain) {
+      el.colMain.classList.toggle("col-lg-6", showSkills);
+      el.colMain.classList.toggle("col-lg-9", showDesk && !showSkills);
+      el.colMain.classList.toggle("col-lg-12", !showDesk);
+    }
+  }
+
+  function renderOnboarding() {
+    if (!el.onboarding) return;
+    if (stageAtLeast("early")) {
+      el.onboarding.innerHTML = "";
+      el.onboarding.classList.add("d-none");
+      return;
+    }
+
+    el.onboarding.classList.remove("d-none");
+    const step = (state.catalog.onboarding || []).find((s) => s.id === state.stage);
+    if (!step) {
+      el.onboarding.innerHTML = "";
+      return;
+    }
+
+    const body = escapeHtml(step.body).replace(/\n/g, "<br>");
+    el.onboarding.innerHTML = `
+      <div class="bytebrew-onboarding-card">
+        <h2 class="h5 mb-2">${escapeHtml(step.title)}</h2>
+        <div class="mb-3">${body}</div>
+        <button type="button" class="btn btn-primary" id="bb-onboarding-next">${escapeHtml(step.nextLabel || "Continue")}</button>
+      </div>
+    `;
+    document.getElementById("bb-onboarding-next")?.addEventListener("click", advanceStage);
+  }
+
   function renderHeader() {
-    el.rep.textContent = String(Math.floor(state.rep));
-    el.hints.textContent = String(state.hintTokens);
-    el.slots.textContent = String(state.inboxSlots);
+    if (el.rep) el.rep.textContent = String(Math.floor(state.rep));
+    if (el.hints) el.hints.textContent = String(state.hintTokens);
+    if (el.slots) el.slots.textContent = String(state.inboxSlots);
   }
 
   function renderInbox() {
+    if (!el.inbox || !stageAtLeast("reveal-inbox")) return;
     fillInbox();
     el.inbox.innerHTML = "";
     if (!state.inbox.length) {
@@ -289,50 +433,100 @@
         ? '<span class="badge text-bg-secondary ms-1">done</span>'
         : "";
       li.innerHTML = `<span class="fw-semibold">${escapeHtml(ticket.title)}</span>${cleared}<div class="small opacity-75">${escapeHtml(ticket.from)}</div>`;
-      li.addEventListener("click", () => selectTicket(id));
+      li.addEventListener("click", () => {
+        if (stageAtLeast("reveal-ticket")) selectTicket(id);
+      });
       el.inbox.appendChild(li);
     }
   }
 
-  function renderSkills() {
-    el.skills.innerHTML = "";
-    for (const skill of state.catalog.skills) {
-      const unlocked = isUnlocked(skill.id);
-      const mastered = isMastered(skill.id);
-      const progress = state.mastery[skill.id] || 0;
-      const row = document.createElement("div");
-      row.className = "bytebrew-skill" + (unlocked ? "" : " is-locked");
+  function skillRowHtml(skill) {
+    const unlocked = isUnlocked(skill.id);
+    const mastered = isMastered(skill.id);
+    const progress = state.mastery[skill.id] || 0;
 
-      let badge = "○";
-      if (mastered) badge = "✓";
-      else if (unlocked) badge = "·";
+    let badge = "○";
+    if (mastered) badge = "✓";
+    else if (unlocked) badge = "·";
 
-      const infoBtn = unlocked
-        ? `<button type="button" class="btn btn-link btn-sm text-decoration-none px-1 py-0 bytebrew-skill-info" data-skill="${skill.id}" title="Syntax & examples" aria-label="Info for ${escapeHtml(skill.label)}"><i class="bi bi-info-circle"></i></button>`
+    const infoBtn = unlocked
+      ? `<button type="button" class="btn btn-link btn-sm text-decoration-none px-1 py-0 bytebrew-skill-info" data-skill="${skill.id}" title="Syntax & examples" aria-label="Info for ${escapeHtml(skill.label)}"><i class="bi bi-info-circle"></i></button>`
+      : "";
+
+    const forceBtn =
+      !unlocked && parentsUnlocked(skill) && skill.forceCost > 0
+        ? `<button type="button" class="btn btn-outline-secondary btn-sm py-0 px-1 bytebrew-force" data-skill="${skill.id}">Force ${forceUnlockCost(skill.id)}</button>`
         : "";
 
-      const forceBtn =
-        !unlocked && parentsUnlocked(skill) && skill.forceCost > 0
-          ? `<button type="button" class="btn btn-outline-secondary btn-sm py-0 px-1 bytebrew-force" data-skill="${skill.id}">Force ${forceUnlockCost(skill.id)}</button>`
-          : "";
-
-      row.innerHTML = `
+    return `
+      <div class="bytebrew-skill${unlocked ? "" : " is-locked"}">
         <span class="bytebrew-skill-mark">${badge}</span>
         <span class="bytebrew-skill-label">${escapeHtml(skill.label)}</span>
         <span class="bytebrew-skill-prog text-muted small">${unlocked ? `${progress}/${skill.quota}` : "locked"}</span>
         <span class="ms-auto d-inline-flex align-items-center gap-1">${infoBtn}${forceBtn}</span>
-      `;
-      el.skills.appendChild(row);
-    }
+      </div>
+    `;
+  }
 
-    el.skills.querySelectorAll(".bytebrew-force").forEach((btn) => {
+  function renderTreeNodes(nodes, accordionId, depth) {
+    if (!nodes || !nodes.length) return "";
+    return nodes
+      .map((node, index) => {
+        const collapseId = `${accordionId}-${node.id || index}-${depth}`;
+        const children = node.children || [];
+
+        if (node.type === "group") {
+          const childHtml = renderTreeNodes(children, collapseId, depth + 1);
+          return `
+            <div class="bytebrew-tree-node">
+              <div class="bytebrew-tree-row">
+                <button type="button" class="btn btn-sm btn-link text-decoration-none px-1 bytebrew-tree-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false" aria-label="Expand ${escapeHtml(node.label || "group")}">
+                  <i class="bi bi-chevron-right"></i>
+                </button>
+                <span class="fw-semibold small">${escapeHtml(node.label || "Group")}</span>
+              </div>
+              <div id="${collapseId}" class="collapse">
+                <div class="bytebrew-tree-children">${childHtml}</div>
+              </div>
+            </div>
+          `;
+        }
+
+        const skill = skillById(node.id);
+        if (!skill) return "";
+        const row = skillRowHtml(skill);
+
+        if (!children.length) {
+          return `<div class="bytebrew-tree-node bytebrew-tree-leaf"><div class="bytebrew-tree-row"><span class="bytebrew-tree-spacer"></span>${row}</div></div>`;
+        }
+
+        const childHtml = renderTreeNodes(children, collapseId, depth + 1);
+        const open = depth === 0;
+        return `
+          <div class="bytebrew-tree-node">
+            <div class="bytebrew-tree-row">
+              <button type="button" class="btn btn-sm btn-link text-decoration-none px-1 bytebrew-tree-toggle${open ? "" : " collapsed"}" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${open ? "true" : "false"}" aria-label="Expand ${escapeHtml(skill.label)}">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+              ${row}
+            </div>
+            <div id="${collapseId}" class="collapse${open ? " show" : ""}">
+              <div class="bytebrew-tree-children">${childHtml}</div>
+            </div>
+          </div>
+        `;
+      })
+      .join("");
+  }
+
+  function bindSkillControls(root) {
+    root.querySelectorAll(".bytebrew-force").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
         forceUnlock(btn.dataset.skill);
       });
     });
-
-    el.skills.querySelectorAll(".bytebrew-skill-info").forEach((btn) => {
+    root.querySelectorAll(".bytebrew-skill-info").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
         showSkillInfo(btn.dataset.skill);
@@ -340,17 +534,22 @@
     });
   }
 
+  function renderSkills() {
+    if (!el.skills || !stageAtLeast("full")) return;
+    const tree = state.catalog.skillTree || [];
+    el.skills.innerHTML = `<div class="bytebrew-skill-tree" id="bb-skill-tree-root">${renderTreeNodes(tree, "bb-skill-tree-root", 0)}</div>`;
+    bindSkillControls(el.skills);
+  }
+
   function renderShop() {
+    if (!el.shop || !stageAtLeast("full")) return;
     el.shop.innerHTML = "";
     for (const upgrade of state.catalog.upgrades) {
       const owned = !!state.purchased[upgrade.id];
       const reqOk =
-        !upgrade.requires ||
-        upgrade.requires.every((r) => state.purchased[r]);
+        !upgrade.requires || upgrade.requires.every((r) => state.purchased[r]);
       const canBuy =
-        reqOk &&
-        state.rep >= upgrade.cost &&
-        (upgrade.repeatable || !owned);
+        reqOk && state.rep >= upgrade.cost && (upgrade.repeatable || !owned);
 
       const item = document.createElement("div");
       item.className = "bytebrew-shop-item";
@@ -374,22 +573,28 @@
   }
 
   function renderTicket() {
+    if (!el.ticketMeta || !stageAtLeast("reveal-ticket")) return;
+
     const ticket = getActiveTicket();
     if (!ticket) {
       el.ticketMeta.innerHTML =
         '<p class="text-muted mb-0">Pick a ticket from the inbox to get started.</p>';
-      el.sandbox.classList.add("d-none");
+      el.sandbox?.classList.add("d-none");
       return;
     }
 
     const resolved = resolveTicket(ticket);
-    el.sandbox.classList.remove("d-none");
+    const showSandbox = stageAtLeast("reveal-sandbox");
+    if (showSandbox) el.sandbox?.classList.remove("d-none");
+    else el.sandbox?.classList.add("d-none");
+
     const tags = ticket.requires
       .map(
         (r) =>
           `<button type="button" class="badge text-bg-secondary me-1 border-0 bytebrew-skill-badge" data-skill="${escapeHtml(r)}" title="View ${escapeHtml(r)} syntax">${escapeHtml(r)}</button>`
       )
       .join("");
+
     el.ticketMeta.innerHTML = `
       <div class="d-flex flex-wrap justify-content-between gap-2 mb-2">
         <div>
@@ -402,10 +607,14 @@
     `;
 
     el.ticketMeta.querySelectorAll(".bytebrew-skill-badge").forEach((btn) => {
-      btn.addEventListener("click", () => showSkillInfo(btn.dataset.skill));
+      btn.addEventListener("click", () => {
+        if (stageAtLeast("full") || isUnlocked(btn.dataset.skill)) {
+          showSkillInfo(btn.dataset.skill);
+        }
+      });
     });
 
-    if (el.editor && el.editor.dataset.ticketId !== ticket.id) {
+    if (showSandbox && el.editor && el.editor.dataset.ticketId !== ticket.id) {
       el.editor.value = ticket.starterSql || "SELECT ";
       el.editor.dataset.ticketId = ticket.id;
       el.output.innerHTML = "";
@@ -418,6 +627,8 @@
   }
 
   function renderAll() {
+    applyStageVisibility();
+    renderOnboarding();
     renderHeader();
     renderInbox();
     renderSkills();
@@ -436,6 +647,7 @@
   }
 
   function forceUnlock(skillId) {
+    if (!stageAtLeast("full")) return;
     const skill = skillById(skillId);
     if (!skill || isUnlocked(skillId)) return;
     if (!parentsUnlocked(skill)) {
@@ -457,6 +669,7 @@
   }
 
   function buyUpgrade(id) {
+    if (!stageAtLeast("full")) return;
     const upgrade = state.catalog.upgrades.find((u) => u.id === id);
     if (!upgrade) return;
     if (!upgrade.repeatable && state.purchased[id]) return;
@@ -479,7 +692,12 @@
     const ticket = getActiveTicket();
     if (!ticket) return;
     if (state.hintTokens <= 0) {
-      setStatus("No hint tokens — buy a pack in Upgrades.", "warning");
+      setStatus(
+        stageAtLeast("full")
+          ? "No hint tokens — buy a pack in Upgrades."
+          : "Hints unlock with the Upgrades panel after you master SELECT.",
+        "warning"
+      );
       return;
     }
     state.hintTokens -= 1;
@@ -488,6 +706,7 @@
   }
 
   async function onRun() {
+    if (!stageAtLeast("reveal-sandbox")) return;
     const ticket = getActiveTicket();
     if (!ticket || !state.runner) return;
     el.feedback.innerHTML = "";
@@ -521,6 +740,7 @@
   }
 
   async function onSubmit() {
+    if (!stageAtLeast("reveal-sandbox")) return;
     const ticket = getActiveTicket();
     if (!ticket) return;
     el.feedback.innerHTML = "";
@@ -552,9 +772,9 @@
       const reward = Math.round(state.catalog.baseRepReward * state.repMultiplier);
       state.rep += reward;
       state.cleared[ticket.id] = true;
+      const wasEarly = isEarlyGame();
       const { masteredNow, unlockedNow } = creditMastery(ticket.credits || []);
 
-      // Remove from inbox and refill
       state.inbox = state.inbox.filter((id) => id !== ticket.id);
       delete state.columnOrders[ticket.id];
       fillInbox();
@@ -573,7 +793,7 @@
       if (masteredNow.length) {
         msg += ` Mastered: ${masteredNow.map((id) => skillById(id).label).join(", ")}.`;
       }
-      if (unlockedNow.length) {
+      if (!wasEarly && unlockedNow.length) {
         msg += ` Unlocked: ${unlockedNow.map((id) => skillById(id).label).join(", ")}.`;
       }
 
@@ -583,14 +803,20 @@
         { dismissible: true }
       );
       setStatus(escapeHtml(msg), "success");
-      renderAll();
-      maybeShowUnlockInfo(unlockedNow);
+
+      if (wasEarly && masteredNow.includes("select")) {
+        enterFullDesk();
+      } else {
+        renderAll();
+        maybeShowUnlockInfo(unlockedNow);
+      }
     } catch (err) {
       el.feedback.innerHTML = `<div class="alert alert-danger mb-0">${escapeHtml(err.message)}</div>`;
     }
   }
 
   async function onReset() {
+    if (!stageAtLeast("reveal-sandbox")) return;
     const ticket = getActiveTicket();
     if (!ticket) return;
     el.feedback.innerHTML = "";
@@ -624,6 +850,14 @@
     el.skillModal = document.getElementById("bb-skill-modal");
     el.skillModalTitle = document.getElementById("bb-skill-modal-title");
     el.skillModalBody = document.getElementById("bb-skill-modal-body");
+    el.onboarding = document.getElementById("bb-onboarding");
+    el.panelInbox = document.getElementById("bb-panel-inbox");
+    el.panelShop = document.getElementById("bb-panel-shop");
+    el.panelSkills = document.getElementById("bb-panel-skills");
+    el.panelTicket = document.getElementById("bb-panel-ticket");
+    el.colLeft = document.getElementById("bb-col-left");
+    el.colSkills = document.getElementById("bb-col-skills");
+    el.colMain = document.getElementById("bb-col-main");
   }
 
   async function init() {
@@ -633,13 +867,11 @@
     state.catalog = await res.json();
     state.rep = state.catalog.startingRep || 0;
     state.inboxSlots = state.catalog.defaultInboxSlots || 1;
+    state.stage = "intro-1";
 
     for (const skill of state.catalog.skills) {
       state.mastery[skill.id] = 0;
     }
-
-    fillInbox();
-    if (state.inbox.length) state.activeId = state.inbox[0];
 
     document.getElementById("bb-run")?.addEventListener("click", onRun);
     document.getElementById("bb-submit")?.addEventListener("click", onSubmit);
@@ -647,7 +879,6 @@
     document.getElementById("bb-hint")?.addEventListener("click", useHint);
 
     renderAll();
-    if (state.activeId) await loadRunner();
   }
 
   document.addEventListener("DOMContentLoaded", () => {
