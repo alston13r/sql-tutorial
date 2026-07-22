@@ -578,8 +578,11 @@
     const ticket = getActiveTicket();
     if (!ticket) {
       el.ticketMeta.innerHTML =
-        '<p class="text-muted mb-0">Pick a ticket from the inbox to get started.</p>';
+        '<p class="text-muted mb-0">Select a ticket from the inbox, then write your SQL in the sandbox.</p>';
       el.sandbox?.classList.add("d-none");
+      if (el.editor) {
+        delete el.editor.dataset.ticketId;
+      }
       return;
     }
 
@@ -778,10 +781,14 @@
       state.inbox = state.inbox.filter((id) => id !== ticket.id);
       delete state.columnOrders[ticket.id];
       fillInbox();
-      const nextId = state.inbox[0] || null;
-      if (nextId) delete state.columnOrders[nextId];
-      state.activeId = nextId;
+      state.activeId = null;
       state.failCount = 0;
+      if (el.editor) {
+        delete el.editor.dataset.ticketId;
+      }
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
 
       let msg = `Correct! +${reward} rep.`;
       for (const id of ticket.credits || []) {
@@ -796,6 +803,7 @@
       if (!wasEarly && unlockedNow.length) {
         msg += ` Unlocked: ${unlockedNow.map((id) => skillById(id).label).join(", ")}.`;
       }
+      msg += " Select a ticket from the inbox for your next request.";
 
       el.feedback.innerHTML = alertHtml(
         `<i class="bi bi-check-circle me-1"></i>${escapeHtml(msg)}`,

@@ -1065,7 +1065,7 @@
     {
       "id": "reveal-sandbox",
       "title": "SQL sandbox",
-      "body": "Use Run to preview results, then Submit to check your answer against the expected result. Start with the SELECT tickets in your inbox. Master SELECT to unlock the full skill tree and desk upgrades.",
+      "body": "Use Run to preview results, then Submit to check your answer against the expected result. Start with the SELECT tickets in your inbox. Master SELECT to unlock the full skill tree and desk upgrades.\n\nSkill badges on each ticket are clickable — tap one for syntax help and examples. After you clear a ticket, select the next one from the inbox yourself before writing a new query.",
       "nextLabel": "Let's go"
     }
   ],
