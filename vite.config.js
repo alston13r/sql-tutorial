@@ -3,12 +3,14 @@ import { resolve, relative } from "path";
 import { globSync } from "glob";
 
 const htmlInputs = Object.fromEntries(
-  globSync("{index,index-path,modules/*.html,pages/*.html}").map((file) => [
-    relative(".", file)
-      .replace(/\.html$/, "")
-      .replace(/[\\/]/g, "-"),
-    resolve(file),
-  ]),
+  globSync(["index.html", "index-path.html", "modules/*.html", "pages/*.html"]).map(
+    (file) => [
+      relative(".", file)
+        .replace(/\.html$/, "")
+        .replace(/[\\/]/g, "-"),
+      resolve(file),
+    ],
+  ),
 );
 
 export default defineConfig({
