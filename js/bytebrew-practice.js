@@ -40,6 +40,7 @@
     columnOrders: {},
     skillsIntroShown: false,
     successTimers: {},
+    showPurchasedUpgrades: false,
   };
 
   const el = {};
@@ -244,20 +245,24 @@
     renderSuccessStack();
   }
 
-  function successAlertHtml(msg, alertId) {
+  function successAlertHtml(msg, alertId, remainingMs) {
+    const duration = Math.max(0, remainingMs);
+    const startScale = duration / SUCCESS_AUTO_DISMISS_MS;
     return `<div class="alert alert-success alert-dismissible fade show bytebrew-success-alert mb-0" role="alert" data-alert-id="${alertId}">
       <i class="bi bi-check-circle me-1"></i>${msg}
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      <div class="bytebrew-success-timer" aria-hidden="true"><div class="bytebrew-success-timer-bar"></div></div>
+      <div class="bytebrew-success-timer" aria-hidden="true"><div class="bytebrew-success-timer-bar" style="--dismiss-ms: ${duration}ms; --start-scale: ${startScale}"></div></div>
     </div>`;
   }
 
   function appendSuccessAlert(msg) {
     state.successAlertSeq += 1;
     const id = state.successAlertSeq;
+    const expiresAt = Date.now() + SUCCESS_AUTO_DISMISS_MS;
     state.successAlerts.push({
       id,
       msg: escapeHtml(msg),
+      expiresAt,
     });
     state.successTimers[id] = setTimeout(
       () => dismissSuccessAlert(id),
@@ -275,10 +280,14 @@
       return;
     }
 
+    const now = Date.now();
     el.successStack.classList.remove("d-none");
     document.body.classList.add("bytebrew-success-visible");
     el.successStack.innerHTML = state.successAlerts
-      .map(({ id, msg }) => successAlertHtml(msg, id))
+      .map(({ id, msg, expiresAt }) => {
+        const remaining = Math.max(0, (expiresAt || now) - now);
+        return successAlertHtml(msg, id, remaining);
+      })
       .join("");
 
     el.successStack.querySelectorAll(".alert").forEach((alertEl) => {
@@ -286,6 +295,23 @@
         dismissSuccessAlert(Number(alertEl.dataset.alertId));
       });
     });
+  }
+
+  function upgradeIsVisible(upgrade) {
+    if (state.stage === "upgrades" && !state.purchased.skill_tree) {
+      return upgrade.id === "skill_tree";
+    }
+    if (upgrade.id === "skill_tree" && state.purchased.skill_tree) {
+      return false;
+    }
+    if (upgrade.requires && !upgrade.requires.every((r) => state.purchased[r])) {
+      return false;
+    }
+    const owned = !!state.purchased[upgrade.id];
+    if (!state.showPurchasedUpgrades && owned && !upgrade.repeatable) {
+      return false;
+    }
+    return true;
   }
 
   function sandboxVisible() {
@@ -656,16 +682,18 @@
 
   function renderShop() {
     if (!el.shop || !stageAtLeast("upgrades")) return;
-    el.shop.innerHTML = "";
-    const upgrades = state.catalog.upgrades.filter((upgrade) => {
-      if (state.stage === "upgrades" && !state.purchased.skill_tree) {
-        return upgrade.id === "skill_tree";
-      }
-      if (upgrade.id === "skill_tree" && state.purchased.skill_tree) {
-        return false;
-      }
-      return true;
-    });
+    const upgrades = state.catalog.upgrades.filter(upgradeIsVisible);
+    const hasOwned = state.catalog.upgrades.some(
+      (u) => state.purchased[u.id] && !u.repeatable
+    );
+
+    el.shop.innerHTML = `
+      <div class="form-check form-check-sm bytebrew-shop-toggle${hasOwned ? "" : " d-none"}">
+        <input class="form-check-input" type="checkbox" id="bb-show-purchased" ${state.showPurchasedUpgrades ? "checked" : ""}>
+        <label class="form-check-label small" for="bb-show-purchased">Show purchased upgrades</label>
+      </div>
+    `;
+
     for (const upgrade of upgrades) {
       const owned = !!state.purchased[upgrade.id];
       const reqOk =
@@ -688,6 +716,20 @@
       `;
       el.shop.appendChild(item);
     }
+
+    if (upgrades.length === 0) {
+      const empty = document.createElement("p");
+      empty.className = "small text-muted mb-0";
+      empty.textContent = hasOwned
+        ? "No upgrades to show. Check “Show purchased upgrades” to review what you own."
+        : "No upgrades available yet.";
+      el.shop.appendChild(empty);
+    }
+
+    document.getElementById("bb-show-purchased")?.addEventListener("change", (e) => {
+      state.showPurchasedUpgrades = e.target.checked;
+      renderShop();
+    });
 
     el.shop.querySelectorAll(".bytebrew-buy").forEach((btn) => {
       btn.addEventListener("click", () => buyUpgrade(btn.dataset.id));

@@ -336,16 +336,23 @@ body:not(:has(> nav.navbar)) {
   background: currentColor;
   opacity: 0.45;
   transform-origin: left center;
-  animation: bytebrew-success-countdown 10s linear forwards;
+  transform: scaleX(var(--start-scale, 1));
+  animation: bytebrew-success-countdown var(--dismiss-ms, 10s) linear forwards;
 }
 
 @keyframes bytebrew-success-countdown {
   from {
-    transform: scaleX(1);
+    transform: scaleX(var(--start-scale, 1));
   }
   to {
     transform: scaleX(0);
   }
+}
+
+.bytebrew-shop-toggle {
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--bs-border-color);
 }
 
 body.bytebrew-success-visible .back-to-top {
