@@ -213,8 +213,12 @@ body:not(:has(> nav.navbar)) {
   border-color: var(--bs-primary);
 }
 
-.bytebrew-ticket-meta {
-  padding: 1rem 1.15rem;
+.bytebrew-ticket-tags .bytebrew-skill-badge {
+  cursor: pointer;
+}
+
+.bytebrew-ticket-tags .bytebrew-skill-badge:hover {
+  filter: brightness(0.92);
 }
 
 .bytebrew-skill-info {

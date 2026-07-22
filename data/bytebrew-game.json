@@ -400,8 +400,8 @@
       "from": "Maya",
       "role": "customer",
       "title": "What's on the menu?",
-      "prompt": "List every drink name and price.",
-      "hint": "SELECT name, price FROM drinks;",
+      "prompt": "List every drink on the menu",
+      "hint": "SELECT name, price FROM drinks; (column order must match the ticket)",
       "requires": [
         "select"
       ],
@@ -410,9 +410,19 @@
       ],
       "starterSql": "SELECT ",
       "validation": {
-        "type": "resultMatch",
-        "query": "SELECT name, price FROM drinks"
-      }
+        "type": "orderedResultMatch",
+        "queryTemplate": "SELECT {columns} FROM drinks"
+      },
+      "columns": [
+        {
+          "expr": "name",
+          "label": "name"
+        },
+        {
+          "expr": "price",
+          "label": "price"
+        }
+      ]
     },
     {
       "id": "t02",
@@ -438,7 +448,7 @@
       "from": "Sam",
       "role": "customer",
       "title": "Drinks over $4",
-      "prompt": "Show drinks that cost more than 4 dollars (name and price).",
+      "prompt": "Show drinks that cost more than 4 dollars",
       "hint": "Use WHERE price > 4.",
       "requires": [
         "where"
@@ -448,16 +458,26 @@
       ],
       "starterSql": "SELECT ",
       "validation": {
-        "type": "resultMatch",
-        "query": "SELECT name, price FROM drinks WHERE price > 4"
-      }
+        "type": "orderedResultMatch",
+        "queryTemplate": "SELECT {columns} FROM drinks WHERE price > 4"
+      },
+      "columns": [
+        {
+          "expr": "name",
+          "label": "name"
+        },
+        {
+          "expr": "price",
+          "label": "price"
+        }
+      ]
     },
     {
       "id": "t04",
       "from": "Riley",
       "role": "coworker",
       "title": "Espresso category",
-      "prompt": "List name and price for drinks in the espresso category.",
+      "prompt": "List drinks in the espresso category",
       "hint": "WHERE category = 'espresso'",
       "requires": [
         "where"
@@ -467,16 +487,26 @@
       ],
       "starterSql": "SELECT ",
       "validation": {
-        "type": "resultMatch",
-        "query": "SELECT name, price FROM drinks WHERE category = 'espresso'"
-      }
+        "type": "orderedResultMatch",
+        "queryTemplate": "SELECT {columns} FROM drinks WHERE category = 'espresso'"
+      },
+      "columns": [
+        {
+          "expr": "name",
+          "label": "name"
+        },
+        {
+          "expr": "price",
+          "label": "price"
+        }
+      ]
     },
     {
       "id": "t05",
       "from": "Maya",
       "role": "customer",
       "title": "Cheapest first",
-      "prompt": "List all drink names and prices, cheapest first.",
+      "prompt": "List all drinks, cheapest first",
       "hint": "ORDER BY price",
       "requires": [
         "orderby"
@@ -487,8 +517,18 @@
       "starterSql": "SELECT ",
       "validation": {
         "type": "orderedResultMatch",
-        "query": "SELECT name, price FROM drinks ORDER BY price"
-      }
+        "queryTemplate": "SELECT {columns} FROM drinks ORDER BY price"
+      },
+      "columns": [
+        {
+          "expr": "name",
+          "label": "name"
+        },
+        {
+          "expr": "price",
+          "label": "price"
+        }
+      ]
     },
     {
       "id": "t06",
@@ -553,8 +593,8 @@
       "from": "Maya",
       "role": "customer",
       "title": "Anything with latte",
-      "prompt": "Find drinks whose name contains the word latte (case-insensitive is fine if you use LIKE '%latte%' on these names).",
-      "hint": "WHERE name LIKE '%Latte%' or '%latte%'",
+      "prompt": "Find drinks whose name contains the word latte",
+      "hint": "SQLite LIKE is case-insensitive for ASCII by default, so LIKE '%latte%' or LIKE '%Latte%' both work on these names.",
       "requires": [
         "like"
       ],
@@ -563,16 +603,26 @@
       ],
       "starterSql": "SELECT ",
       "validation": {
-        "type": "resultMatch",
-        "query": "SELECT name, price FROM drinks WHERE name LIKE '%Latte%'"
-      }
+        "type": "orderedResultMatch",
+        "queryTemplate": "SELECT {columns} FROM drinks WHERE name LIKE '%Latte%'"
+      },
+      "columns": [
+        {
+          "expr": "name",
+          "label": "name"
+        },
+        {
+          "expr": "price",
+          "label": "price"
+        }
+      ]
     },
     {
       "id": "t10",
       "from": "Jordan",
       "role": "coworker",
       "title": "Espresso or tea",
-      "prompt": "List drinks in category espresso or tea (name, category, price).",
+      "prompt": "List drinks in category espresso or tea",
       "hint": "WHERE category IN ('espresso', 'tea')",
       "requires": [
         "in"
@@ -582,9 +632,23 @@
       ],
       "starterSql": "SELECT ",
       "validation": {
-        "type": "resultMatch",
-        "query": "SELECT name, category, price FROM drinks WHERE category IN ('espresso', 'tea')"
-      }
+        "type": "orderedResultMatch",
+        "queryTemplate": "SELECT {columns} FROM drinks WHERE category IN ('espresso', 'tea')"
+      },
+      "columns": [
+        {
+          "expr": "name",
+          "label": "name"
+        },
+        {
+          "expr": "category",
+          "label": "category"
+        },
+        {
+          "expr": "price",
+          "label": "price"
+        }
+      ]
     },
     {
       "id": "t11",
@@ -709,7 +773,7 @@
       "from": "Maya",
       "role": "coworker",
       "title": "Price range",
-      "prompt": "Return the minimum and maximum drink prices.",
+      "prompt": "Return the minimum and maximum drink prices",
       "hint": "SELECT MIN(price), MAX(price) FROM drinks;",
       "requires": [
         "min_max"
@@ -719,16 +783,26 @@
       ],
       "starterSql": "SELECT ",
       "validation": {
-        "type": "resultMatch",
-        "query": "SELECT MIN(price), MAX(price) FROM drinks"
-      }
+        "type": "orderedResultMatch",
+        "queryTemplate": "SELECT {columns} FROM drinks"
+      },
+      "columns": [
+        {
+          "expr": "MIN(price)",
+          "label": "MIN(price)"
+        },
+        {
+          "expr": "MAX(price)",
+          "label": "MAX(price)"
+        }
+      ]
     },
     {
       "id": "t18",
       "from": "Jordan",
       "role": "coworker",
       "title": "Count by category",
-      "prompt": "For each category, show the category and how many drinks it has.",
+      "prompt": "For each category, show how many drinks it has",
       "hint": "GROUP BY category with COUNT(*)",
       "requires": [
         "groupby"
@@ -738,16 +812,26 @@
       ],
       "starterSql": "SELECT ",
       "validation": {
-        "type": "resultMatch",
-        "query": "SELECT category, COUNT(*) FROM drinks GROUP BY category"
-      }
+        "type": "orderedResultMatch",
+        "queryTemplate": "SELECT {columns} FROM drinks GROUP BY category ORDER BY category"
+      },
+      "columns": [
+        {
+          "expr": "category",
+          "label": "category"
+        },
+        {
+          "expr": "COUNT(*)",
+          "label": "COUNT(*)"
+        }
+      ]
     },
     {
       "id": "t19",
       "from": "Sam",
       "role": "coworker",
       "title": "Pricey categories",
-      "prompt": "Categories whose average price is greater than 4 (category and avg price).",
+      "prompt": "Categories whose average price is greater than 4",
       "hint": "GROUP BY \u2026 HAVING AVG(price) > 4",
       "requires": [
         "having"
@@ -757,17 +841,27 @@
       ],
       "starterSql": "SELECT ",
       "validation": {
-        "type": "resultMatch",
-        "query": "SELECT category, AVG(price) FROM drinks GROUP BY category HAVING AVG(price) > 4"
-      }
+        "type": "orderedResultMatch",
+        "queryTemplate": "SELECT {columns} FROM drinks GROUP BY category HAVING AVG(price) > 4 ORDER BY category"
+      },
+      "columns": [
+        {
+          "expr": "category",
+          "label": "category"
+        },
+        {
+          "expr": "AVG(price)",
+          "label": "AVG(price)"
+        }
+      ]
     },
     {
       "id": "t20",
       "from": "Riley",
       "role": "coworker",
       "title": "Friendly column names",
-      "prompt": "Select drink name as drink_name and price as menu_price.",
-      "hint": "SELECT name AS drink_name, price AS menu_price FROM drinks;",
+      "prompt": "Select drink names and prices with friendly aliases",
+      "hint": "SELECT name AS drink_name, price AS menu_price FROM drinks; (match the alias order in the ticket)",
       "requires": [
         "alias"
       ],
@@ -777,15 +871,25 @@
       "starterSql": "SELECT ",
       "validation": {
         "type": "orderedResultMatch",
-        "query": "SELECT name AS drink_name, price AS menu_price FROM drinks"
-      }
+        "queryTemplate": "SELECT {columns} FROM drinks"
+      },
+      "columns": [
+        {
+          "expr": "name AS drink_name",
+          "label": "drink_name"
+        },
+        {
+          "expr": "price AS menu_price",
+          "label": "menu_price"
+        }
+      ]
     },
     {
       "id": "t21",
       "from": "Maya",
       "role": "customer",
       "title": "Who ordered what?",
-      "prompt": "List customer name, drink name, and qty for every order.",
+      "prompt": "List who ordered what for every order",
       "hint": "JOIN customers and drinks through orders.",
       "requires": [
         "join"
@@ -795,9 +899,23 @@
       ],
       "starterSql": "SELECT ",
       "validation": {
-        "type": "resultMatch",
-        "query": "SELECT c.name AS customer, d.name AS drink, o.qty FROM orders o JOIN customers c ON o.customer_id = c.id JOIN drinks d ON o.drink_id = d.id"
-      }
+        "type": "orderedResultMatch",
+        "queryTemplate": "SELECT {columns} FROM orders o JOIN customers c ON o.customer_id = c.id JOIN drinks d ON o.drink_id = d.id ORDER BY o.id"
+      },
+      "columns": [
+        {
+          "expr": "c.name AS customer",
+          "label": "customer"
+        },
+        {
+          "expr": "d.name AS drink",
+          "label": "drink"
+        },
+        {
+          "expr": "o.qty",
+          "label": "qty"
+        }
+      ]
     },
     {
       "id": "t22",
@@ -844,7 +962,7 @@
       "from": "Riley",
       "role": "customer",
       "title": "Over $4, cheapest first",
-      "prompt": "Drinks costing more than 4, cheapest first (name and price).",
+      "prompt": "Drinks costing more than 4, cheapest first",
       "hint": "WHERE + ORDER BY",
       "requires": [
         "where",
@@ -857,8 +975,18 @@
       "starterSql": "SELECT ",
       "validation": {
         "type": "orderedResultMatch",
-        "query": "SELECT name, price FROM drinks WHERE price > 4 ORDER BY price"
-      }
+        "queryTemplate": "SELECT {columns} FROM drinks WHERE price > 4 ORDER BY price"
+      },
+      "columns": [
+        {
+          "expr": "name",
+          "label": "name"
+        },
+        {
+          "expr": "price",
+          "label": "price"
+        }
+      ]
     }
   ]
 }

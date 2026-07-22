@@ -22,6 +22,7 @@
     failCount: 0,
     runner: null,
     statusMsg: "",
+    columnOrders: {},
   };
 
   const el = {};
@@ -83,6 +84,45 @@
   function getActiveTicket() {
     if (!state.activeId) return null;
     return state.catalog.tickets.find((t) => t.id === state.activeId) || null;
+  }
+
+  function shuffleInPlace(arr) {
+    for (let i = arr.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function ensureColumnOrder(ticket) {
+    if (!ticket.columns || ticket.columns.length < 2) return null;
+    if (!state.columnOrders[ticket.id]) {
+      state.columnOrders[ticket.id] = shuffleInPlace([...ticket.columns]);
+    }
+    return state.columnOrders[ticket.id];
+  }
+
+  /** Build display prompt + validation with shuffled column order when applicable. */
+  function resolveTicket(ticket) {
+    const ordered = ensureColumnOrder(ticket);
+    let prompt = ticket.prompt;
+    const validation = { ...ticket.validation };
+
+    if (ordered) {
+      const labels = ordered.map((c) => c.label || c.expr);
+      const exprs = ordered.map((c) => c.expr);
+      const base = ticket.prompt.replace(/\s*\([^)]*\)\s*\.?$/, "").trim().replace(/\.$/, "");
+      prompt = `${base} (${labels.join(", ")}).`;
+      if (validation.queryTemplate) {
+        validation.type = "orderedResultMatch";
+        validation.query = validation.queryTemplate.replace(
+          "{columns}",
+          exprs.join(", ")
+        );
+      }
+    }
+
+    return { prompt, validation };
   }
 
   function forceUnlockCost(skillId) {
@@ -342,9 +382,13 @@
       return;
     }
 
+    const resolved = resolveTicket(ticket);
     el.sandbox.classList.remove("d-none");
     const tags = ticket.requires
-      .map((r) => `<span class="badge text-bg-secondary me-1">${escapeHtml(r)}</span>`)
+      .map(
+        (r) =>
+          `<button type="button" class="badge text-bg-secondary me-1 border-0 bytebrew-skill-badge" data-skill="${escapeHtml(r)}" title="View ${escapeHtml(r)} syntax">${escapeHtml(r)}</button>`
+      )
       .join("");
     el.ticketMeta.innerHTML = `
       <div class="d-flex flex-wrap justify-content-between gap-2 mb-2">
@@ -352,10 +396,14 @@
           <div class="text-muted small">Ticket ${escapeHtml(ticket.id)} — ${escapeHtml(ticket.from)} (${escapeHtml(ticket.role)})</div>
           <h2 class="h5 mb-1">${escapeHtml(ticket.title)}</h2>
         </div>
-        <div>${tags}</div>
+        <div class="bytebrew-ticket-tags">${tags}</div>
       </div>
-      <p class="mb-0">${escapeHtml(ticket.prompt)}</p>
+      <p class="mb-0">${escapeHtml(resolved.prompt)}</p>
     `;
+
+    el.ticketMeta.querySelectorAll(".bytebrew-skill-badge").forEach((btn) => {
+      btn.addEventListener("click", () => showSkillInfo(btn.dataset.skill));
+    });
 
     if (el.editor && el.editor.dataset.ticketId !== ticket.id) {
       el.editor.value = ticket.starterSql || "SELECT ";
@@ -378,6 +426,9 @@
   }
 
   function selectTicket(id) {
+    if (state.activeId !== id) {
+      delete state.columnOrders[id];
+    }
     state.activeId = id;
     state.failCount = 0;
     setStatus("");
@@ -482,7 +533,8 @@
       }
 
       const fresh = await SqlRunner.createFromFile(DB_BASE + state.catalog.database);
-      const result = new Exercise.Validator(fresh).validate(sql, ticket.validation);
+      const resolved = resolveTicket(ticket);
+      const result = new Exercise.Validator(fresh).validate(sql, resolved.validation);
 
       if (result.actual) {
         Exercise.renderResultTable(el.output, result.actual);
@@ -504,8 +556,11 @@
 
       // Remove from inbox and refill
       state.inbox = state.inbox.filter((id) => id !== ticket.id);
+      delete state.columnOrders[ticket.id];
       fillInbox();
-      state.activeId = state.inbox[0] || null;
+      const nextId = state.inbox[0] || null;
+      if (nextId) delete state.columnOrders[nextId];
+      state.activeId = nextId;
       state.failCount = 0;
 
       let msg = `Correct! +${reward} rep.`;
