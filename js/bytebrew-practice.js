@@ -107,21 +107,50 @@
     }
   }
 
+  function unlockedIds() {
+    return new Set(
+      state.catalog.skills.filter((s) => isUnlocked(s.id)).map((s) => s.id)
+    );
+  }
+
+  function newlyUnlocked(before, after) {
+    return [...after].filter((id) => !before.has(id));
+  }
+
   function creditMastery(credits) {
-    const unlockedNow = [];
+    const before = unlockedIds();
+    const masteredNow = [];
     for (const id of credits) {
       const skill = skillById(id);
       if (!skill) continue;
-      const before = state.mastery[id] || 0;
-      const after = Math.min(skill.quota, before + 1);
+      const prev = state.mastery[id] || 0;
+      const after = Math.min(skill.quota, prev + 1);
       state.mastery[id] = after;
-      if (before < skill.quota && after >= skill.quota) {
-        unlockedNow.push(id);
+      if (prev < skill.quota && after >= skill.quota) {
+        masteredNow.push(id);
       }
     }
-    // Re-evaluate children that may now unlock via parent mastery
     fillInbox();
-    return unlockedNow;
+    return {
+      masteredNow,
+      unlockedNow: newlyUnlocked(before, unlockedIds()),
+    };
+  }
+
+  function alertHtml(msg, kind, { dismissible = false } = {}) {
+    const cls =
+      kind === "success"
+        ? "alert-success"
+        : kind === "danger"
+          ? "alert-danger"
+          : kind === "warning"
+            ? "alert-warning"
+            : "alert-info";
+    const dismissClass = dismissible ? " alert-dismissible fade show" : "";
+    const closeBtn = dismissible
+      ? '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
+      : "";
+    return `<div class="alert ${cls}${dismissClass} mb-0${dismissible ? "" : " py-2"}" role="alert">${msg}${closeBtn}</div>`;
   }
 
   async function loadRunner() {
@@ -142,15 +171,56 @@
       el.status.innerHTML = "";
       return;
     }
-    const cls =
-      kind === "success"
-        ? "alert-success"
-        : kind === "danger"
-          ? "alert-danger"
-          : kind === "warning"
-            ? "alert-warning"
-            : "alert-info";
-    el.status.innerHTML = `<div class="alert ${cls} mb-0 py-2">${msg}</div>`;
+    el.status.innerHTML = alertHtml(msg, kind, {
+      dismissible: kind === "success",
+    });
+  }
+
+  function showSkillInfo(skillId, { unlockedBanner = false, alsoUnlocked = [] } = {}) {
+    const skill = skillById(skillId);
+    if (!skill || !el.skillModalTitle || !el.skillModalBody) return;
+
+    const examples = (skill.examples || [])
+      .map((ex) => escapeHtml(ex))
+      .join("\n");
+    const moduleLink =
+      skill.moduleHref && skill.moduleLabel
+        ? `<p class="mb-0"><a href="${escapeHtml(skill.moduleHref)}">Learn more: ${escapeHtml(skill.moduleLabel)}</a></p>`
+        : "";
+    const alsoNote =
+      alsoUnlocked.length > 0
+        ? `<p class="small text-muted">Also unlocked: ${alsoUnlocked
+            .map((id) => escapeHtml(skillById(id)?.label || id))
+            .join(", ")}. Open any skill’s <i class="bi bi-info-circle"></i> for details.</p>`
+        : "";
+
+    el.skillModalTitle.textContent = unlockedBanner
+      ? `Unlocked: ${skill.label}`
+      : skill.label;
+
+    el.skillModalBody.innerHTML = `
+      ${unlockedBanner ? '<p class="text-success small mb-2">New skill available in your tree.</p>' : ""}
+      ${alsoNote}
+      <p>${escapeHtml(skill.summary || "")}</p>
+      <div class="text-muted small text-uppercase fw-semibold mb-1">Syntax</div>
+      <pre class="bytebrew-skill-examples mb-3"><code>${escapeHtml(skill.syntax || "")}</code></pre>
+      <div class="text-muted small text-uppercase fw-semibold mb-1">Examples</div>
+      <p class="small text-muted mb-1">Using the tutorial <code>employees</code> database:</p>
+      <pre class="bytebrew-skill-examples mb-3"><code>${examples}</code></pre>
+      ${moduleLink}
+    `;
+
+    if (window.bootstrap?.Modal) {
+      bootstrap.Modal.getOrCreateInstance(el.skillModal).show();
+    }
+  }
+
+  function maybeShowUnlockInfo(skillIds) {
+    if (!skillIds || !skillIds.length) return;
+    showSkillInfo(skillIds[0], {
+      unlockedBanner: true,
+      alsoUnlocked: skillIds.slice(1),
+    });
   }
 
   function renderHeader() {
@@ -197,16 +267,20 @@
       if (mastered) badge = "✓";
       else if (unlocked) badge = "·";
 
+      const infoBtn = unlocked
+        ? `<button type="button" class="btn btn-link btn-sm text-decoration-none px-1 py-0 bytebrew-skill-info" data-skill="${skill.id}" title="Syntax & examples" aria-label="Info for ${escapeHtml(skill.label)}"><i class="bi bi-info-circle"></i></button>`
+        : "";
+
       const forceBtn =
         !unlocked && parentsUnlocked(skill) && skill.forceCost > 0
-          ? `<button type="button" class="btn btn-outline-secondary btn-sm py-0 px-1 ms-auto bytebrew-force" data-skill="${skill.id}">Force ${forceUnlockCost(skill.id)}</button>`
+          ? `<button type="button" class="btn btn-outline-secondary btn-sm py-0 px-1 bytebrew-force" data-skill="${skill.id}">Force ${forceUnlockCost(skill.id)}</button>`
           : "";
 
       row.innerHTML = `
         <span class="bytebrew-skill-mark">${badge}</span>
         <span class="bytebrew-skill-label">${escapeHtml(skill.label)}</span>
         <span class="bytebrew-skill-prog text-muted small">${unlocked ? `${progress}/${skill.quota}` : "locked"}</span>
-        ${forceBtn}
+        <span class="ms-auto d-inline-flex align-items-center gap-1">${infoBtn}${forceBtn}</span>
       `;
       el.skills.appendChild(row);
     }
@@ -215,6 +289,13 @@
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
         forceUnlock(btn.dataset.skill);
+      });
+    });
+
+    el.skills.querySelectorAll(".bytebrew-skill-info").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        showSkillInfo(btn.dataset.skill);
       });
     });
   }
@@ -315,11 +396,13 @@
       setStatus(`Need ${cost} reputation to force-unlock ${skill.label}.`, "warning");
       return;
     }
+    const before = unlockedIds();
     state.rep -= cost;
     state.forceUnlocked[skillId] = true;
     setStatus(`Force-unlocked ${skill.label} (−${cost} rep).`, "success");
     fillInbox();
     renderAll();
+    maybeShowUnlockInfo(newlyUnlocked(before, unlockedIds()));
   }
 
   function buyUpgrade(id) {
@@ -417,7 +500,7 @@
       const reward = Math.round(state.catalog.baseRepReward * state.repMultiplier);
       state.rep += reward;
       state.cleared[ticket.id] = true;
-      const newlyMastered = creditMastery(ticket.credits || []);
+      const { masteredNow, unlockedNow } = creditMastery(ticket.credits || []);
 
       // Remove from inbox and refill
       state.inbox = state.inbox.filter((id) => id !== ticket.id);
@@ -432,13 +515,21 @@
           msg += ` ${skill.label} ${state.mastery[id] || 0}/${skill.quota}.`;
         }
       }
-      if (newlyMastered.length) {
-        msg += ` Mastered: ${newlyMastered.map((id) => skillById(id).label).join(", ")}.`;
+      if (masteredNow.length) {
+        msg += ` Mastered: ${masteredNow.map((id) => skillById(id).label).join(", ")}.`;
+      }
+      if (unlockedNow.length) {
+        msg += ` Unlocked: ${unlockedNow.map((id) => skillById(id).label).join(", ")}.`;
       }
 
-      el.feedback.innerHTML = `<div class="alert alert-success mb-0"><i class="bi bi-check-circle me-1"></i>${escapeHtml(msg)}</div>`;
-      setStatus(msg, "success");
+      el.feedback.innerHTML = alertHtml(
+        `<i class="bi bi-check-circle me-1"></i>${escapeHtml(msg)}`,
+        "success",
+        { dismissible: true }
+      );
+      setStatus(escapeHtml(msg), "success");
       renderAll();
+      maybeShowUnlockInfo(unlockedNow);
     } catch (err) {
       el.feedback.innerHTML = `<div class="alert alert-danger mb-0">${escapeHtml(err.message)}</div>`;
     }
@@ -475,6 +566,9 @@
     el.output = document.querySelector("#bb-sandbox .sql-output");
     el.feedback = document.querySelector("#bb-sandbox .sql-feedback");
     el.tables = document.querySelector("#bb-sandbox .sql-tables");
+    el.skillModal = document.getElementById("bb-skill-modal");
+    el.skillModalTitle = document.getElementById("bb-skill-modal-title");
+    el.skillModalBody = document.getElementById("bb-skill-modal-body");
   }
 
   async function init() {

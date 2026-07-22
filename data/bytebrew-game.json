@@ -5,25 +5,338 @@
   "defaultInboxSlots": 1,
   "baseRepReward": 15,
   "skills": [
-    { "id": "select", "label": "SELECT", "quota": 2, "parents": [], "parentMode": "all", "startUnlocked": true, "forceCost": 0 },
-    { "id": "where", "label": "WHERE", "quota": 2, "parents": ["select"], "parentMode": "all", "forceCost": 40 },
-    { "id": "orderby", "label": "ORDER BY", "quota": 2, "parents": ["select"], "parentMode": "all", "forceCost": 40 },
-    { "id": "limit", "label": "LIMIT", "quota": 2, "parents": ["select"], "parentMode": "all", "forceCost": 40 },
-    { "id": "like", "label": "LIKE", "quota": 2, "parents": ["where"], "parentMode": "all", "forceCost": 50 },
-    { "id": "in", "label": "IN", "quota": 2, "parents": ["where"], "parentMode": "all", "forceCost": 50 },
-    { "id": "insert", "label": "INSERT", "quota": 2, "parents": ["select"], "parentMode": "all", "forceCost": 60 },
-    { "id": "update", "label": "UPDATE", "quota": 2, "parents": ["select"], "parentMode": "all", "forceCost": 60 },
-    { "id": "delete", "label": "DELETE", "quota": 2, "parents": ["select"], "parentMode": "all", "forceCost": 60 },
-    { "id": "count", "label": "COUNT", "quota": 2, "parents": ["select"], "parentMode": "all", "forceCost": 50 },
-    { "id": "sum", "label": "SUM", "quota": 2, "parents": ["select"], "parentMode": "all", "forceCost": 50 },
-    { "id": "avg", "label": "AVG", "quota": 2, "parents": ["select"], "parentMode": "all", "forceCost": 50 },
-    { "id": "min_max", "label": "MIN/MAX", "quota": 2, "parents": ["select"], "parentMode": "all", "forceCost": 50 },
-    { "id": "groupby", "label": "GROUP BY", "quota": 2, "parents": ["count", "sum", "avg", "min_max"], "parentMode": "any", "forceCost": 80 },
-    { "id": "having", "label": "HAVING", "quota": 2, "parents": ["groupby"], "parentMode": "all", "forceCost": 90 },
-    { "id": "alias", "label": "Aliases", "quota": 2, "parents": ["select"], "parentMode": "all", "forceCost": 40 },
-    { "id": "join", "label": "JOIN", "quota": 2, "parents": ["where", "alias"], "parentMode": "all", "forceCost": 100 },
-    { "id": "create_table", "label": "CREATE TABLE", "quota": 1, "parents": ["select"], "parentMode": "all", "forceCost": 80 },
-    { "id": "alter_table", "label": "ALTER TABLE", "quota": 1, "parents": ["create_table"], "parentMode": "all", "forceCost": 90 }
+    {
+      "id": "select",
+      "label": "SELECT",
+      "quota": 2,
+      "parents": [],
+      "parentMode": "all",
+      "startUnlocked": true,
+      "forceCost": 0,
+      "summary": "Read columns from a table.",
+      "syntax": "SELECT column1, column2 FROM table_name;",
+      "examples": [
+        "SELECT name, department FROM employees;",
+        "SELECT * FROM employees;"
+      ],
+      "moduleHref": "../modules/01-foundations.html",
+      "moduleLabel": "Getting Started"
+    },
+    {
+      "id": "where",
+      "label": "WHERE",
+      "quota": 2,
+      "parents": [
+        "select"
+      ],
+      "parentMode": "all",
+      "forceCost": 40,
+      "summary": "Filter rows that match a condition.",
+      "syntax": "SELECT \u2026 FROM table WHERE condition;",
+      "examples": [
+        "SELECT name FROM employees WHERE salary > 70000;",
+        "SELECT * FROM employees WHERE department = 'Sales';"
+      ],
+      "moduleHref": "../modules/03-filtering.html",
+      "moduleLabel": "Filtering & Sorting"
+    },
+    {
+      "id": "orderby",
+      "label": "ORDER BY",
+      "quota": 2,
+      "parents": [
+        "select"
+      ],
+      "parentMode": "all",
+      "forceCost": 40,
+      "summary": "Sort result rows by one or more columns.",
+      "syntax": "SELECT \u2026 FROM table ORDER BY column [ASC|DESC];",
+      "examples": [
+        "SELECT name, salary FROM employees ORDER BY salary;",
+        "SELECT name FROM employees ORDER BY salary DESC;"
+      ],
+      "moduleHref": "../modules/03-filtering.html",
+      "moduleLabel": "Filtering & Sorting"
+    },
+    {
+      "id": "limit",
+      "label": "LIMIT",
+      "quota": 2,
+      "parents": [
+        "select"
+      ],
+      "parentMode": "all",
+      "forceCost": 40,
+      "summary": "Return only the first N rows.",
+      "syntax": "SELECT \u2026 FROM table LIMIT n;",
+      "examples": [
+        "SELECT name FROM employees LIMIT 3;",
+        "SELECT name FROM employees ORDER BY salary DESC LIMIT 2;"
+      ],
+      "moduleHref": "../modules/02-select.html",
+      "moduleLabel": "SELECT Basics"
+    },
+    {
+      "id": "like",
+      "label": "LIKE",
+      "quota": 2,
+      "parents": [
+        "where"
+      ],
+      "parentMode": "all",
+      "forceCost": 50,
+      "summary": "Match text patterns with wildcards (% and _).",
+      "syntax": "WHERE column LIKE 'pattern'",
+      "examples": [
+        "SELECT name FROM employees WHERE name LIKE '%Chen%';",
+        "SELECT name FROM employees WHERE name LIKE 'A%';"
+      ],
+      "moduleHref": "../modules/06-pattern-matching.html",
+      "moduleLabel": "Pattern Matching & Ranges"
+    },
+    {
+      "id": "in",
+      "label": "IN",
+      "quota": 2,
+      "parents": [
+        "where"
+      ],
+      "parentMode": "all",
+      "forceCost": 50,
+      "summary": "Match a value against a list.",
+      "syntax": "WHERE column IN (value1, value2, \u2026)",
+      "examples": [
+        "SELECT name FROM employees WHERE department IN ('Engineering', 'Sales');"
+      ],
+      "moduleHref": "../modules/06-pattern-matching.html",
+      "moduleLabel": "Pattern Matching & Ranges"
+    },
+    {
+      "id": "insert",
+      "label": "INSERT",
+      "quota": 2,
+      "parents": [
+        "select"
+      ],
+      "parentMode": "all",
+      "forceCost": 60,
+      "summary": "Add a new row to a table.",
+      "syntax": "INSERT INTO table (col1, col2) VALUES (val1, val2);",
+      "examples": [
+        "INSERT INTO employees (id, name, department, salary, hired_date) VALUES (7, 'Grace Park', 'Engineering', 90000, '2024-01-15');"
+      ],
+      "moduleHref": "../modules/04-modifying.html",
+      "moduleLabel": "Modifying Data"
+    },
+    {
+      "id": "update",
+      "label": "UPDATE",
+      "quota": 2,
+      "parents": [
+        "select"
+      ],
+      "parentMode": "all",
+      "forceCost": 60,
+      "summary": "Change values in existing rows.",
+      "syntax": "UPDATE table SET column = value WHERE condition;",
+      "examples": [
+        "UPDATE employees SET salary = 70000 WHERE name = 'David Kim';"
+      ],
+      "moduleHref": "../modules/04-modifying.html",
+      "moduleLabel": "Modifying Data"
+    },
+    {
+      "id": "delete",
+      "label": "DELETE",
+      "quota": 2,
+      "parents": [
+        "select"
+      ],
+      "parentMode": "all",
+      "forceCost": 60,
+      "summary": "Remove rows that match a condition.",
+      "syntax": "DELETE FROM table WHERE condition;",
+      "examples": [
+        "DELETE FROM employees WHERE name = 'Frank Lee';"
+      ],
+      "moduleHref": "../modules/04-modifying.html",
+      "moduleLabel": "Modifying Data"
+    },
+    {
+      "id": "count",
+      "label": "COUNT",
+      "quota": 2,
+      "parents": [
+        "select"
+      ],
+      "parentMode": "all",
+      "forceCost": 50,
+      "summary": "Count rows (optionally matching a condition).",
+      "syntax": "SELECT COUNT(*) FROM table;",
+      "examples": [
+        "SELECT COUNT(*) FROM employees;",
+        "SELECT COUNT(*) FROM employees WHERE department = 'Sales';"
+      ],
+      "moduleHref": "../modules/05-aggregates.html",
+      "moduleLabel": "Aggregate Functions"
+    },
+    {
+      "id": "sum",
+      "label": "SUM",
+      "quota": 2,
+      "parents": [
+        "select"
+      ],
+      "parentMode": "all",
+      "forceCost": 50,
+      "summary": "Add up numeric values in a column.",
+      "syntax": "SELECT SUM(column) FROM table;",
+      "examples": [
+        "SELECT SUM(salary) FROM employees;"
+      ],
+      "moduleHref": "../modules/05-aggregates.html",
+      "moduleLabel": "Aggregate Functions"
+    },
+    {
+      "id": "avg",
+      "label": "AVG",
+      "quota": 2,
+      "parents": [
+        "select"
+      ],
+      "parentMode": "all",
+      "forceCost": 50,
+      "summary": "Compute the average of numeric values.",
+      "syntax": "SELECT AVG(column) FROM table;",
+      "examples": [
+        "SELECT AVG(salary) FROM employees WHERE department = 'Engineering';"
+      ],
+      "moduleHref": "../modules/05-aggregates.html",
+      "moduleLabel": "Aggregate Functions"
+    },
+    {
+      "id": "min_max",
+      "label": "MIN/MAX",
+      "quota": 2,
+      "parents": [
+        "select"
+      ],
+      "parentMode": "all",
+      "forceCost": 50,
+      "summary": "Find the smallest or largest value in a column.",
+      "syntax": "SELECT MIN(column), MAX(column) FROM table;",
+      "examples": [
+        "SELECT MIN(salary), MAX(salary) FROM employees;"
+      ],
+      "moduleHref": "../modules/05-aggregates.html",
+      "moduleLabel": "Aggregate Functions"
+    },
+    {
+      "id": "groupby",
+      "label": "GROUP BY",
+      "quota": 2,
+      "parents": [
+        "count",
+        "sum",
+        "avg",
+        "min_max"
+      ],
+      "parentMode": "any",
+      "forceCost": 80,
+      "summary": "Collapse rows into groups and aggregate each group.",
+      "syntax": "SELECT col, AGG(\u2026) FROM table GROUP BY col;",
+      "examples": [
+        "SELECT department, COUNT(*) FROM employees GROUP BY department;"
+      ],
+      "moduleHref": "../modules/08-grouping.html",
+      "moduleLabel": "GROUP BY & HAVING"
+    },
+    {
+      "id": "having",
+      "label": "HAVING",
+      "quota": 2,
+      "parents": [
+        "groupby"
+      ],
+      "parentMode": "all",
+      "forceCost": 90,
+      "summary": "Filter groups after aggregation (like WHERE for groups).",
+      "syntax": "\u2026 GROUP BY col HAVING condition;",
+      "examples": [
+        "SELECT department, AVG(salary) FROM employees GROUP BY department HAVING AVG(salary) > 70000;"
+      ],
+      "moduleHref": "../modules/08-grouping.html",
+      "moduleLabel": "GROUP BY & HAVING"
+    },
+    {
+      "id": "alias",
+      "label": "Aliases",
+      "quota": 2,
+      "parents": [
+        "select"
+      ],
+      "parentMode": "all",
+      "forceCost": 40,
+      "summary": "Rename columns (or tables) in the result.",
+      "syntax": "SELECT column AS alias_name FROM table;",
+      "examples": [
+        "SELECT name AS employee_name, salary AS yearly_pay FROM employees;"
+      ],
+      "moduleHref": "../modules/02-select.html",
+      "moduleLabel": "SELECT Basics"
+    },
+    {
+      "id": "join",
+      "label": "JOIN",
+      "quota": 2,
+      "parents": [
+        "where",
+        "alias"
+      ],
+      "parentMode": "all",
+      "forceCost": 100,
+      "summary": "Combine rows from related tables.",
+      "syntax": "SELECT \u2026 FROM a JOIN b ON a.id = b.a_id;",
+      "examples": [
+        "SELECT e.name, d.budget FROM employees e JOIN departments d ON e.department = d.name;"
+      ],
+      "moduleHref": "../modules/07-joins.html",
+      "moduleLabel": "Joins"
+    },
+    {
+      "id": "create_table",
+      "label": "CREATE TABLE",
+      "quota": 1,
+      "parents": [
+        "select"
+      ],
+      "parentMode": "all",
+      "forceCost": 80,
+      "summary": "Define a new table and its columns.",
+      "syntax": "CREATE TABLE name (col type, \u2026);",
+      "examples": [
+        "CREATE TABLE projects (id INTEGER PRIMARY KEY, title TEXT NOT NULL, budget REAL);"
+      ],
+      "moduleHref": "../modules/11-schema.html",
+      "moduleLabel": "Database & Tables"
+    },
+    {
+      "id": "alter_table",
+      "label": "ALTER TABLE",
+      "quota": 1,
+      "parents": [
+        "create_table"
+      ],
+      "parentMode": "all",
+      "forceCost": 90,
+      "summary": "Change an existing table\u2019s structure.",
+      "syntax": "ALTER TABLE name ADD COLUMN col type;",
+      "examples": [
+        "ALTER TABLE employees ADD COLUMN email TEXT;"
+      ],
+      "moduleHref": "../modules/11-schema.html",
+      "moduleLabel": "Database & Tables"
+    }
   ],
   "upgrades": [
     {
@@ -31,37 +344,54 @@
       "label": "Extra inbox slot",
       "description": "+1 concurrent ticket in the inbox.",
       "cost": 40,
-      "effect": { "type": "inboxSlots", "value": 1 }
+      "effect": {
+        "type": "inboxSlots",
+        "value": 1
+      }
     },
     {
       "id": "inbox_2",
       "label": "Second extra slot",
       "description": "+1 more inbox slot (needs Extra inbox slot).",
       "cost": 70,
-      "requires": ["inbox_1"],
-      "effect": { "type": "inboxSlots", "value": 1 }
+      "requires": [
+        "inbox_1"
+      ],
+      "effect": {
+        "type": "inboxSlots",
+        "value": 1
+      }
     },
     {
       "id": "rep_boost",
       "label": "Reputation booster",
       "description": "+25% reputation from ticket clears.",
       "cost": 60,
-      "effect": { "type": "repMultiplier", "value": 1.25 }
+      "effect": {
+        "type": "repMultiplier",
+        "value": 1.25
+      }
     },
     {
       "id": "hint_pack",
-      "label": "Hint tokens (×3)",
+      "label": "Hint tokens (\u00d73)",
       "description": "Buy 3 soft hints for the active ticket.",
       "cost": 25,
       "repeatable": true,
-      "effect": { "type": "hintTokens", "value": 3 }
+      "effect": {
+        "type": "hintTokens",
+        "value": 3
+      }
     },
     {
       "id": "mastery_rush",
       "label": "Mastery rush",
       "description": "Force-unlock costs 30% less.",
       "cost": 50,
-      "effect": { "type": "forceDiscount", "value": 0.3 }
+      "effect": {
+        "type": "forceDiscount",
+        "value": 0.3
+      }
     }
   ],
   "tickets": [
@@ -72,8 +402,12 @@
       "title": "What's on the menu?",
       "prompt": "List every drink name and price.",
       "hint": "SELECT name, price FROM drinks;",
-      "requires": ["select"],
-      "credits": ["select"],
+      "requires": [
+        "select"
+      ],
+      "credits": [
+        "select"
+      ],
       "starterSql": "SELECT ",
       "validation": {
         "type": "resultMatch",
@@ -87,8 +421,12 @@
       "title": "Just the names",
       "prompt": "Return only the drink names.",
       "hint": "SELECT name FROM drinks;",
-      "requires": ["select"],
-      "credits": ["select"],
+      "requires": [
+        "select"
+      ],
+      "credits": [
+        "select"
+      ],
       "starterSql": "SELECT ",
       "validation": {
         "type": "resultMatch",
@@ -102,8 +440,12 @@
       "title": "Drinks over $4",
       "prompt": "Show drinks that cost more than 4 dollars (name and price).",
       "hint": "Use WHERE price > 4.",
-      "requires": ["where"],
-      "credits": ["where"],
+      "requires": [
+        "where"
+      ],
+      "credits": [
+        "where"
+      ],
       "starterSql": "SELECT ",
       "validation": {
         "type": "resultMatch",
@@ -117,8 +459,12 @@
       "title": "Espresso category",
       "prompt": "List name and price for drinks in the espresso category.",
       "hint": "WHERE category = 'espresso'",
-      "requires": ["where"],
-      "credits": ["where"],
+      "requires": [
+        "where"
+      ],
+      "credits": [
+        "where"
+      ],
       "starterSql": "SELECT ",
       "validation": {
         "type": "resultMatch",
@@ -132,8 +478,12 @@
       "title": "Cheapest first",
       "prompt": "List all drink names and prices, cheapest first.",
       "hint": "ORDER BY price",
-      "requires": ["orderby"],
-      "credits": ["orderby"],
+      "requires": [
+        "orderby"
+      ],
+      "credits": [
+        "orderby"
+      ],
       "starterSql": "SELECT ",
       "validation": {
         "type": "orderedResultMatch",
@@ -147,8 +497,12 @@
       "title": "Price high to low",
       "prompt": "List drink names ordered by price descending.",
       "hint": "ORDER BY price DESC",
-      "requires": ["orderby"],
-      "credits": ["orderby"],
+      "requires": [
+        "orderby"
+      ],
+      "credits": [
+        "orderby"
+      ],
       "starterSql": "SELECT ",
       "validation": {
         "type": "orderedResultMatch",
@@ -161,9 +515,13 @@
       "role": "customer",
       "title": "Top of the menu",
       "prompt": "Show the first 3 drinks by id (name only).",
-      "hint": "ORDER BY id LIMIT 3 — or LIMIT 3 if ids are ordered.",
-      "requires": ["limit"],
-      "credits": ["limit"],
+      "hint": "ORDER BY id LIMIT 3 \u2014 or LIMIT 3 if ids are ordered.",
+      "requires": [
+        "limit"
+      ],
+      "credits": [
+        "limit"
+      ],
       "starterSql": "SELECT ",
       "validation": {
         "type": "orderedResultMatch",
@@ -177,8 +535,13 @@
       "title": "Two cheapest",
       "prompt": "Return the 2 cheapest drink names (cheapest first).",
       "hint": "ORDER BY price LIMIT 2",
-      "requires": ["limit", "orderby"],
-      "credits": ["limit"],
+      "requires": [
+        "limit",
+        "orderby"
+      ],
+      "credits": [
+        "limit"
+      ],
       "starterSql": "SELECT ",
       "validation": {
         "type": "orderedResultMatch",
@@ -192,8 +555,12 @@
       "title": "Anything with latte",
       "prompt": "Find drinks whose name contains the word latte (case-insensitive is fine if you use LIKE '%latte%' on these names).",
       "hint": "WHERE name LIKE '%Latte%' or '%latte%'",
-      "requires": ["like"],
-      "credits": ["like"],
+      "requires": [
+        "like"
+      ],
+      "credits": [
+        "like"
+      ],
       "starterSql": "SELECT ",
       "validation": {
         "type": "resultMatch",
@@ -207,8 +574,12 @@
       "title": "Espresso or tea",
       "prompt": "List drinks in category espresso or tea (name, category, price).",
       "hint": "WHERE category IN ('espresso', 'tea')",
-      "requires": ["in"],
-      "credits": ["in"],
+      "requires": [
+        "in"
+      ],
+      "credits": [
+        "in"
+      ],
       "starterSql": "SELECT ",
       "validation": {
         "type": "resultMatch",
@@ -222,8 +593,12 @@
       "title": "Add Matcha",
       "prompt": "Insert a new drink: Matcha, category tea, price 4.50. (If Matcha Latte already exists, add a distinct row named exactly Matcha.)",
       "hint": "INSERT INTO drinks (id, name, category, price) VALUES (11, 'Matcha', 'tea', 4.50);",
-      "requires": ["insert"],
-      "credits": ["insert"],
+      "requires": [
+        "insert"
+      ],
+      "credits": [
+        "insert"
+      ],
       "starterSql": "INSERT INTO drinks ",
       "validation": {
         "type": "mutation",
@@ -238,8 +613,12 @@
       "title": "Cold Brew price change",
       "prompt": "Update Cold Brew so its price is 3.75.",
       "hint": "UPDATE drinks SET price = 3.75 WHERE name = 'Cold Brew';",
-      "requires": ["update"],
-      "credits": ["update"],
+      "requires": [
+        "update"
+      ],
+      "credits": [
+        "update"
+      ],
       "starterSql": "UPDATE ",
       "validation": {
         "type": "mutation",
@@ -254,8 +633,12 @@
       "title": "Remove Pumpkin Spice",
       "prompt": "Delete the Pumpkin Spice drink from the menu.",
       "hint": "DELETE FROM drinks WHERE name = 'Pumpkin Spice';",
-      "requires": ["delete"],
-      "credits": ["delete"],
+      "requires": [
+        "delete"
+      ],
+      "credits": [
+        "delete"
+      ],
       "starterSql": "DELETE ",
       "validation": {
         "type": "mutation",
@@ -270,8 +653,12 @@
       "title": "How many drinks?",
       "prompt": "Return a single count of all drinks.",
       "hint": "SELECT COUNT(*) FROM drinks;",
-      "requires": ["count"],
-      "credits": ["count"],
+      "requires": [
+        "count"
+      ],
+      "credits": [
+        "count"
+      ],
       "starterSql": "SELECT ",
       "validation": {
         "type": "resultMatch",
@@ -285,8 +672,12 @@
       "title": "Sum of prices",
       "prompt": "Return the sum of all drink prices.",
       "hint": "SELECT SUM(price) FROM drinks;",
-      "requires": ["sum"],
-      "credits": ["sum"],
+      "requires": [
+        "sum"
+      ],
+      "credits": [
+        "sum"
+      ],
       "starterSql": "SELECT ",
       "validation": {
         "type": "resultMatch",
@@ -300,8 +691,13 @@
       "title": "Average espresso price",
       "prompt": "Average price of drinks in the espresso category.",
       "hint": "SELECT AVG(price) FROM drinks WHERE category = 'espresso';",
-      "requires": ["avg", "where"],
-      "credits": ["avg"],
+      "requires": [
+        "avg",
+        "where"
+      ],
+      "credits": [
+        "avg"
+      ],
       "starterSql": "SELECT ",
       "validation": {
         "type": "resultMatch",
@@ -315,8 +711,12 @@
       "title": "Price range",
       "prompt": "Return the minimum and maximum drink prices.",
       "hint": "SELECT MIN(price), MAX(price) FROM drinks;",
-      "requires": ["min_max"],
-      "credits": ["min_max"],
+      "requires": [
+        "min_max"
+      ],
+      "credits": [
+        "min_max"
+      ],
       "starterSql": "SELECT ",
       "validation": {
         "type": "resultMatch",
@@ -330,8 +730,12 @@
       "title": "Count by category",
       "prompt": "For each category, show the category and how many drinks it has.",
       "hint": "GROUP BY category with COUNT(*)",
-      "requires": ["groupby"],
-      "credits": ["groupby"],
+      "requires": [
+        "groupby"
+      ],
+      "credits": [
+        "groupby"
+      ],
       "starterSql": "SELECT ",
       "validation": {
         "type": "resultMatch",
@@ -344,9 +748,13 @@
       "role": "coworker",
       "title": "Pricey categories",
       "prompt": "Categories whose average price is greater than 4 (category and avg price).",
-      "hint": "GROUP BY … HAVING AVG(price) > 4",
-      "requires": ["having"],
-      "credits": ["having"],
+      "hint": "GROUP BY \u2026 HAVING AVG(price) > 4",
+      "requires": [
+        "having"
+      ],
+      "credits": [
+        "having"
+      ],
       "starterSql": "SELECT ",
       "validation": {
         "type": "resultMatch",
@@ -360,8 +768,12 @@
       "title": "Friendly column names",
       "prompt": "Select drink name as drink_name and price as menu_price.",
       "hint": "SELECT name AS drink_name, price AS menu_price FROM drinks;",
-      "requires": ["alias"],
-      "credits": ["alias"],
+      "requires": [
+        "alias"
+      ],
+      "credits": [
+        "alias"
+      ],
       "starterSql": "SELECT ",
       "validation": {
         "type": "orderedResultMatch",
@@ -375,8 +787,12 @@
       "title": "Who ordered what?",
       "prompt": "List customer name, drink name, and qty for every order.",
       "hint": "JOIN customers and drinks through orders.",
-      "requires": ["join"],
-      "credits": ["join"],
+      "requires": [
+        "join"
+      ],
+      "credits": [
+        "join"
+      ],
       "starterSql": "SELECT ",
       "validation": {
         "type": "resultMatch",
@@ -390,8 +806,12 @@
       "title": "Loyalty table",
       "prompt": "Create a table loyalty_members with columns id (INTEGER PRIMARY KEY) and email (TEXT NOT NULL).",
       "hint": "CREATE TABLE loyalty_members (id INTEGER PRIMARY KEY, email TEXT NOT NULL);",
-      "requires": ["create_table"],
-      "credits": ["create_table"],
+      "requires": [
+        "create_table"
+      ],
+      "credits": [
+        "create_table"
+      ],
       "starterSql": "CREATE TABLE ",
       "validation": {
         "type": "mutation",
@@ -406,8 +826,12 @@
       "title": "Add caffeine column",
       "prompt": "Add an INTEGER column caffeine_mg to the drinks table.",
       "hint": "ALTER TABLE drinks ADD COLUMN caffeine_mg INTEGER;",
-      "requires": ["alter_table"],
-      "credits": ["alter_table"],
+      "requires": [
+        "alter_table"
+      ],
+      "credits": [
+        "alter_table"
+      ],
       "starterSql": "ALTER TABLE ",
       "validation": {
         "type": "mutation",
@@ -422,8 +846,14 @@
       "title": "Over $4, cheapest first",
       "prompt": "Drinks costing more than 4, cheapest first (name and price).",
       "hint": "WHERE + ORDER BY",
-      "requires": ["where", "orderby"],
-      "credits": ["where", "orderby"],
+      "requires": [
+        "where",
+        "orderby"
+      ],
+      "credits": [
+        "where",
+        "orderby"
+      ],
       "starterSql": "SELECT ",
       "validation": {
         "type": "orderedResultMatch",

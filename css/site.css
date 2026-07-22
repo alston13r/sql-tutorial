@@ -212,3 +212,26 @@ body:not(:has(> nav.navbar)) {
 .bytebrew-inbox-item.active {
   border-color: var(--bs-primary);
 }
+
+.bytebrew-ticket-meta {
+  padding: 1rem 1.15rem;
+}
+
+.bytebrew-skill-info {
+  padding: 0.1rem 0.35rem;
+  line-height: 1;
+}
+
+.bytebrew-skill .ms-auto {
+  margin-left: auto !important;
+}
+
+.bytebrew-skill-examples {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  background: var(--bs-tertiary-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.375rem;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+}
